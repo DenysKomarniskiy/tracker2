@@ -49,18 +49,16 @@ function loadTestSets() {
 	    }
 	);
 }
-loadTestSets();
 
 function renderTestSet(cellNode, row, dataContext, colDef){
 	
 	if (testSets.size === 0) {
 		if (loadTestSets.status === 'empty'){
 			loadTestSets();
-		} else {
-			setTimeOut(renderTestSet.bind(null, cellNode, row, dataContext, colDef), 300);
-		}
-	} else {		
-		$(cellNode).text(testSets.get(dataContext.test_set_id).local_set);		
+		} 
+		setTimeout(renderTestSet.bind(null, cellNode, row, dataContext, colDef), 110);
+	} else {
+		cellNode.innerHTML = testSets.get(dataContext.test_set_id).local_set;		
 	}
 	
 }
