@@ -1,0 +1,5 @@
+models\CoreModel.class
+servlet\listeners\ContextListener.class
+models\entities\User.class
+models\UserModel.class
+servlet\auth\LoginPage.class
