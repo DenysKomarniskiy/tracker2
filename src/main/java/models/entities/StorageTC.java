@@ -40,7 +40,7 @@ public class StorageTC  {
 	
 	@Column(name="test_set_id", length=10, nullable=true)
 	private int test_set_id;
-	
+
 	public String getTc_id() {
 		return tc_id;
 	}

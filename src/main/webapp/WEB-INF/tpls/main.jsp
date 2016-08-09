@@ -20,7 +20,6 @@
 		<jsp:include page="${template}" />
 	</c:if>
 
-
 </body>
 </html>
 

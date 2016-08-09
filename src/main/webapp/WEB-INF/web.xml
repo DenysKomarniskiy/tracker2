@@ -23,6 +23,13 @@
   	<servlet-name>TestSet</servlet-name>
   	<servlet-class>servlet.storage.TestSet</servlet-class>
   </servlet>
+  <servlet>
+  	<description>
+  	</description>
+  	<display-name>TestingSheet</display-name>
+  	<servlet-name>TestingSheet</servlet-name>
+  	<servlet-class>servlet.storage.TestingSheet</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>Storage</servlet-name>
   	<url-pattern>/Storage</url-pattern>
@@ -30,5 +37,9 @@
   <servlet-mapping>
   	<servlet-name>TestSet</servlet-name>
   	<url-pattern>/TestSet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>TestingSheet</servlet-name>
+  	<url-pattern>/TestingSheet</url-pattern>
   </servlet-mapping>
 </web-app>

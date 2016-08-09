@@ -12,6 +12,7 @@ import org.hibernate.service.ServiceRegistry;
 import models.entities.StorageTC;
 import models.entities.TestSet;
 import models.entities.Testing;
+import models.entities.TestingSheet;
 import models.entities.User;
 
 //import util.TestingTestcase;
@@ -26,6 +27,7 @@ public class ContextListener implements ServletContextListener {
 		configuration.addAnnotatedClass(Testing.class);
 		configuration.addAnnotatedClass(StorageTC.class);
 		configuration.addAnnotatedClass(TestSet.class);
+		configuration.addAnnotatedClass(TestingSheet.class);		
 		System.out.println("Hibernate Configuration created successfully");
 
 		// logger.info("Hibernate Configuration created successfully");
