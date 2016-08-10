@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -68,16 +69,60 @@ public class TestSet extends HttpServlet {
 
 		if (action.equals("edit")) {
 			String id = request.getParameter("id");
-			response.getWriter().println(id);
-			return;
+			String localSet = request.getParameter("local_set");
+			String sdSet = request.getParameter("sd_set");
+
+			if (id == null) {
+				response.getWriter().println("error: please populate id");
+				return;
+			}
+
+			if (localSet == null && sdSet == null) {
+				response.getWriter().println("error: local_set and sd_set is emty, nothing  to modify");
+				return;
+			}
+
+			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+			Session hibernateSession = sessionFactory.getCurrentSession();
+
+			Transaction tx = hibernateSession.beginTransaction();
+			models.entities.TestSet testSet = (models.entities.TestSet) hibernateSession.createQuery("from TestSet where id= :id").setParameter("id", Integer.valueOf(id)).getResultList().stream()
+					.findFirst().orElse(null);
+			tx.commit();
+
+			if (testSet == null) {
+				response.getWriter().println("error: No such id");
+				return;
+			}
+
+			if (testSet.getId() > 0) {
+
+			}
+
+//			if (sdSet != null) {
+//				query = hibernateSession.createQuery("update Test_set set sd_set=:sd_set where id= :id");
+//				query.setParameter("sd_set", sdSet);
+//				query.setInteger("id", Integer.valueOf(id));
+//				int result = query.executeUpdate();
+//				response.getWriter().println("Test_set Update Status=" + result);
+//				return;
+//			}
+//
+//			if (localSet != null) {
+//				query = hibernateSession.createQuery("update Test_set set local_set= :local_set where id= :id");
+//				query.setParameter("local_set", localSet);
+//				query.setInteger("id", Integer.valueOf(id));
+//				int result = query.executeUpdate();
+//				response.getWriter().println("Test_set Update Status=" + result);
+//				return;
+//			}
+
 		}
-		
+
 		if (action.equals("delete")) {
 			String id = request.getParameter("id");
 			return;
 		}
-		
-		
 
 	}
 
