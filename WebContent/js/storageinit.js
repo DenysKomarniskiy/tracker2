@@ -15,16 +15,6 @@ var users = {'0': 'opya', '1': 'rovo', '2': 'deko', '3': 'mmal', '4': 'myut'};
 var usersString = Object.keys(users).map(function(k) {return users[k]}).join(",");
 var grid;
 
-function sdFormatter(row, cell, value) {
-        switch (value){
-            case true   : return '&#10004';
-            case false  : return '<a href="#">post</a>';
-            case 'wait' : return '<div class="loader"></div>';
-            default : return value;
-        }
-}
-
-
 var testSets = new Map;
 loadTestSets.status = 'empty';
 function loadTestSets() {
