@@ -21,15 +21,24 @@ public class TestSet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Gson gson = new Gson();
+
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
+		Gson gson = new Gson();
 
 		Transaction tx = hibernateSession.beginTransaction();
-		List tcs = hibernateSession.createQuery("from TestSet").getResultList();
+		List testsets = hibernateSession.createQuery("from TestSet").getResultList();
+		List users = hibernateSession.createQuery("from User").getResultList();
+		List testings = hibernateSession.createQuery("from Testing").getResultList();
 		tx.commit();
 
-		response.getWriter().println(gson.toJson(tcs));
+		request.setAttribute("title", "Test Sets management");
+		request.setAttribute("template", "testset.jsp");
+		request.setAttribute("users", gson.toJson(users));
+		request.setAttribute("testings", gson.toJson(testings));
+		request.setAttribute("testsets", gson.toJson(testsets));
+
+		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
