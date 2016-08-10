@@ -50,10 +50,6 @@ public class LoginPage extends HttpServlet {
 
 		}
 
-		if (request.getParameter("storage") != null) {
-
-		}
-
 	}
 
 }

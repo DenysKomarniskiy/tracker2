@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -38,8 +40,17 @@ public class StorageTC  {
 	@Column(name="tags", length=500, nullable=true)
 	private String tags;
 	
-	@Column(name="test_set_id", length=10, nullable=true)
-	private int test_set_id;
+	@OneToOne
+	@JoinColumn(name = "test_set_id", nullable = false)
+	private TestSet testSet;
+
+	public TestSet getTestSet() {
+		return testSet;
+	}
+
+	public void setTestSet(TestSet testSet) {
+		this.testSet = testSet;
+	}
 
 	public String getTc_id() {
 		return tc_id;
@@ -105,12 +116,5 @@ public class StorageTC  {
 		this.tags = tags;
 	}
 
-	public int getTest_set_id() {
-		return test_set_id;
-	}
-
-	public void setTest_set_id(int test_set_id) {
-		this.test_set_id = test_set_id;
-	}
 
 }

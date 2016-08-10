@@ -15,43 +15,8 @@ var users = {'0': 'opya', '1': 'rovo', '2': 'deko', '3': 'mmal', '4': 'myut'};
 var usersString = Object.keys(users).map(function(k) {return users[k]}).join(",");
 var grid;
 
-
-var testSets = new Map;
-loadTestSets.status = 'empty';
-function loadTestSets() {
-
-	loadTestSets.status = 'pending';
-	fetch(
-		'testset'
-	).then(
-		function(response) {
-			return response.json();
-	    }
-	).then(
-		function(data) {			
-			data.forEach(function(item){
-				testSets.set(item.id, item);
-			});		
-			loadTestSets.status = 'loaded';
-		}	
-	).catch(
-		function(error) {
-			console.log('loadTestSets: Request failed', error);
-	    }
-	);
-}
-
-function renderTestSet(cellNode, row, dataContext, colDef){
-	
-	if (testSets.size === 0) {
-		if (loadTestSets.status === 'empty'){
-			loadTestSets();
-		} 
-		setTimeout(renderTestSet.bind(null, cellNode, row, dataContext, colDef), 110);
-	} else {
-		cellNode.innerHTML = testSets.get(dataContext.test_set_id).local_set;		
-	}
-	
+function testSetFormat(row, cell, value, columnDef, dataContext) {    
+    return value.local_set;
 }
 
 var columns = [
@@ -59,8 +24,8 @@ var columns = [
     {id: "author", 		name: "Author", 	field: "author", 		width: 50, 	options: usersString, editor: Slick.Editors.Select},
     {id: "step_num", 	name: "Step Count", field: "step_num", 		width: 65	},
     {id: "duration", 	name: "Duration", 	field: "duration", 		width: 65, sortable: true, editor: Slick.Editors.Integer},
-    {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65, selectable: false, sortable: true},
-    {id: "test_set_id", name: "Set Name", 	field: "test_set_id", 	width: 150,	 rerenderOnResize: false,   asyncPostRender: renderTestSet, sortable: true},
+    {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65, sortable: true},
+    {id: "testSet", 	name: "Set Name", 	field: "testSet", 		width: 150,	formatter: testSetFormat, sortable: true},
     {id: "features", 	name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText},    
 ];
 var options = {
@@ -69,8 +34,6 @@ var options = {
     enableAddRow: false,
     enableCellNavigation: true,
     asyncEditorLoading: false,
-    enableAsyncPostRender: true,
-    asyncPostRenderDelay: 0,
     rowHeight: 25,
     cellFlashingCssClass: 'flash-cell',
     enableColumnReorder: false,

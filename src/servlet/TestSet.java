@@ -27,15 +27,15 @@ public class TestSet extends HttpServlet {
 		Gson gson = new Gson();
 
 		Transaction tx = hibernateSession.beginTransaction();
+		List testings = hibernateSession.createQuery("from Testing").getResultList();
 		List testsets = hibernateSession.createQuery("from TestSet").getResultList();
 		List users = hibernateSession.createQuery("from User").getResultList();
-		List testings = hibernateSession.createQuery("from Testing").getResultList();
 		tx.commit();
 
 		request.setAttribute("title", "Test Sets management");
 		request.setAttribute("template", "testset.jsp");
-		request.setAttribute("users", gson.toJson(users));
-		request.setAttribute("testings", gson.toJson(testings));
+		request.setAttribute("users", users);
+		request.setAttribute("testings", testings);
 		request.setAttribute("testsets", gson.toJson(testsets));
 
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);

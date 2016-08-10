@@ -28,7 +28,7 @@ public class Testing extends HttpServlet {
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List tcs = hibernateSession
-				.createQuery("SELECT DISTINCT ts FROM TestingSheet ts LEFT JOIN FETCH ts.storageTC WHERE ts.testingId = :testing_id AND ts.runner = :runner")
+				.createQuery("SELECT DISTINCT ts FROM TestingSheet ts LEFT JOIN FETCH ts.storageTC stc LEFT JOIN FETCH stc.testSet WHERE ts.testingId = :testing_id AND ts.runner = :runner")
 				.setParameter("testing_id", 1)
 				.setParameter("runner", "opya")
 				.getResultList();
