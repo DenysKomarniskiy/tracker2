@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import com.google.gson.Gson;
 
@@ -45,8 +45,11 @@ public class TestSet extends HttpServlet {
 
 		String action = request.getParameter("action");
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+		Session hibernateSession;
+		Transaction tx;
 
 		if (action == null) {
+			response.setStatus(400);
 			response.getWriter().println("error: action is missing");
 			return;
 		}
@@ -57,16 +60,17 @@ public class TestSet extends HttpServlet {
 			String sdSet = request.getParameter("sd_set");
 
 			if (localSet == null || sdSet == null) {
+				response.setStatus(400);
 				response.getWriter().println("error: local_set or sd_set is missing");
 				return;
 			}
 			
-			Session hibernateSession = sessionFactory.getCurrentSession();
+			hibernateSession = sessionFactory.getCurrentSession();
 			models.entities.TestSet testSet = new models.entities.TestSet();
 			testSet.setLocalSet(localSet);
 			testSet.setSdSet(sdSet);
 
-			Transaction tx = hibernateSession.beginTransaction();
+			tx = hibernateSession.beginTransaction();
 			hibernateSession.save(testSet);
 			tx.commit();
 
@@ -81,63 +85,44 @@ public class TestSet extends HttpServlet {
 			String sdSet = request.getParameter("sd_set");
 
 			if (id == null) {
+				response.setStatus(400);
 				response.getWriter().println("error: please populate id");
 				return;
 			}
 
 			if (localSet == null && sdSet == null) {
+				response.setStatus(400);
 				response.getWriter().println("error: local_set and sd_set is emty, nothing  to modify");
 				return;
-			}
-
-			Session hibernateSession = sessionFactory.getCurrentSession();
-			Transaction tx = hibernateSession.beginTransaction();
-			models.entities.TestSet testSet = (models.entities.TestSet) hibernateSession.createQuery("from TestSet where id= :id").setParameter("id", Integer.valueOf(id)).getResultList().stream()
-					.findFirst().orElse(null);
+			}	
+			
+			hibernateSession = sessionFactory.getCurrentSession();
+			tx = hibernateSession.beginTransaction();
+			Query query = null;
+			
+			if (localSet != null && sdSet != null) {				
+				query = hibernateSession
+						.createQuery("update TestSet set local_set=:local_set, sd_set=:sd_set  where id= :id")
+						.setParameter("sd_set", sdSet)
+						.setParameter("local_set", localSet)
+						.setParameter("id", Integer.valueOf(id));				
+			} else if(sdSet != null){
+				query = hibernateSession
+						.createQuery("update TestSet set sd_set=:sd_set where id= :id")
+						.setParameter("sd_set", sdSet)
+						.setParameter("id", Integer.valueOf(id));
+			} else if (localSet != null) {
+				query = hibernateSession
+						.createQuery("update TestSet set local_set=:local_set where id= :id")
+						.setParameter("local_set", localSet)
+						.setParameter("id", Integer.valueOf(id));						
+			}					
+			
+			int result = query.executeUpdate();
 			tx.commit();
 
-			if (testSet == null) {
-				response.getWriter().println("error: No such id");
-				return;
-			}
-
-			if (localSet != null && sdSet != null) {
-				sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
-				hibernateSession = sessionFactory.getCurrentSession();
-
-				tx = hibernateSession.beginTransaction();
-				int result = hibernateSession.createQuery("update TestSet set local_set=:local_set, sd_set=:sd_set  where id= :id").setParameter("sd_set", sdSet)
-						.setParameter("local_set", localSet).setParameter("id", Integer.valueOf(id)).executeUpdate();
-				tx.commit();
-
-				response.getWriter().println("Test_set Update Status=" + result);
-				return;
-			}
-
-			if (sdSet != null) {
-				
-				hibernateSession = sessionFactory.getCurrentSession();
-
-				tx = hibernateSession.beginTransaction();
-				int result = hibernateSession.createQuery("update TestSet set sd_set=:sd_set where id= :id").setParameter("sd_set", sdSet).setParameter("id", Integer.valueOf(id)).executeUpdate();
-				tx.commit();
-
-				response.getWriter().println("Test_set Update Status=" + result);
-				return;
-			}
-
-			if (localSet != null) {
-				
-				hibernateSession = sessionFactory.getCurrentSession();
-				tx = hibernateSession.beginTransaction();
-				int result = hibernateSession.createQuery("update TestSet set local_set=:local_set where id= :id").setParameter("local_set", localSet).setParameter("id", Integer.valueOf(id))
-						.executeUpdate();
-				tx.commit();
-
-				response.getWriter().println("Test_set Update Status=" + result);
-				return;
-			}
-
+			response.getWriter().println("Test_set Update Status=" + result);
+			return;
 		}
 
 		if (action.equals("delete")) {
@@ -149,8 +134,8 @@ public class TestSet extends HttpServlet {
 			}
 			
 			
-			Session hibernateSession = sessionFactory.getCurrentSession();
-			Transaction tx = hibernateSession.beginTransaction();
+			hibernateSession = sessionFactory.getCurrentSession();
+			tx = hibernateSession.beginTransaction();
 			models.entities.TestSet testSet = (models.entities.TestSet) hibernateSession.createQuery("from TestSet where id= :id").setParameter("id", Integer.valueOf(id)).getResultList().stream()
 					.findFirst().orElse(null);
 			tx.commit();

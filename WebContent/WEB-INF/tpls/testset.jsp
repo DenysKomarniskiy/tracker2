@@ -27,27 +27,34 @@
 	}
 	var gridColumns = [             
     	{id: "id", 		name: "Testset ID", 	field: "id", 		width: 200},    
-    	{id: "sd_set", 	name: "SD Set name", 	field: "sd_set", 	width: 400, editor: Slick.Editors.Text},
-    	{id: "local_set", 	name: "Local Set name", field: "local_set", width: 400, editor: Slick.Editors.Text},
+    	{id: "local_set", 	name: "Local Set name", field: "local_set", width: 300, editor: Slick.Editors.Text},
+    	{id: "sd_set", 	name: "SD Set name", 	field: "sd_set", 	width: 500, editor: Slick.Editors.Text},
     ];
 	
 	function queueAndExecuteCommand(item, column, editCommand) {
-		console.log(item, column, editCommand)
+		
 		var id = item.id;
 		var field = column.field;
 		var data = editCommand.serializedValue;
-		var formData = new FormData();
-		formData.append("action", "edit");
-		formData.append("id", id);
-		formData.append(field, data);
-		var opts = {method: 'post', body: formData};		
-		fetch('testset', opts)
-		.then(editCommand.execute)
-		.catch(function(err){
-			console.log(err);
-		});
+		var opts = {
+			method: 'post',  
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
+    		body: "action=edit&id="+id+"&"+field+"="+data
+   		};		
 		
-		//();
+		fetch(
+			'testset', opts
+		).then(
+			resp => resp.text()			
+		).then(
+			function(){
+				editCommand.execute();
+			}
+		).catch(
+			function(err){
+				console.log(err);
+			}
+		);
 	}
 
 	dataView.setItems(testsets);	
