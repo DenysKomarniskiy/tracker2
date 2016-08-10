@@ -139,16 +139,6 @@
 
       <Host name="localhost"  appBase="webapps" unpackWARs="true" autoDeploy="true" deployXML="true">
 		
-		<Context docBase="../../tracker2" path="/tracker2" reloadable="true">
-
-			<ResourceLink name="jdbc/TrackerDBres"
-							global="jdbc/TrackerDB"
-							auth="Container"
-							type="javax.sql.DataSource" />
-		
-		    <!-- Default set of monitored resources -->		    
-		    <WatchedResource>WEB-INF/web.xml</WatchedResource>
-		</Context>
         <!-- SingleSignOn valve, share authentication between web applications
              Documentation at: /docs/config/valve.html -->
         <!--
