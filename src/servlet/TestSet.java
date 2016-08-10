@@ -20,19 +20,23 @@ public class TestSet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		Gson gson = new Gson();
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List testsets = hibernateSession.createQuery("from TestSet").getResultList();
+		List users = hibernateSession.createQuery("from User").getResultList();
+		List testings = hibernateSession.createQuery("from Testing").getResultList();
 		tx.commit();
 
 		request.setAttribute("title", "Test Sets management");
 		request.setAttribute("template", "testset.jsp");
-		request.setAttribute("testsets", gson.toJson(testsets));		
-		
+		request.setAttribute("users", gson.toJson(users));
+		request.setAttribute("testings", gson.toJson(testings));
+		request.setAttribute("testsets", gson.toJson(testsets));
+
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
 	}
 
@@ -76,13 +80,11 @@ public class TestSet extends HttpServlet {
 			response.getWriter().println(id);
 			return;
 		}
-		
+
 		if (action.equals("delete")) {
 			String id = request.getParameter("id");
 			return;
 		}
-		
-		
 
 	}
 

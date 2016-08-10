@@ -16,6 +16,11 @@
 </head>
 <body>
 
+	<script type="text/javascript">
+		var users = ${users};
+		var testings = ${testings};
+	</script>
+
 	<c:if test="${not empty template}">
 		<jsp:include page="${template}" />
 	</c:if>
