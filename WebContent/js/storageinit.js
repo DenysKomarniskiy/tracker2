@@ -15,6 +15,7 @@ var users = {'0': 'opya', '1': 'rovo', '2': 'deko', '3': 'mmal', '4': 'myut'};
 var usersString = Object.keys(users).map(function(k) {return users[k]}).join(",");
 var grid;
 
+
 var testSets = new Map;
 loadTestSets.status = 'empty';
 function loadTestSets() {
