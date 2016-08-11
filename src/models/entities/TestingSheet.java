@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -21,8 +22,8 @@ public class TestingSheet {
 	@Column(name = "id")
 	private int id;
 
-	@Column(name = "testing_id")
-	private int testingId;
+//	@Column(name = "testing_id")
+//	private int testingId;
 
 	@Column(name = "runner")
 	private String runner;
@@ -47,10 +48,24 @@ public class TestingSheet {
 
 	@Column(name = "gene_ver", nullable=true)
 	private String geneVer;
-
+	
+	@ManyToOne
+	@JoinColumn(name="testing_id", nullable=false)
+	private Testing testing;
+	
 	@OneToOne
-	@JoinColumn(name = "strg_tc_id", nullable = false)
+	@JoinColumn(name = "strg_tc_id", nullable = false, updatable=false)
 	private StorageTC storageTC;
+
+	public Testing getTesting() {
+		return testing;
+	}
+
+	public void setTesting(Testing testing) {
+		this.testing = testing;
+	}
+
+
 
 	public int getId() {
 		return id;
@@ -60,13 +75,13 @@ public class TestingSheet {
 		this.id = id;
 	}
 
-	public int getTestingId() {
-		return testingId;
-	}
-
-	public void setTestingId(int testingId) {
-		this.testingId = testingId;
-	}
+//	public int getTestingId() {
+//		return testingId;
+//	}
+//
+//	public void setTestingId(int testingId) {
+//		this.testingId = testingId;
+//	}
 
 	public String getRunner() {
 		return runner;

@@ -23,11 +23,11 @@ public class ContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
 		Configuration configuration = new Configuration();
 		configuration.configure("hibernate.cfg.xml");
-		configuration.addAnnotatedClass(User.class);
-		configuration.addAnnotatedClass(Testing.class);
 		configuration.addAnnotatedClass(StorageTC.class);
-		configuration.addAnnotatedClass(TestSet.class);
+		configuration.addAnnotatedClass(Testing.class);
 		configuration.addAnnotatedClass(TestingSheet.class);		
+		configuration.addAnnotatedClass(TestSet.class);
+		configuration.addAnnotatedClass(User.class);
 		System.out.println("Hibernate Configuration created successfully");
 
 		// logger.info("Hibernate Configuration created successfully");

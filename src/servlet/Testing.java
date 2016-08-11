@@ -25,16 +25,15 @@ public class Testing extends HttpServlet {
 		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
-
+		
 		Transaction tx = hibernateSession.beginTransaction();
-		List tcs = hibernateSession
-				.createQuery("SELECT DISTINCT ts FROM TestingSheet ts LEFT JOIN FETCH ts.storageTC stc LEFT JOIN FETCH stc.testSet WHERE ts.testingId = :testing_id AND ts.runner = :runner")
-				.setParameter("testing_id", 1)
-				.setParameter("runner", "opya")
+		List<models.entities.Testing> testing = hibernateSession
+				.createQuery("SELECT DISTINCT tst FROM Testing tst LEFT JOIN FETCH tst.testingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tst.id = :id ")
+				.setParameter("id", 5)
 				.getResultList();
 		tx.commit();
-
-		response.getWriter().println(gson.toJson(tcs));
+		
+		response.getWriter().println(gson.toJson(testing));
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
