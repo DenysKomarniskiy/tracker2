@@ -54,49 +54,42 @@ public class Testing extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String user = request.getParameter("user");
+		String runner = request.getParameter("runner");
 		String testingId = request.getParameter("testingId");
-		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
-		Session hibernateSession;
-		Transaction tx;
 
-		if (user == null || testingId == null) {
+		if (runner == null || testingId == null) {
 			response.setStatus(400);
 			response.getWriter().println("error: please define user and testing!");
 			return;
 		}
 
-		hibernateSession = sessionFactory.getCurrentSession();
-		tx = hibernateSession.beginTransaction();
-		Query<TestingSheet> query = null;
-
-		if (user.toLowerCase().equals("all")) {
-			query = hibernateSession.createQuery("from TestingSheet where testingId= :testingId").
-					setParameter("testingId", Integer.valueOf(testingId));
-		} else {
-			query = hibernateSession.createQuery("from TestingSheet where testingId= :testingId and runner= :runner").
-					setParameter("testingId", Integer.valueOf(testingId)).
-					setParameter("runner", user);
-		}
-		List<TestingSheet> testSheet = query.getResultList();
-		tx.commit();
+		List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(testingId), runner);
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
 		response.getWriter().println(gson.toJson(testSheet));
 	}
 
-	private List<models.entities.Testing> getTestingSheet(int testingId, String runner) {
+	private List<TestingSheet> getTestingSheet(int testingId, String runner) {
 
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 
 		Transaction tx = hibernateSession.beginTransaction();
-		List<models.entities.Testing> testing = hibernateSession
-				.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
-				.setParameter("testingId", testingId).setParameter("runner", runner).getResultList();
+		Query<TestingSheet> query = null;
+
+		if (runner.toLowerCase().equals("all")) {
+			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId")
+					.setParameter("testingId", testingId);
+		} else {
+			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
+					.setParameter("testingId", testingId)
+					.setParameter("runner", runner);
+		}
+		List<TestingSheet> testSheet = query.getResultList();
+
 		tx.commit();
 
-		return testing;
+		return testSheet;
 
 	}
 
