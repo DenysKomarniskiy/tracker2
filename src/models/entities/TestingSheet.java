@@ -32,7 +32,7 @@ public class TestingSheet {
 	private String tcStatus;
 
 	@Column(name = "duration")
-	private int testing_duration;
+	private int tduration;
 
 	@Column(name = "comment", nullable=true)
 	private String comment;
@@ -100,11 +100,11 @@ public class TestingSheet {
 	}
 
 	public int getDuration() {
-		return testing_duration;
+		return tduration;
 	}
 
 	public void setDuration(int duration) {
-		this.testing_duration = duration;
+		this.tduration = duration;
 	}
 
 	public String getComment() {
