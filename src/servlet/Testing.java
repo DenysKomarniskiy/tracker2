@@ -25,10 +25,29 @@ public class Testing extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
+		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+		Session hibernateSession = sessionFactory.getCurrentSession();		
 
-		List<models.entities.Testing> testing = getTestingSheet(7, "opya");
+		Transaction tx = hibernateSession.beginTransaction();
+		List<models.entities.Testing> testings = hibernateSession.createQuery("from Testing").getResultList();
+		int lastTestingId = testings.get(testings.size()-1).getId();
+		List users = hibernateSession.createQuery("from User").getResultList();	
+		tx.commit();
+		
+		
 
-		response.getWriter().println(gson.toJson(testing));
+		request.setAttribute("title", "Testing");
+		request.setAttribute("users", users);
+		request.setAttribute("testings", testings);
+		request.setAttribute("testingSheet", lastTestingId);
+
+		request.setAttribute("template", "testing.jsp");
+		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
+
+//		
+//		 List<models.entities.Testing> testing = getTestingSheet(7, "opya");
+//		
+//		 response.getWriter().println(gson.toJson(testing));
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -44,9 +63,7 @@ public class Testing extends HttpServlet {
 		Transaction tx = hibernateSession.beginTransaction();
 		List<models.entities.Testing> testing = hibernateSession
 				.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
-				.setParameter("testingId", testingId)
-				.setParameter("runner", runner)
-				.getResultList();
+				.setParameter("testingId", testingId).setParameter("runner", runner).getResultList();
 		tx.commit();
 
 		return testing;
