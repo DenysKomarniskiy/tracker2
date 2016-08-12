@@ -17,11 +17,12 @@
 <body>
 
 	<div class="header">
-		<form action="loginpage" method="post">
+		<form id="login-testing" action="loginpage" method="post">
 			<select name="user_id">
 				<c:forEach items="${users}" var="user">
 					<option value="${user.id}">${user.id}</option>
 				</c:forEach>
+				<option value="all">All</option>
 			</select> 
 			<select name="testing_id">
 				<c:forEach items="${testings}" var="testing">
