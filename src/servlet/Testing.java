@@ -12,11 +12,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import utils.TestingSerializer;
+import models.entities.TestingSheet;
 
 @WebServlet("/testing")
 public class Testing extends HttpServlet {
@@ -33,7 +35,35 @@ public class Testing extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		doGet(request, response);
+		String user = request.getParameter("user");
+		String testingId = request.getParameter("testingId");
+		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+		Session hibernateSession;
+		Transaction tx;
+
+		if (user == null || testingId == null) {
+			response.setStatus(400);
+			response.getWriter().println("error: please define user and testing!");
+			return;
+		}
+
+		hibernateSession = sessionFactory.getCurrentSession();
+		tx = hibernateSession.beginTransaction();
+		Query<TestingSheet> query = null;
+
+		if (user.toLowerCase().equals("all")) {
+			query = hibernateSession.createQuery("from TestingSheet where testingId= :testingId").
+					setParameter("testingId", Integer.valueOf(testingId));
+		} else {
+			query = hibernateSession.createQuery("from TestingSheet where testingId= :testingId and runner= :runner").
+					setParameter("testingId", Integer.valueOf(testingId)).
+					setParameter("runner", user);
+		}
+		List<TestingSheet> testSheet = query.getResultList();
+		tx.commit();
+
+		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
+		response.getWriter().println(gson.toJson(testSheet));
 	}
 
 	private List<models.entities.Testing> getTestingSheet(int testingId, String runner) {
