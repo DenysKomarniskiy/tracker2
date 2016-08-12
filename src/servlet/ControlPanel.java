@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -55,7 +54,7 @@ public class ControlPanel extends HttpServlet {
 		String userWithMinTime = null;
 		
 		Testing testing = new Testing();
-		testing.setName("asdfasdf");
+		testing.setName("new_testing2");
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List<StorageTC> allTestComplTCs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet WHERE stc.auto_ide = :ide").setParameter("ide", "TC").getResultList();
@@ -108,17 +107,18 @@ public class ControlPanel extends HttpServlet {
 			newTestingSheet.add(testingSheetEntry);
 		}
 
+//		Gson gson = new Gson();
+//		response.getWriter().println(gson.toJson(newTestingSheet));
+//		return;
+		
 		testing.setTestingSheet(newTestingSheet);
 
 		hibernateSession = sessionFactory.getCurrentSession();
 		tx = hibernateSession.beginTransaction();
-
 		hibernateSession.save(testing);
-
 		for (TestingSheet testingSheetEntry : newTestingSheet) {
 			hibernateSession.save(testingSheetEntry);
 		}
-
 		tx.commit();
 
 	}

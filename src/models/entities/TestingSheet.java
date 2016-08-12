@@ -22,8 +22,8 @@ public class TestingSheet {
 	@Column(name = "id")
 	private int id;
 
-//	@Column(name = "testing_id")
-//	private int testingId;
+	@Column(name = "testing_id", insertable=false, updatable=false)
+	private int testingId;
 
 	@Column(name = "runner")
 	private String runner;
@@ -75,13 +75,13 @@ public class TestingSheet {
 		this.id = id;
 	}
 
-//	public int getTestingId() {
-//		return testingId;
-//	}
-//
-//	public void setTestingId(int testingId) {
-//		this.testingId = testingId;
-//	}
+	public int getTestingId() {
+		return testingId;
+	}
+
+	public void setTestingId(int testingId) {
+		this.testingId = testingId;
+	}
 
 	public String getRunner() {
 		return runner;

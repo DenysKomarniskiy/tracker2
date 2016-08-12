@@ -14,31 +14,43 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import utils.TestingSerializer;
 
-@WebServlet("/testingsheet")
+@WebServlet("/testing")
 public class Testing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		Gson gson = new Gson();
-		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
-		Session hibernateSession = sessionFactory.getCurrentSession();
-		
-		Transaction tx = hibernateSession.beginTransaction();
-		List<models.entities.Testing> testing = hibernateSession
-				.createQuery("SELECT DISTINCT tst FROM Testing tst LEFT JOIN FETCH tst.testingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tst.id = :id ")
-				.setParameter("id", 5)
-				.getResultList();
-		tx.commit();
-		
+		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
+
+		List<models.entities.Testing> testing = getTestingSheet(7, "opya");
+
 		response.getWriter().println(gson.toJson(testing));
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+
+	private List<models.entities.Testing> getTestingSheet(int testingId, String runner) {
+
+		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+		Session hibernateSession = sessionFactory.getCurrentSession();
+
+		Transaction tx = hibernateSession.beginTransaction();
+		List<models.entities.Testing> testing = hibernateSession
+				.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
+				.setParameter("testingId", testingId)
+				.setParameter("runner", runner)
+				.getResultList();
+		tx.commit();
+
+		return testing;
+
 	}
 
 }
