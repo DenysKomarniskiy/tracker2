@@ -89,6 +89,18 @@ public class TestSet extends HttpServlet {
 				response.getWriter().println("error: please populate id");
 				return;
 			}
+			
+			hibernateSession = sessionFactory.getCurrentSession();
+			tx = hibernateSession.beginTransaction();
+			models.entities.TestSet testSet = (models.entities.TestSet) hibernateSession.createQuery("from TestSet where id= :id").setParameter("id", Integer.valueOf(id)).getResultList().stream()
+					.findFirst().orElse(null);
+			tx.commit();
+
+			if (testSet == null) {
+				response.getWriter().println("error: No such id");
+				return;
+			}
+
 
 			if (localSet == null && sdSet == null) {
 				response.setStatus(400);
