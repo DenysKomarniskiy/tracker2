@@ -29,7 +29,7 @@ import utils.Distributor;
 /**
  * Servlet implementation class ControlPanel
  */
-@WebServlet("/ControlPanel")
+@WebServlet("/controlpanel")
 public class ControlPanel extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -54,7 +54,7 @@ public class ControlPanel extends HttpServlet {
 		String userWithMinTime = null;
 		
 		Testing testing = new Testing();
-		testing.setName("new_testing2");
+		testing.setName("new_testing5");
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List<StorageTC> allTestComplTCs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet WHERE stc.auto_ide = :ide").setParameter("ide", "TC").getResultList();
@@ -116,6 +116,7 @@ public class ControlPanel extends HttpServlet {
 		hibernateSession = sessionFactory.getCurrentSession();
 		tx = hibernateSession.beginTransaction();
 		hibernateSession.save(testing);
+		
 		for (TestingSheet testingSheetEntry : newTestingSheet) {
 			hibernateSession.save(testingSheetEntry);
 		}

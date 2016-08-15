@@ -19,26 +19,7 @@ function testSetFormat(row, cell, value, columnDef, dataContext) {
     return value.local_set;
 }
 
-var columns = [
-    {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 200, sortable: true},    
-    {id: "author", 		name: "Author", 	field: "author", 		width: 50, 	options: usersString, editor: Slick.Editors.Select},
-    {id: "step_num", 	name: "Step Count", field: "step_num", 		width: 65	},
-    {id: "duration", 	name: "Duration", 	field: "duration", 		width: 65, sortable: true, editor: Slick.Editors.Integer},
-    {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65, sortable: true},
-    {id: "testSet", 	name: "Set Name", 	field: "testSet", 		width: 150,	formatter: testSetFormat, sortable: true},
-    {id: "features", 	name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText},    
-];
-var options = {
-    autoEdit: true,
-    editable: true,
-    enableAddRow: false,
-    enableCellNavigation: true,
-    asyncEditorLoading: false,
-    rowHeight: 25,
-    cellFlashingCssClass: 'flash-cell',
-    enableColumnReorder: false,
-    multiColumnSort: true
-};
+
 
 var myDataView = new Slick.Data.DataView();
 myDataView.getItemMetadata = function (index) {

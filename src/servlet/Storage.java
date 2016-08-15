@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 
 import models.entities.StorageTC;
 
-
 @WebServlet("/storage")
 public class Storage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -27,40 +26,32 @@ public class Storage extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		Object to = request.getParameter("to");
+		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
-		
-		if (to == null) {			
-			Transaction tx = hibernateSession.beginTransaction();
-			List testings = hibernateSession.createQuery("from Testing").getResultList();
-			List users = hibernateSession.createQuery("from User").getResultList();			
-			tx.commit();
-			
-			request.setAttribute("title", "Storage");
-			request.setAttribute("template", "storage.jsp");
-			request.setAttribute("users", users);
-			request.setAttribute("testings", testings);
 
-			request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
-			return;
-		}
+		Transaction tx = hibernateSession.beginTransaction();
+		List testings = hibernateSession.createQuery("from Testing").getResultList();
+		List users = hibernateSession.createQuery("from User").getResultList();
+		List<StorageTC> tcs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
+		tx.commit();
 
-		if (to.equals("json")) {
-			Gson gson = new Gson();			
+		request.setAttribute("title", "Storage");
+		request.setAttribute("users", users);
+		request.setAttribute("jusers", gson.toJson(users));
+		request.setAttribute("testings", testings);
+		request.setAttribute("tcs", gson.toJson(tcs));
 
-			Transaction tx = hibernateSession.beginTransaction();
-			List<StorageTC> tcs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
-			tx.commit();
-
-			response.getWriter().println(gson.toJson(tcs));
-		}
+		request.setAttribute("template", "storage.jsp");
+		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
+		return;
 
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+
+	
+
 	}
 
 }

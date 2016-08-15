@@ -32,15 +32,15 @@ public class Testing extends HttpServlet {
 		Session hibernateSession = sessionFactory.getCurrentSession();
 
 		Transaction tx = hibernateSession.beginTransaction();
-
 		List<models.entities.Testing> testings = hibernateSession.createQuery("from Testing").getResultList();
-		List users = hibernateSession.createQuery("from User").getResultList();
-		tx.commit();
+		List users = hibernateSession.createQuery("from User").getResultList();		
+		tx.commit();		
 
-		List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(7), "all");
+		List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(testings.get(testings.size()-1).getId()), "all");
 
 		request.setAttribute("title", "Testing");
 		request.setAttribute("users", users);
+		request.setAttribute("jusers", gson.toJson(users));
 		request.setAttribute("testings", testings);
 		request.setAttribute("testSheet", gson.toJson(testSheet));
 
@@ -134,7 +134,7 @@ public class Testing extends HttpServlet {
 		Query<TestingSheet> query = null;
 
 		if (runner.toLowerCase().equals("all")) {
-			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId")
+			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId")
 					.setParameter("testingId", testingId);
 		} else {
 

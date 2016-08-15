@@ -8,14 +8,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+
 
 @Entity
-@Table(name = "Storage", uniqueConstraints = { @UniqueConstraint(columnNames = { "tc_id" }) })
+@Table(name = "Storage")
 public class StorageTC  {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private int id;
+	
 	@Column(name="tc_id", nullable=false, unique=true, length=50)
 	private String tc_id;	
 	
@@ -40,6 +43,9 @@ public class StorageTC  {
 	@Column(name="tags", length=500, nullable=true)
 	private String tags;
 	
+	@Column(name="run_parameters", length=50, nullable=true)
+	private String run_param;
+
 	@OneToOne
 	@JoinColumn(name = "test_set_id", nullable = false)
 	private TestSet testSet;
@@ -50,6 +56,14 @@ public class StorageTC  {
 
 	public void setTestSet(TestSet testSet) {
 		this.testSet = testSet;
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getTc_id() {
@@ -114,6 +128,14 @@ public class StorageTC  {
 
 	public void setTags(String tags) {
 		this.tags = tags;
+	}
+	
+	public String getRun_param() {
+		return run_param;
+	}
+
+	public void setRun_param(String run_param) {
+		this.run_param = run_param;
 	}
 
 

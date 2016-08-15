@@ -1,3 +1,5 @@
+<textarea id="clipboard" style="display: none"></textarea>
+
 <div id="main-grid" style="height: 850px;"></div>
 
 <script src="./js/lib/jquery/jquery-3.1.0.min.js"></script>
@@ -13,8 +15,8 @@
 
 <script type="text/javascript">	
 	var view = {};
-	view['data'] = ${tcs};
+	view['data'] = ${testSheet};
 	view['users'] = ${jusers};
 </script>
 
-<script type="text/javascript" src="./js/main.js"></script>
+<script src="./js/main.js"></script>	

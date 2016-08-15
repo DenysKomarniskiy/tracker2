@@ -19,42 +19,49 @@ public class TestingSheet {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private int id;
 
-	@Column(name = "testing_id", insertable=false, updatable=false)
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	@Column(name = "testing_id", insertable = false, updatable = false)
 	private int testingId;
 
 	@Column(name = "runner")
 	private String runner;
 
-	@Column(name = "tc_status", nullable=true)
+	@Column(name = "tc_status", nullable = true)
 	private String tcStatus;
 
 	@Column(name = "duration")
 	private int tduration;
 
-	@Column(name = "comment", nullable=true)
+	@Column(name = "comment", nullable = true)
 	private String comment;
 
-	@Column(name = "softdev", nullable=true)
+	@Column(name = "softdev", nullable = true)
 	private int softdev;
 
-	@Column(name = "tqc_ver", nullable=true)
+	@Column(name = "tqc_ver", nullable = true)
 	private String tqcVer;
 
-	@Column(name = "lab_ver", nullable=true)
+	@Column(name = "lab_ver", nullable = true)
 	private String labVer;
 
-	@Column(name = "gene_ver", nullable=true)
+	@Column(name = "gene_ver", nullable = true)
 	private String geneVer;
-	
+
 	@ManyToOne
-	@JoinColumn(name="testing_id", nullable=false)
+	@JoinColumn(name = "testing_id")
 	private Testing testing;
-	
+
 	@OneToOne
-	@JoinColumn(name = "strg_tc_id", nullable = false, updatable=false)
+	@JoinColumn(name = "strg_id", nullable = false)
 	private StorageTC storageTC;
 
 	public Testing getTesting() {
@@ -63,16 +70,6 @@ public class TestingSheet {
 
 	public void setTesting(Testing testing) {
 		this.testing = testing;
-	}
-
-
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public int getTestingId() {
