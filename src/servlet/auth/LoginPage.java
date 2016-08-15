@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,9 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-
-import models.entities.Testing;
-import models.entities.User;
 
 @WebServlet("/loginpage")
 public class LoginPage extends HttpServlet {
@@ -30,26 +28,30 @@ public class LoginPage extends HttpServlet {
 		Session hibernateSession = sessionFactory.getCurrentSession();
 
 		Transaction tx = hibernateSession.beginTransaction();
-		List<User> users = hibernateSession.createQuery("from User").getResultList();
-		List<Testing> testings = hibernateSession.createQuery("from Testing").getResultList();
+		List users = hibernateSession.createQuery("from User").getResultList();
+		List testings = hibernateSession.createQuery("from Testing tst ORDER BY tst.id DESC").getResultList();
 		tx.commit();
 
-		request.setAttribute("title", "Login to the system");
-		request.setAttribute("template", "login-page.jsp");
+		request.setAttribute("title", "Login to the system");		
 		request.setAttribute("users", users);
 		request.setAttribute("testings", testings);
 
-		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
+		request.getRequestDispatcher("/WEB-INF/tpls/login-page.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		Cookie userCookie = new Cookie("runner", request.getParameter("user_id"));
+		Cookie testingCookie = new Cookie("testing_id", request.getParameter("testing_id"));
+		userCookie.setMaxAge(60*60*24*175);
+		testingCookie.setMaxAge(60*60*24*175);
+		response.addCookie(userCookie);
+		response.addCookie(testingCookie);
+		
+		response.sendRedirect("/tracker2/testing");
 
-		if (request.getParameter("testing") != null) {
-
-			response.getWriter().print("testing");
-
-		}
 
 	}
 
 }
+

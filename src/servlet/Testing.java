@@ -2,10 +2,11 @@ package servlet;
 
 import java.io.IOException;
 import java.util.List;
-
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,11 +22,13 @@ import com.google.gson.GsonBuilder;
 import utils.TestingSerializer;
 import models.entities.TestingSheet;
 
-@WebServlet("/testing")
+@WebServlet(name = "Testing", urlPatterns = "/testing")
 public class Testing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		Map<String, String> cook = utils.Utils.getCookiesMap(request.getCookies());
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
@@ -33,13 +36,15 @@ public class Testing extends HttpServlet {
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List<models.entities.Testing> testings = hibernateSession.createQuery("from Testing").getResultList();
-		List users = hibernateSession.createQuery("from User").getResultList();		
-		tx.commit();		
+		List users = hibernateSession.createQuery("from User").getResultList();
+		tx.commit();
 
-		List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(testings.get(testings.size()-1).getId()), "all");
+		List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(cook.get("testing_id")), cook.get("runner"));
 
 		request.setAttribute("title", "Testing");
 		request.setAttribute("users", users);
+		request.setAttribute("selectedUser", cook.get("runner"));
+		request.setAttribute("selectedTesting", cook.get("testing_id"));
 		request.setAttribute("jusers", gson.toJson(users));
 		request.setAttribute("testings", testings);
 		request.setAttribute("testSheet", gson.toJson(testSheet));
@@ -50,6 +55,8 @@ public class Testing extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+		// System.out.println(request.getParameter("submit"));
 
 		String action = request.getParameter("action");
 		// get parameters
@@ -67,8 +74,14 @@ public class Testing extends HttpServlet {
 		String geneVerEdt = request.getParameter("geneVerEdt");
 
 		if (action == null) {
-			response.setStatus(400);
-			response.getWriter().println("error: action is missing");
+			Cookie userCookie = new Cookie("runner", runner);
+			Cookie testingCookie = new Cookie("testing_id", testingId);
+			userCookie.setMaxAge(60*60*24*175);
+			testingCookie.setMaxAge(60*60*24*175);
+			response.addCookie(userCookie);
+			response.addCookie(testingCookie);
+			
+			response.sendRedirect("/tracker2/testing");			
 			return;
 		}
 
@@ -134,8 +147,8 @@ public class Testing extends HttpServlet {
 		Query<TestingSheet> query = null;
 
 		if (runner.toLowerCase().equals("all")) {
-			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId")
-					.setParameter("testingId", testingId);
+			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId").setParameter("testingId",
+					testingId);
 		} else {
 
 			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")

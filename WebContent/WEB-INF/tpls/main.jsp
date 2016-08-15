@@ -17,19 +17,19 @@
 <body>
 
 	<div class="header">
-		<form id="login-testing" action="loginpage" method="post">
+		<form id="login-testing" action="testing" method="post">			
 			<select name="user_id">
 				<c:forEach items="${users}" var="user">
-					<option value="${user.id}">${user.id}</option>
+					<option ${user.id == selectedUser ? 'selected' : ''} value="${user.id}">${user.id}</option>
 				</c:forEach>
-				<option selected value="all">All</option>
+				<option value="all">All</option>
 			</select> 
 			<select name="testing_id">
 				<c:forEach items="${testings}" var="testing">
-					<option value="${testing.id}">${testing.name}</option>
+					<option ${testing.id == selectedTesting ? 'selected' : ''} value="${testing.id}">${testing.name}</option>
 				</c:forEach>
 			</select> 
-			<input type="submit" name="testing" value="Testing" /> 
+			<input type="submit" name="submit" value="Testing" /> 
 			<a href="storage">Storage</a>	
 		</form>
 	</div>

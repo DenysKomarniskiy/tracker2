@@ -1,16 +1,25 @@
+var users;
+
+if (view.users){
+	users = view.users.reduce((prev, curr) => prev+curr.id+',', '');
+	users = users.slice(0, -1);
+}
+
 var APP = {
 		
 	dataUrl: null,
 	faceName: null,
+	users: null,
 	
 	init: function(){
 		
 		this.resolveRoute();
 		
-		$('form#login-testing').on('submit', this.loadData);	
+		if (this.faceName !== 'storage') {
+			$('form#login-testing').on('submit', this.loadData);
+		}	
 		
-		this.dataView = new Slick.Data.DataView();
-		console.log(view.data);
+		this.dataView = new Slick.Data.DataView();		
 		this.dataView.setItems(view.data);
 		this.dataView.getItemMetadata = this.metaDataFormatter;
 		
@@ -82,7 +91,7 @@ var APP = {
 		"storage": {
 			columns: [
                {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 200, sortable: true},    
-               {id: "author", 		name: "Author", 	field: "author", 		width: 50, 	options: view.users.reduce((prev, curr) => prev+curr.id, ''), editor: Slick.Editors.Select},
+               {id: "author", 		name: "Author", 	field: "author", 		width: 50, 	options: users, editor: Slick.Editors.Select},
                {id: "step_num", 	name: "Step Count", field: "step_num", 		width: 65	},
                {id: "duration", 	name: "Duration", 	field: "duration", 		width: 65, sortable: true, editor: Slick.Editors.Integer},
                {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65, sortable: true},
@@ -105,14 +114,15 @@ var APP = {
 			columns: [
           	    {id: "tc_id", 		name: "TC ID", 			field: "storageTC", 	width: 120, sortable: true, formatter: (a, b, c) => c.tc_id },    
           	    {id: "author", 		name: "Author", 		field: "storageTC", 	width: 50, 	formatter: (a, b, c) => c.author},
-          	 	{id: "runner", 		name: "Runner", 		field: "runner", 		width: 50, 	sortable: true},
+          	 	{id: "runner", 		name: "Runner", 		field: "runner", 		width: 50, options: users, editor: Slick.Editors.Select},
           	    {id: "step_num", 	name: "Step Count", 	field: "storageTC", 	width: 65, formatter: (a, b, c) => c.step_num	},
           	    {id: "tduration", 	name: "Duration", 		field: "tduration", 	width: 65, sortable: true, editor: Slick.Editors.Integer},
           	 	{id: "local_set", 	name: "Set Name", 		field: "storageTC", 	width: 150,	formatter: true, formatter: (a, b, c) => c.testSet.local_set, sortable: true},
           	 	{id: "status", 		name: "Status TC", 		field: "status", 		width: 50, },
-          	 	{id: "apps", 		name: "Application", 	field: "storageTC", 	width: 50, 	formatter: (a, b, c) => c.apps},   	    
+          	 	{id: "apps", 		name: "Application", 	field: "storageTC", 	width: 80, 	formatter: (a, b, c) => c.apps},   	    
           	 	{id: "comment", 	name: "Comment", 		field: "comment", 		width: 200, editor: Slick.Editors.LongText},
           	    {id: "features", 	name: "Features", 		field: "storageTC", 	width: 200, formatter: (a, b, c) => c.features},
+          	    {id: "softdev", 	name: "SoftDev", 		field: "softdev", 		width: 50},
           	 	{id: "tqc_ver", 	name: "TQC ver", 		field: "tqc_ver", 		width: 50, editor: Slick.Editors.Text}, 
           		{id: "lab_ver", 	name: "LAB ver", 		field: "lab_ver", 		width: 50, editor: Slick.Editors.Text}, 
           		{id: "gene_ver", 	name: "GENE ver", 		field: "gene_ver", 		width: 50, editor: Slick.Editors.Text}, 
