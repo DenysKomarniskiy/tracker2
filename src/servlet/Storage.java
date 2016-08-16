@@ -16,6 +16,7 @@ import org.hibernate.Transaction;
 import com.google.gson.Gson;
 
 import models.entities.StorageTC;
+import models.entities.TestingSheet;
 
 
 @WebServlet("/storage")
@@ -49,12 +50,62 @@ public class Storage extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		//edt_author
-		//edt_features
-		//edt_run_path
-		//edt_run_param
-		//edt_step_num
-		//edt_duration
+		String action = request.getParameter("action");
+		String id = request.getParameter("id");
+		
+		
+		String authorEdt   = request.getParameter("edt_author");
+		String featuresEdt = request.getParameter("edt_features");
+		String runPathEdt = request.getParameter("edt_run_path");
+		String runParamEdt = request.getParameter("edt_run_param");
+		String stepNumEdt = request.getParameter("edt_step_num");
+		String durationEdt = request.getParameter("edt_tduration");
+		
+		if (action == null) {
+			response.setStatus(400);
+			response.getWriter().println("error: action is missing");	
+			return;
+		}
+		
+		if (action.equals("edit")) {
+
+			
+			
+			
+			if (id == null) {
+				response.setStatus(400);
+				response.getWriter().println("error: id is missing");
+				return;
+			}
+			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+			Session hibernateSession = sessionFactory.getCurrentSession();
+			Transaction tx;
+
+			tx = hibernateSession.beginTransaction();
+			StorageTC storageTC = (StorageTC) hibernateSession.load(StorageTC.class, new Integer(id));
+
+			if (authorEdt != null) {
+				storageTC.setAuthor(authorEdt);
+			}
+			if (featuresEdt != null) {
+				storageTC.setFeatures(featuresEdt);
+			}
+			if (runPathEdt != null) {
+				storageTC.setRun_path(runPathEdt);
+			}
+			if (runParamEdt != null) {
+				storageTC.setRun_param(runParamEdt);
+			}
+			if (stepNumEdt != null) {
+				storageTC.setStep_num(new Integer(stepNumEdt));
+			}
+			if (durationEdt != null) {
+				storageTC.setDuration(new Integer(durationEdt));
+			}
+			hibernateSession.update(storageTC);
+			tx.commit();
+		}
+		
 		
 
 	}
