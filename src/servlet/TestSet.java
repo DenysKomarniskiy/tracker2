@@ -27,15 +27,11 @@ public class TestSet extends HttpServlet {
 		Gson gson = new Gson();
 
 		Transaction tx = hibernateSession.beginTransaction();
-		List testings = hibernateSession.createQuery("from Testing").getResultList();
 		List testsets = hibernateSession.createQuery("from TestSet").getResultList();
-		List users = hibernateSession.createQuery("from User").getResultList();
 		tx.commit();
 
 		request.setAttribute("title", "Test Sets management");
 		request.setAttribute("template", "testset.jsp");
-		request.setAttribute("users", users);
-		request.setAttribute("testings", testings);
 		request.setAttribute("testsets", gson.toJson(testsets));
 
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
@@ -53,11 +49,12 @@ public class TestSet extends HttpServlet {
 			response.getWriter().println("error: action is missing");
 			return;
 		}
+		
+		String id = request.getParameter("id");
+		String localSet = request.getParameter("edt_local_set");
+		String sdSet = request.getParameter("edt_sd_set");
 
-		if (action.equals("add")) {
-
-			String localSet = request.getParameter("local_set");
-			String sdSet = request.getParameter("sd_set");
+		if (action.equals("add")) {		
 
 			if (localSet == null || sdSet == null) {
 				response.setStatus(400);
@@ -79,10 +76,7 @@ public class TestSet extends HttpServlet {
 			return;
 		}
 
-		if (action.equals("edit")) {
-			String id = request.getParameter("id");
-			String localSet = request.getParameter("local_set");
-			String sdSet = request.getParameter("sd_set");
+		if (action.equals("edit")) {			
 
 			if (id == null) {
 				response.setStatus(400);
@@ -137,14 +131,13 @@ public class TestSet extends HttpServlet {
 			return;
 		}
 
-		if (action.equals("delete")) {
-			String id = request.getParameter("id");
+		if (action.equals("delete")) {			
 			
 			if (id == null) {
+				response.setStatus(400);
 				response.getWriter().println("error: please populate id");
 				return;
-			}
-			
+			}			
 			
 			hibernateSession = sessionFactory.getCurrentSession();
 			tx = hibernateSession.beginTransaction();

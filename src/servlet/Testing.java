@@ -3,7 +3,6 @@ package servlet;
 import java.io.IOException;
 import java.util.List;
 
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -18,31 +17,28 @@ import org.hibernate.query.Query;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import utils.TestingSerializer;
 import models.entities.TestingSheet;
+import utils.TestingSerializer;
 
-@WebServlet("/testing")
+@WebServlet(name = "Testing", urlPatterns = "/testing")
 public class Testing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
+		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 
 		Transaction tx = hibernateSession.beginTransaction();
-		List<models.entities.Testing> testings = hibernateSession.createQuery("from Testing").getResultList();
-		List users = hibernateSession.createQuery("from User").getResultList();		
+		List testings = hibernateSession.createQuery("SELECT tst.id, tst.name from Testing tst").getResultList();
+		List users = hibernateSession.createQuery("from User").getResultList();
 		tx.commit();		
 
-		List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(testings.get(testings.size()-1).getId()), "all");
-
 		request.setAttribute("title", "Testing");
-		request.setAttribute("users", users);
+
+		request.setAttribute("jtestings", gson.toJson(testings));
 		request.setAttribute("jusers", gson.toJson(users));
-		request.setAttribute("testings", testings);
-		request.setAttribute("testSheet", gson.toJson(testSheet));
 
 		request.setAttribute("template", "testing.jsp");
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
@@ -52,23 +48,12 @@ public class Testing extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		String action = request.getParameter("action");
-		// get parameters
-
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
-		// edit parameters
-		String id = request.getParameter("id");
-		String runnerEdt = request.getParameter("runnerEdt");
-		String tcStatusEdt = request.getParameter("tcStatusEdt");
-		String durationEdt = request.getParameter("durationEdt");
-		String commentEdt = request.getParameter("commentEdt");
-		String tqcVerEdt = request.getParameter("tqcVerEdt");
-		String labVerEdt = request.getParameter("labVerEdt");
-		String geneVerEdt = request.getParameter("geneVerEdt");
 
 		if (action == null) {
 			response.setStatus(400);
-			response.getWriter().println("error: action is missing");
+			response.getWriter().println("error: action is missing");	
 			return;
 		}
 
@@ -86,6 +71,16 @@ public class Testing extends HttpServlet {
 
 		} else if (action.equals("edit")) {
 
+			// edit parameters
+			String id = request.getParameter("id");
+			String runnerEdt = request.getParameter("edt_runner");
+			String tcStatusEdt = request.getParameter("edt_status");
+			String durationEdt = request.getParameter("edt_tduration");
+			String commentEdt = request.getParameter("edt_comment");
+			String tqcVerEdt = request.getParameter("edt_tqc_ver");
+			String labVerEdt = request.getParameter("edt_lab_ver");
+			String geneVerEdt = request.getParameter("edt_gene_ver");
+			
 			if (id == null) {
 				response.setStatus(400);
 				response.getWriter().println("error: id is missing");
@@ -134,8 +129,8 @@ public class Testing extends HttpServlet {
 		Query<TestingSheet> query = null;
 
 		if (runner.toLowerCase().equals("all")) {
-			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId")
-					.setParameter("testingId", testingId);
+			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId").setParameter("testingId",
+					testingId);
 		} else {
 
 			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")

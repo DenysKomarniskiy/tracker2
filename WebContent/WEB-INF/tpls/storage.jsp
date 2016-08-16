@@ -14,7 +14,6 @@
 <script type="text/javascript">	
 	var view = {};
 	view['data'] = ${tcs};
-	view['users'] = ${jusers};
 </script>
 
 <script type="text/javascript" src="./js/main.js"></script>
