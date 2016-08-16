@@ -136,8 +136,6 @@ var APP = {
     		body: "action=edit&id="+id+"&"+field+"="+data
    		};		
 		
-		console.log(opts.body);
-		
 		fetch(
 			this.dataUrl, opts
 		).then(
@@ -173,7 +171,12 @@ var APP = {
 	            var sign = args.sortCols[i].sortAsc ? 1 : -1;
 	            var field_id = args.sortCols[i].sortCol.id;
 	            
-	            var x = row1[field], y = row2[field];	            
+	            var x = row1[field], y = row2[field];	
+	            
+	            if (field === 'testSet' && field_id === 'local_set') {
+	            	x = row1[field][field_id];
+	            	y = row2[field][field_id];
+	            }
 	            
 	            if (field === 'storageTC' && field_id === 'local_set') {
 	            	x = row1[field].testSet[field_id];
@@ -206,7 +209,7 @@ var APP = {
                {id: "edt_step_num", 	name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer},
                {id: "edt_duration", 	name: "Duration", 	field: "duration", 		width: 65, sortable: true, editor: Slick.Editors.Integer},
                {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65, sortable: true},
-               {id: "testSet", 		name: "Set Name", 	field: "testSet", 		width: 150,	formatter: (a, b, c) => c.local_set, sortable: true},
+               {id: "local_set", 		name: "Set Name", 	field: "testSet", 		width: 150,	formatter: (a, b, c) => c.local_set, sortable: true},
                {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText},    
                {id: "edt_run_path", name: "run_path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text},
                {id: "edt_run_param",name: "run_param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text},

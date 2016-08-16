@@ -10,6 +10,10 @@
 	</form>
 </div>
 
+<div class="search">
+	<span>Search TC</span><input id="search-tc" type="text">
+</div>
+
 <div id="main-grid" style="height: 850px;"></div>
 
 <script src="./js/lib/jquery/jquery-3.1.0.min.js"></script>
