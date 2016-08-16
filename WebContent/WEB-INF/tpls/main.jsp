@@ -15,25 +15,9 @@
 <title>${title}</title>
 </head>
 <body>
-
-	<div class="header">
-		<form id="login-testing" action="testing" method="post">			
-			<select name="user_id">
-				<c:forEach items="${users}" var="user">
-					<option ${user.id == selectedUser ? 'selected' : ''} value="${user.id}">${user.id}</option>
-				</c:forEach>
-				<option value="all">All</option>
-			</select> 
-			<select name="testing_id">
-				<c:forEach items="${testings}" var="testing">
-					<option ${testing.id == selectedTesting ? 'selected' : ''} value="${testing.id}">${testing.name}</option>
-				</c:forEach>
-			</select> 
-			<input type="submit" name="submit" value="Testing" /> 
-			<a href="storage">Storage</a>	
-		</form>
+	<div class="headline">
+		<a href="testset">Test Sets</a> | <a href="storage">Storage</a> | <a href="testing">Testing</a>
 	</div>
-
 	<c:if test="${not empty template}">
 		<jsp:include page="${template}" />
 	</c:if>

@@ -1,4 +1,14 @@
-<textarea id="clipboard" style="display: none"></textarea>
+
+<div class="testing-selector">
+	<form id="login-testing" action="testing" method="post">
+		<select name="user_id">
+			<option value="all">All</option>
+		</select> 
+		<select name="testing_id">
+		</select> 
+		<input type="submit" name="submit" value="Go" />
+	</form>
+</div>
 
 <div id="main-grid" style="height: 850px;"></div>
 
@@ -13,10 +23,13 @@
 <script src="./js/lib/slickgrid/slick.dataview.js"></script>
 <script src="./js/lib/slickgrid/plugins/slick.autotooltips.js"></script>
 
-<script type="text/javascript">	
+<script type="text/javascript">
 	var view = {};
-	view['data'] = ${testSheet};
+	view['testings'] = ${jtestings};
 	view['users'] = ${jusers};
+	view['data'] = [];
 </script>
 
-<script src="./js/main.js"></script>	
+
+
+<script src="./js/main.js"></script>
