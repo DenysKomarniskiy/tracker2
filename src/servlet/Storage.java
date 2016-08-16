@@ -32,11 +32,13 @@ public class Storage extends HttpServlet {
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List<StorageTC> tcs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
+		List users = hibernateSession.createQuery("from User").getResultList();
 		tx.commit();
 		
 		request.setAttribute("title", "Storage");
 
 		request.setAttribute("tcs", gson.toJson(tcs));
+		request.setAttribute("jusers", gson.toJson(users));
 
 		request.setAttribute("template", "storage.jsp");
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);

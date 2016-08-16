@@ -18,7 +18,7 @@ var APP = {
 		
 		this.dataView = new Slick.Data.DataView();		
 		this.dataView.setItems(view.data);
-		this.dataView.getItemMetadata = this.metaDataFormatter;
+		this.dataView.getItemMetadata = this.metaDataFormatter.bind(this);
 		
 		this.SETTINGS[this.faceName].options.editCommandHandler = this.editCommandHandler.bind(this);
 		
@@ -84,7 +84,7 @@ var APP = {
 	},
 	
 	metaDataFormatter: function(index)	{
-		var item = APP.dataView.getItem(index);
+		var item = this.dataView.getItem(index);
 	    return {
 	        cssClasses: 'status-' + item.tcstatus
 	    };		
@@ -202,12 +202,12 @@ var APP = {
 		"storage": {
 			columns: [
                {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 200, sortable: true},    
-               {id: "author", 		name: "Author", 	field: "author", 		width: 50, 	options: view.usersString, editor: Slick.Editors.Select},
+               {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50, 	options: view.usersString, editor: Slick.Editors.Select},
                {id: "step_num", 	name: "Step Count", field: "step_num", 		width: 65	},
-               {id: "duration", 	name: "Duration", 	field: "duration", 		width: 65, sortable: true, editor: Slick.Editors.Integer},
+               {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65, sortable: true, editor: Slick.Editors.Integer},
                {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65, sortable: true},
                {id: "testSet", 		name: "Set Name", 	field: "testSet", 		width: 150,	formatter: (a, b, c) => c.local_set, sortable: true},
-               {id: "features", 	name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText},    
+               {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText},    
            ],
            	options: {
     		    autoEdit: true,
@@ -268,7 +268,6 @@ var APP = {
 		}
 	},
 	
-
 }
 		
 APP.init();
