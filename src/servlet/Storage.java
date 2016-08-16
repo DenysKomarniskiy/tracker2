@@ -55,11 +55,11 @@ public class Storage extends HttpServlet {
 		
 		
 		String authorEdt   = request.getParameter("edt_author");
+		String durationEdt = request.getParameter("edt_duration");
 		String featuresEdt = request.getParameter("edt_features");
 		String runPathEdt = request.getParameter("edt_run_path");
 		String runParamEdt = request.getParameter("edt_run_param");
 		String stepNumEdt = request.getParameter("edt_step_num");
-		String durationEdt = request.getParameter("edt_tduration");
 		
 		if (action == null) {
 			response.setStatus(400);

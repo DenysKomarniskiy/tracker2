@@ -16,9 +16,12 @@ var APP = {
 			this.initFace[this.faceName].apply(this);
 		}	
 		
+		$("#search-tc").keyup(this.search.bind(this));		
+		
 		this.dataView = new Slick.Data.DataView();		
 		this.dataView.setItems(view.data);
 		this.dataView.getItemMetadata = this.metaDataFormatter.bind(this);
+		this.dataView.setFilter(this.dataViewFilter);		
 		
 		this.SETTINGS[this.faceName].options.editCommandHandler = this.editCommandHandler.bind(this);
 		
@@ -59,6 +62,20 @@ var APP = {
 		}
 	},
 	
+	search: function(e) {
+		Slick.GlobalEditorLock.cancelCurrentEdit();
+	    
+		// clear on Esc
+	    if (e.which == 27) {
+	    	e.target.value = "";
+	    }
+	    
+	    this.dataView.setFilterArgs({searchTC: e.target.value});
+	    this.dataView.refresh();
+	    this.grid.invalidate();
+	    this.grid.render();
+	},
+	
 	loadData: function(e) {
 		
 		e.preventDefault();
@@ -68,12 +85,16 @@ var APP = {
 		localStorage.setItem('lastSelectedUser', $form.find('select[name="user_id"]').val());
 		localStorage.setItem('lastSelectedTesting', $form.find('select[name="testing_id"]').val());
 		
-		fetch(APP.dataUrl, {
+		var opts = {
 		    method: 'post',
 		    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
 		    body: $form.serialize() + '&action=get'
 		    
-		})
+		};
+		
+		console.log('request ->', opts);
+		
+		fetch(APP.dataUrl, opts)
 		.then(function(response) {
 		    return response.json();
 		})
@@ -88,6 +109,16 @@ var APP = {
 	    return {
 	        cssClasses: 'status-' + item.tcstatus
 	    };		
+	},
+	
+	dataViewFilter: function (item, args) {									
+		if (!args)
+			return true;
+	 
+		if (args.searchTC != "" && !~item.storageTC.tc_id.indexOf(args.searchTC)) {							
+			return false;		 
+		}					 
+		return true;
 	},
 	
 	resolveRoute: function() {
@@ -118,7 +149,8 @@ var APP = {
 	
 	updateGrid: function(data) {
 		
-		console.dir(data);	
+		console.log('response <-');
+		console.dir(data);
 	    
 		this.dataView.setItems(data);
 		this.grid.invalidate();
@@ -136,13 +168,15 @@ var APP = {
     		body: "action=edit&id="+id+"&"+field+"="+data
    		};		
 		
+		console.log('request ->', opts);
+		
 		fetch(
 			this.dataUrl, opts
 		).then(
 			resp => resp.text()			
 		).then(
 			function(respText){
-				console.log(respText);
+				console.log('response <-', respText);
 				editCommand.execute();
 			}
 		).catch(
