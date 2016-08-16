@@ -45,6 +45,9 @@ public class StorageTC  {
 	
 	@Column(name="run_parameters", length=50, nullable=true)
 	private String run_param;
+	
+	@Column(name="run_path", length=500, nullable=true)
+	private String run_path;
 
 	@OneToOne
 	@JoinColumn(name = "test_set_id", nullable = false)
@@ -138,5 +141,12 @@ public class StorageTC  {
 		this.run_param = run_param;
 	}
 
+	public String getRun_path() {
+		return run_path;
+	}
+
+	public void setRun_path(String run_path) {
+		this.run_path = run_path;
+	}
 
 }
