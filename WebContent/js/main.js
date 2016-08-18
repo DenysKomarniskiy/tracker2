@@ -26,7 +26,17 @@ var APP = {
 		this.grid.onClick.subscribe(this.gridClickHandler.bind(this));	
 		this.grid.onSort.subscribe(this.gridSortHandler.bind(this));
 		
-	},	
+	},
+	
+	validateData: function(data){		
+		data.forEach((item) => {
+			if (item.storageTC){
+				item.storageTC.apps = item.storageTC.apps || ""; 
+			}
+		});
+		
+		return data;
+	},
 	
 	initFace: {
 		"testing": function() {				
@@ -202,7 +212,7 @@ var APP = {
 		console.log('response <-');
 		console.dir(data);
 	    
-		this.dataView.setItems(data);
+		this.dataView.setItems(this.validateData(data));
 		this.grid.invalidate();
 		this.grid.render();		
 	},
@@ -288,15 +298,15 @@ var APP = {
 	SETTINGS: {
 		"storage": {
 			columns: [
-               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 200, sortable: true},    
-               {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50, 	options: view.usersString, editor: Slick.Editors.Select},
-               {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer},
-               {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,  sortable: true, editor: Slick.Editors.Integer},
-               {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65,  sortable: true},
-               {id: "local_set", 	name: "Set Name", 	field: "testSet", 		width: 150,	formatter: (a, b, c) => c.local_set, sortable: true},
-               {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText},    
-               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text},
-               {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text},
+               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 200, 								sortable: true									},    
+               {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50, 	editor: Slick.Editors.Select, 						options: view.usersString, 	},
+               {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer													},
+               {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,  editor: Slick.Editors.Integer,	sortable: true, 								},
+               {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65,  								sortable: true									},
+               {id: "local_set", 	name: "Set Name", 	field: "testSet", 		width: 150,									sortable: true, 	formatter: (a, b, c) => c.local_set,},
+               {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText													},    
+               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text														},
+               {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text														},
            ],
            	options: {
     		    autoEdit: true,
@@ -314,11 +324,11 @@ var APP = {
 			columns: [
           	    {id: "tc_id", 			name: "TC ID", 			field: "storageTC", 	width: 120, sortable: true, formatter: (a, b, c) => c.tc_id },    
           	    {id: "author", 			name: "Author", 		field: "storageTC", 	width: 50, 	formatter: (a, b, c) => c.author},
-          	 	{id: "edt_runner", 		name: "Runner", 		field: "runner", 		width: 50, options: view.usersString, editor: Slick.Editors.Select},
+          	 	{id: "edt_runner", 		name: "Runner", 		field: "runner", 		width: 50, editor: Slick.Editors.Select, options: view.usersString},
           	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65, formatter: (a, b, c) => c.step_num	},
           	    {id: "edt_tduration", 	name: "Duration", 		field: "tduration", 	width: 65, sortable: true, editor: Slick.Editors.Integer},
           	 	{id: "local_set", 		name: "Set Name", 		field: "storageTC", 	width: 150,	formatter: true, formatter: (a, b, c) => c.testSet.local_set, sortable: true},
-          	 	{id: "edt_status", 		name: "Status TC", 		field: "status", 		width: 50, },
+          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 50,  editor: Slick.Editors.Select, 	options: ",P,F,W,C,I"	},
           	 	{id: "apps", 			name: "Application", 	field: "storageTC", 	width: 80, 	formatter: (a, b, c) => c.apps},   	    
           	 	{id: "edt_comment", 	name: "Comment", 		field: "comment", 		width: 200, editor: Slick.Editors.LongText},
           	    {id: "features", 		name: "Features", 		field: "storageTC", 	width: 200, formatter: (a, b, c) => c.features},

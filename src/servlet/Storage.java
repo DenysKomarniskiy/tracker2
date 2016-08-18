@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
 import com.google.gson.Gson;
 
@@ -21,9 +20,6 @@ import models.entities.StorageTC;
 @WebServlet("/storage")
 public class Storage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	public Storage() {
-	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -56,18 +52,18 @@ public class Storage extends HttpServlet {
 		String action = request.getParameter("action");
 		String id = request.getParameter("id");
 
+		if (action == null) {
+			response.setStatus(400);
+			response.getWriter().println("error: action is missing");
+			return;
+		}
+		
 		String authorEdt = request.getParameter("edt_author");
 		String stepNumEdt = request.getParameter("edt_step_num");
 		String durationEdt = request.getParameter("edt_duration");
 		String featuresEdt = request.getParameter("edt_features");
 		String runPathEdt = request.getParameter("edt_run_path");
 		String runParamEdt = request.getParameter("edt_run_param");
-
-		if (action == null) {
-			response.setStatus(400);
-			response.getWriter().println("error: action is missing");
-			return;
-		}
 
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();

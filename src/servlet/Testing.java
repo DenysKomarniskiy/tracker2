@@ -46,7 +46,7 @@ public class Testing extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		
 		String action = request.getParameter("action");
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
@@ -56,6 +56,8 @@ public class Testing extends HttpServlet {
 			response.getWriter().println("error: action is missing");	
 			return;
 		}
+		
+		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
 
 		if (action.equals("get")) {
 
@@ -66,7 +68,7 @@ public class Testing extends HttpServlet {
 			}
 
 			List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(testingId), runner);
-			Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
+			
 			response.getWriter().println(gson.toJson(testSheet));
 
 		} else if (action.equals("edit")) {
@@ -117,6 +119,9 @@ public class Testing extends HttpServlet {
 
 			hibernateSession.update(testingSheet);
 			tx.commit();
+			
+			Gson gson2 = new Gson();
+			response.getWriter().println(gson2.toJson(testingSheet));
 		}
 	}
 
