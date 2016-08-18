@@ -26,9 +26,7 @@ import models.entities.User;
 import models.entities.Testing;
 import utils.Distributor;
 
-/**
- * Servlet implementation class ControlPanel
- */
+
 @WebServlet("/controlpanel")
 public class ControlPanel extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -36,12 +34,9 @@ public class ControlPanel extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 
+		
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");

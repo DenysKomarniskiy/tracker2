@@ -9,6 +9,7 @@
 <link rel="stylesheet" type="text/css" href="./js/lib/slickgrid/slick.grid.css" />
 <link rel="stylesheet" type="text/css" href="./js/lib/slickgrid/slick-default-theme.css" />
 <link rel="stylesheet" type="text/css" href="./css/main.css" />
+<link rel="stylesheet" type="text/css" href="./css/modal.css" />
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -21,6 +22,8 @@
 	<c:if test="${not empty template}">
 		<jsp:include page="${template}" />
 	</c:if>
+
+<jsp:include page="modal.jsp" />
 
 </body>
 </html>

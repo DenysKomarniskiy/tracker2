@@ -1,12 +1,8 @@
-if (view.users){
+if (view.users) {
 	view.usersString = view.users.reduce((prev, curr) => prev+curr.id+',', '').slice(0, -1);
 }
 
 var APP = {
-		
-	dataUrl: null,
-	faceName: null,
-	users: null,
 	
 	init: function(){
 		
@@ -33,15 +29,20 @@ var APP = {
 	},	
 	
 	initFace: {
-		"testing": function() {
+		"testing": function() {				
+			//init vars
+			this.dataUrl = 'testing';
+			this.searchPath = ['storageTC','tc_id'];
 			
+			//load stored values
 			var lastSelectedUser = localStorage.getItem('lastSelectedUser');
 			var lastSelectedTesting = localStorage.getItem('lastSelectedTesting');
 						
+			//build interface
 			var $testingSelect = $('select[name="testing_id"]');					
 			$.each(view['testings'], (i, item) => {	
 				var $opt = $('<option></option>').val(item[0]).html(item[1]);
-				if (item[0] == lastSelectedTesting){
+				if (item[0] == lastSelectedTesting) {
 					$opt.attr('selected', true);
 				} 
 				$testingSelect.append($opt);	
@@ -50,16 +51,68 @@ var APP = {
 			var $userSelect = $('select[name="user_id"]');					
 			$.each(view['users'], (i, item) => { 
 				var $opt = $('<option></option>').val(item.id).html(item.id);
-				if (item.id == lastSelectedUser){
+				if (item.id == lastSelectedUser) {
 					$opt.attr('selected', true);
 				} 
-				$userSelect.append( $opt ); 
+				$userSelect.append($opt); 
 			});
 			
 			$('form#login-testing')
 			.on('submit', this.loadData.bind(this))
-			.trigger('submit');			
+			.trigger('submit');
+			
+
+		},
+		
+		"storage": function() {
+			//init vars
+			this.dataUrl = 'storage';
+			this.searchPath = ['tc_id'];			
+			
+			//build interface
+			$('button#b-add').click(() => {
+				var textnode = document.createTextNode("Testcase"); 
+				var form = document.getElementById("add-testcase-form").cloneNode(true);
+				form.style.display = "flex";				
+				
+				var submit = document.createElement('button');
+				submit.innerText="ADD";
+				submit.onclick = () => {
+					
+					if (!form.checkValidity()){
+						form[0].click();
+						return;
+					}
+					
+					var opts = {
+					    method: 'post',
+					    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+					    body: $(form).serialize() + '&action=add'					    
+					};
+					
+					console.log('request ->', opts);
+					
+					fetch(APP.dataUrl, opts)
+					.then(resp => resp.json())
+					.then(resp => {
+						console.log('response <-', resp);
+						this.dataView.insertItem(0, resp);
+						this.grid.invalidate();
+						this.grid.render();						
+						Modal.close();
+						this.grid.scrollRowToTop(0);
+					})
+					.catch(Modal.printMsg.bind(Modal));					
+				};
+				
+				Modal
+				.setHeader('Add Testcase')
+				.setContent(form)
+				.setFooter(submit)
+				.show();
+			});
 		}
+	
 	},
 	
 	search: function(e) {
@@ -70,7 +123,7 @@ var APP = {
 	    	e.target.value = "";
 	    }
 	    
-	    this.dataView.setFilterArgs({searchTC: e.target.value});
+	    this.dataView.setFilterArgs({q: e.target.value, path: this.searchPath});
 	    this.dataView.refresh();
 	    this.grid.invalidate();
 	    this.grid.render();
@@ -111,14 +164,13 @@ var APP = {
 	    };		
 	},
 	
-	dataViewFilter: function (item, args) {									
-		if (!args)
-			return true;
-	 
-		if (args.searchTC != "" && !~item.storageTC.tc_id.indexOf(args.searchTC)) {							
-			return false;		 
-		}					 
-		return true;
+	dataViewFilter: function (item, args) {							
+		if (!args || args.q == "")
+			return true;		
+		
+		var data = args.path.reduce((prev, curr) => prev[curr], item);		 
+			 
+		return data.includes(args.q);
 	},
 	
 	resolveRoute: function() {
@@ -126,13 +178,11 @@ var APP = {
 		var path = window.location.pathname;
 		
 		switch (true) {
-			case !!~path.indexOf('testing'):
-				this.dataUrl = 'testing';
+			case !!~path.indexOf('testing'):				
 				this.faceName = 'testing';
 				break;
 				
 			case !!~path.indexOf('storage'):
-				this.dataUrl = 'storage';
 				this.faceName = 'storage';
 				break;
 				
@@ -142,7 +192,7 @@ var APP = {
 				break;				
 			
 			default:
-				this.dataUrl = 'default';
+				this.faceName = 'default';
 		
 		}
 	},
@@ -240,13 +290,13 @@ var APP = {
 			columns: [
                {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 200, sortable: true},    
                {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50, 	options: view.usersString, editor: Slick.Editors.Select},
-               {id: "edt_step_num", 	name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer},
-               {id: "edt_duration", 	name: "Duration", 	field: "duration", 		width: 65, sortable: true, editor: Slick.Editors.Integer},
-               {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65, sortable: true},
-               {id: "local_set", 		name: "Set Name", 	field: "testSet", 		width: 150,	formatter: (a, b, c) => c.local_set, sortable: true},
+               {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer},
+               {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,  sortable: true, editor: Slick.Editors.Integer},
+               {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65,  sortable: true},
+               {id: "local_set", 	name: "Set Name", 	field: "testSet", 		width: 150,	formatter: (a, b, c) => c.local_set, sortable: true},
                {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText},    
-               {id: "edt_run_path", name: "run_path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text},
-               {id: "edt_run_param",name: "run_param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text},
+               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text},
+               {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text},
            ],
            	options: {
     		    autoEdit: true,
@@ -291,7 +341,7 @@ var APP = {
 		},
 		"testset": {
 			columns: [
-	          	{id: "id", 			name: "Testset ID", 	field: "id", 		width: 200},    
+	          	{id: "id", 				name: "Testset ID", 	field: "id", 		width: 200},    
 				{id: "edt_local_set", 	name: "Local Set name", field: "local_set", width: 300, editor: Slick.Editors.Text},
 				{id: "edt_sd_set", 		name: "SD Set name", 	field: "sd_set", 	width: 500, editor: Slick.Editors.Text},
           	],
@@ -310,13 +360,6 @@ var APP = {
 }
 		
 APP.init();
-
-
-	
-
-
-
-
 
 
 

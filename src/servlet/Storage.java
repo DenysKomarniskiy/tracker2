@@ -12,12 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import com.google.gson.Gson;
 
 import models.entities.StorageTC;
-import models.entities.TestingSheet;
-
 
 @WebServlet("/storage")
 public class Storage extends HttpServlet {
@@ -35,12 +34,15 @@ public class Storage extends HttpServlet {
 		Transaction tx = hibernateSession.beginTransaction();
 		List<StorageTC> tcs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
 		List users = hibernateSession.createQuery("from User").getResultList();
+		List testsets = hibernateSession.createQuery("from TestSet").getResultList();
 		tx.commit();
-		
+
 		request.setAttribute("title", "Storage");
 
 		request.setAttribute("tcs", gson.toJson(tcs));
 		request.setAttribute("jusers", gson.toJson(users));
+		request.setAttribute("users", users);
+		request.setAttribute("testsets", testsets);
 
 		request.setAttribute("template", "storage.jsp");
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
@@ -50,36 +52,34 @@ public class Storage extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		Gson gson = new Gson();
 		String action = request.getParameter("action");
 		String id = request.getParameter("id");
-		
-		
-		String authorEdt   = request.getParameter("edt_author");
+
+		String authorEdt = request.getParameter("edt_author");
+		String stepNumEdt = request.getParameter("edt_step_num");
 		String durationEdt = request.getParameter("edt_duration");
 		String featuresEdt = request.getParameter("edt_features");
 		String runPathEdt = request.getParameter("edt_run_path");
 		String runParamEdt = request.getParameter("edt_run_param");
-		String stepNumEdt = request.getParameter("edt_step_num");
-		
+
 		if (action == null) {
 			response.setStatus(400);
-			response.getWriter().println("error: action is missing");	
+			response.getWriter().println("error: action is missing");
 			return;
 		}
-		
+
+		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+		Session hibernateSession = sessionFactory.getCurrentSession();
+		Transaction tx;
+
 		if (action.equals("edit")) {
 
-			
-			
-			
 			if (id == null) {
 				response.setStatus(400);
 				response.getWriter().println("error: id is missing");
 				return;
 			}
-			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
-			Session hibernateSession = sessionFactory.getCurrentSession();
-			Transaction tx;
 
 			tx = hibernateSession.beginTransaction();
 			StorageTC storageTC = (StorageTC) hibernateSession.load(StorageTC.class, new Integer(id));
@@ -104,9 +104,44 @@ public class Storage extends HttpServlet {
 			}
 			hibernateSession.update(storageTC);
 			tx.commit();
+
+		} else if (action.equals("add")) {
+
+			StorageTC stc = new StorageTC();
+
+			String tcId = request.getParameter("edt_tc_id");
+			String testSet = request.getParameter("edt_test_set");
+			String autoIde = request.getParameter("edt_auto_ide");
+			stc.setTc_id(tcId);
+			stc.setAuthor(authorEdt);
+			stc.setAuto_ide(autoIde);
+			stc.setTestSetId(new Integer(testSet));
+			stc.setStep_num(new Integer(stepNumEdt));
+			stc.setDuration(new Integer(durationEdt));
+
+			if (featuresEdt != null) {
+				stc.setFeatures(featuresEdt);
+			}
+			if (runPathEdt != null) {
+				stc.setRun_path(runPathEdt);
+			}
+			if (runParamEdt != null) {
+				stc.setRun_param(runParamEdt);
+			}
+			tx = hibernateSession.beginTransaction();
+			hibernateSession.save(stc);
+			tx.commit();
+
+			hibernateSession = sessionFactory.getCurrentSession();
+			tx = hibernateSession.beginTransaction();
+			Object addedTc = hibernateSession
+					.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet where stc.id = :id")
+					.setParameter("id", stc.getId())
+					.getSingleResult();
+			tx.commit();
+
+			response.getWriter().println(gson.toJson(addedTc));
 		}
-		
-		
 
 	}
 

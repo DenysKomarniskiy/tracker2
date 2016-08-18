@@ -43,6 +43,17 @@ public class StorageTC  {
 	@Column(name="tags", length=500, nullable=true)
 	private String tags;
 	
+	@Column(name = "test_set_id")
+	private int testSetId;
+	
+	public int getTestSetId() {
+		return testSetId;
+	}
+
+	public void setTestSetId(int testSetId) {
+		this.testSetId = testSetId;
+	}
+
 	@Column(name="run_parameters", length=50, nullable=true)
 	private String run_param;
 	
@@ -50,7 +61,7 @@ public class StorageTC  {
 	private String run_path;
 
 	@OneToOne
-	@JoinColumn(name = "test_set_id", nullable = false)
+	@JoinColumn(name = "test_set_id", nullable = false , insertable = false, updatable = false)
 	private TestSet testSet;
 
 	public TestSet getTestSet() {
