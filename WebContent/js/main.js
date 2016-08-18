@@ -43,6 +43,7 @@ var APP = {
 			//init vars
 			this.dataUrl = 'testing';
 			this.searchPath = ['storageTC','tc_id'];
+			this.editCallBack = (resp) => {console.log(1, resp)};
 			
 			//load stored values
 			var lastSelectedUser = localStorage.getItem('lastSelectedUser');
@@ -77,7 +78,7 @@ var APP = {
 		"storage": function() {
 			//init vars
 			this.dataUrl = 'storage';
-			this.searchPath = ['tc_id'];			
+			this.searchPath = ['tc_id'];		
 			
 			//build interface
 			$('button#b-add').click(() => {
@@ -235,9 +236,12 @@ var APP = {
 		).then(
 			resp => resp.text()			
 		).then(
-			function(respText){
+			respText => {
 				console.log('response <-', respText);
 				editCommand.execute();
+				if (typeof this.editCallBack === 'function') {
+					this.editCallBack.call(this, respText);
+				}
 			}
 		).catch(
 			function(err){

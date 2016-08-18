@@ -9,9 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.query.Query;
 
 import com.google.gson.Gson;
@@ -46,8 +48,8 @@ public class Testing extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String action = request.getParameter("action");
+
+		String action = request.getParameter("action");	
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
 
@@ -56,9 +58,11 @@ public class Testing extends HttpServlet {
 			response.getWriter().println("error: action is missing");	
 			return;
 		}
-		
-		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
 
+		Gson gson = new GsonBuilder()
+				.registerTypeAdapter(models.entities.Testing.class, new TestingSerializer())				
+				.create();
+		
 		if (action.equals("get")) {
 
 			if (runner == null || testingId == null) {
@@ -120,8 +124,7 @@ public class Testing extends HttpServlet {
 			hibernateSession.update(testingSheet);
 			tx.commit();
 			
-			Gson gson2 = new Gson();
-			response.getWriter().println(gson2.toJson(testingSheet));
+			response.getWriter().println("{\"updated\": true}");
 		}
 	}
 
