@@ -8,7 +8,7 @@
 body {
 	background: beige;
 	padding: 0;
-	margin: 8px;
+	margin: 0;
 }
 
 h2 {
@@ -250,23 +250,23 @@ input.editor-checkbox {
 
 /*user styles*/
 .slick-row.status-P {
-	background-color: #79f578;
+	background-color: rgba(121, 245, 120, 0.4);
 }
 
 .slick-row.status-F {
-	background-color: #f18484;
+	background-color: rgba(241, 132, 132, 0.4);
 }
 
 .slick-row.status-W {
-	background-color: #ffa700;
+	background-color: rgba(255, 167, 0, 0.4);
 }
 
 .slick-row.status-C {
-	background-color: #c32222;
+	background-color: rgba(195, 34, 34, 0.4);
 }
 
 .slick-row.status-I {
-	background-color: #f764e4;
+	background-color: rgba(247, 100, 228, 0.4);
 }
 
 .flash-cell {

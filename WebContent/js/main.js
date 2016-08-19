@@ -4,6 +4,8 @@ if (view.users) {
 
 var APP = {
 	
+	gridClickHandlers: [],
+		
 	init: function(){
 		
 		this.resolveRoute();
@@ -24,14 +26,15 @@ var APP = {
 		this.grid = new Slick.Grid("#main-grid", this.dataView, this.SETTINGS[this.faceName].columns, this.SETTINGS[this.faceName].options);    
 		this.grid.registerPlugin(new Slick.AutoTooltips({}));
 		this.grid.onClick.subscribe(this.gridClickHandler.bind(this));	
-		this.grid.onSort.subscribe(this.gridSortHandler.bind(this));
+		this.grid.onSort.subscribe(this.gridSortHandler.bind(this));		
 		
 	},
 	
 	validateData: function(data){		
 		data.forEach((item) => {
 			if (item.storageTC){
-				item.storageTC.apps = item.storageTC.apps || ""; 
+				item.storageTC.apps 	= item.storageTC.apps || ""; 
+				item.storageTC.features = item.storageTC.features || ""; 
 			}
 		});
 		
@@ -43,13 +46,20 @@ var APP = {
 			//init vars
 			this.dataUrl = 'testing';
 			this.searchPath = ['storageTC','tc_id'];
-			this.editCallBack = (resp) => {console.log(1, resp)};
-			
+
 			//load stored values
 			var lastSelectedUser = localStorage.getItem('lastSelectedUser');
 			var lastSelectedTesting = localStorage.getItem('lastSelectedTesting');
+			
+			$.each($('div.app-ver input'), (i, item) => {		
+				view.appVer[item.name] = item.value = localStorage.getItem(item.name);
+				item.onblur = (e) => { localStorage.setItem(e.target.name, e.target.value);};
+			});
+			
+			//init grid click handlers
+			this.gridClickHandlers.push(this.idRowClickHandler);
 						
-			//build interface
+			//build interface			
 			var $testingSelect = $('select[name="testing_id"]');					
 			$.each(view['testings'], (i, item) => {	
 				var $opt = $('<option></option>').val(item[0]).html(item[1]);
@@ -171,7 +181,7 @@ var APP = {
 	metaDataFormatter: function(index)	{
 		var item = this.dataView.getItem(index);
 	    return {
-	        cssClasses: 'status-' + item.tcstatus
+	        cssClasses: 'status-' + item.tcStatus
 	    };		
 	},
 	
@@ -227,8 +237,8 @@ var APP = {
 			method: 'post',  
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
     		body: "action=edit&id="+id+"&"+field+"="+data
-   		};		
-		
+   		};				
+
 		console.log('request ->', opts);
 		
 		fetch(
@@ -239,9 +249,8 @@ var APP = {
 			respText => {
 				console.log('response <-', respText);
 				editCommand.execute();
-				if (typeof this.editCallBack === 'function') {
-					this.editCallBack.call(this, respText);
-				}
+				this.grid.invalidateRow(editCommand.row);
+				this.grid.render();
 			}
 		).catch(
 			function(err){
@@ -250,8 +259,16 @@ var APP = {
 		);
 	},
 	
-	gridClickHandler: function(e){
-
+	gridClickHandler: function(gridEvent) {		
+		this.gridClickHandlers.forEach((handler) => {
+			if (typeof handler === 'function') {
+				handler.call(this, gridEvent);
+			}	
+		});
+	},
+	
+	idRowClickHandler: function(e) {
+		
 		var cell = this.grid.getCellFromEvent(e);
 		var columns = this.grid.getColumns();
 
@@ -259,7 +276,7 @@ var APP = {
 	    	this.grid.flashCell(cell.row, cell.cell, 200);
 		    copyToClipboard(this.grid.getCellNode(cell.row, cell.cell).innerText);
 		}
-
+	    
 	},
 	
 	gridSortHandler: function (e, args) {
@@ -332,7 +349,7 @@ var APP = {
           	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65, formatter: (a, b, c) => c.step_num	},
           	    {id: "edt_tduration", 	name: "Duration", 		field: "tduration", 	width: 65, sortable: true, editor: Slick.Editors.Integer},
           	 	{id: "local_set", 		name: "Set Name", 		field: "storageTC", 	width: 150,	formatter: true, formatter: (a, b, c) => c.testSet.local_set, sortable: true},
-          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 50,  editor: Slick.Editors.Select, 	options: ",P,F,W,C,I"	},
+          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 50,  },
           	 	{id: "apps", 			name: "Application", 	field: "storageTC", 	width: 80, 	formatter: (a, b, c) => c.apps},   	    
           	 	{id: "edt_comment", 	name: "Comment", 		field: "comment", 		width: 200, editor: Slick.Editors.LongText},
           	    {id: "features", 		name: "Features", 		field: "storageTC", 	width: 200, formatter: (a, b, c) => c.features},

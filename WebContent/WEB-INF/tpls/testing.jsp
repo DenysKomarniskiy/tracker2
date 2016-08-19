@@ -14,7 +14,14 @@
 	<span>Search TC</span><input id="search-tc" type="text">
 </div>
 
-<div id="main-grid" style="height: 850px;"></div>
+<div class="app-ver">
+	<span>TQC Ver:</span><input name="tqcver" id="tqc-ver" type="text">
+	<span>LAB Ver:</span><input name="labver" id="lab-ver" type="text">
+	<span>GENE Ver:</span><input name="genever" id="gene-ver" type="text">
+</div>
+
+
+<div id="main-grid" style="height: calc(100vh - 80px)"></div>
 
 <script src="./js/lib/jquery/jquery-3.1.0.min.js"></script>
 <script src="./js/lib/jquery/jquery-ui.min.js"></script>
@@ -32,6 +39,7 @@
 	view['testings'] = ${jtestings};
 	view['users'] = ${jusers};
 	view['data'] = [];
+	view['appVer'] = {};	
 </script>
 
 
