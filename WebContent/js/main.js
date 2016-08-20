@@ -394,6 +394,28 @@ APP.init();
 
 
 
+/* main interface*/
+
+var init = function() {
+
+    var mdlDrawer = document.getElementById('mdl-drawer');
+    var mdlObfuscator = document.getElementById('mdl-obfuscator');
+    var menuBtn = document.getElementById('mdl-menu-btn');
+
+    menuBtn.onclick = function () {
+        mdlDrawer.classList.add('is-visible');
+        mdlObfuscator.classList.add('is-visible');
+    };
+
+    mdlObfuscator.onclick = function () {
+        mdlDrawer.classList.remove('is-visible');
+        mdlObfuscator.classList.remove('is-visible');
+    }
+
+};
+
+init();
+
 
 /* helpers */
 function copyToClipboard(text) {
