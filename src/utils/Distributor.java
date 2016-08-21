@@ -50,6 +50,7 @@ public class Distributor {
 			if (excludeUsers.contains(key)) {
 				continue;
 			}
+			System.out.println(timePerUser);
 			Long value = timePerUser.get(key).get(1);
 			if (value <= minDuration) {
 				minDuration = value;

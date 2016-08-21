@@ -48,14 +48,10 @@
 			<div id="mdl-drawer" class="mdl-layout__drawer" aria-hidden="true">
 				<span class="mdl-layout__title">Tracker</span>
 				<nav class="mdl-navigation">
-					<a class="mdl-navigation__link" href="testset"><i
-						class="material-icons">class</i> Test Sets</a> <a
-						class="mdl-navigation__link" href="storage"><i
-						class="material-icons">storage</i> Storage</a> <a
-						class="mdl-navigation__link" href="testing"><i
-						class="material-icons">bug_report</i> Testing</a> <a
-						class="mdl-navigation__link" href=""><i class="material-icons">settings</i>
-						Settings</a>
+					<a class="mdl-navigation__link" href="testset"><i class="material-icons">class</i> Test Sets</a> 
+					<a class="mdl-navigation__link" href="storage"><i class="material-icons">storage</i> Storage</a> 
+					<a class="mdl-navigation__link" href="testing"><i class="material-icons">accessible<!-- bug_report --></i> Testing</a> 
+					<a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Settings</a>
 				</nav>
 			</div>
 			<main class="mdl-layout__content">
@@ -80,13 +76,12 @@
 	<jsp:include page="modal.jsp" />
 
 	<ul id="status-menu" style="display: none; position: absolute">
-		<b></b>
-		<li class="n" data="">No run</li>
-		<li class="p" data="P">Passed</li>
-		<li class="f" data="F">Failed</li>
-		<li class="w" data="W">Waiting</li>
-		<li class="c" data="C">Correction</li>
-		<li class="i" data="I">Investigate</li>
+		<li class="n" data-status="">No run</li>
+		<li class="p" data-status="P">Passed</li>
+		<li class="f" data-status="F">Failed</li>
+		<li class="w" data-status="W">Waiting</li>
+		<li class="c" data-status="C">Correction</li>
+		<li class="i" data-status="I">Investigate</li>
 	</ul>	
 	
 	<script src="./js/lib/jquery/jquery-3.1.0.min.js"></script>

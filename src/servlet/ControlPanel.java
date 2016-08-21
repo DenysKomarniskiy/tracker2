@@ -117,6 +117,8 @@ public class ControlPanel extends HttpServlet {
 		}
 		tx.commit();
 
+		response.getWriter().println("{\"created\": true}");
+		
 	}
 
 }

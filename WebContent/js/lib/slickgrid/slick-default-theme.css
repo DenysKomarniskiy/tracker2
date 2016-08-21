@@ -5,8 +5,9 @@ No built-in (selected, editable, highlight, flashing, invalid, loading, :focus) 
 classes should alter those!
 */
 
+ /*
 .slick-header-columns {
-  background: url('images/header-columns-bg.gif') repeat-x center bottom;
+  background: url('images/header-columns-bg.gif') repeat-x center bottom; 
   border-bottom: 1px solid silver;
 }
 
@@ -18,6 +19,7 @@ classes should alter those!
 .slick-header-column:hover, .slick-header-column-active {
   background: white url('images/header-columns-over-bg.gif') repeat-x center bottom;
 }
+*/
 
 .slick-headerrow {
   background: #fafafa;

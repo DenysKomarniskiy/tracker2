@@ -47,7 +47,7 @@ var APP = {
 			this.dataUrl = 'testing';
 			this.searchPath = ['storageTC','tc_id'];
 
-			//load stored values
+			//load ver. stored values
 			var lastSelectedUser = localStorage.getItem('lastSelectedUser');
 			var lastSelectedTesting = localStorage.getItem('lastSelectedTesting');
 			
@@ -58,6 +58,7 @@ var APP = {
 			
 			//init grid click handlers
 			this.gridClickHandlers.push(this.idRowClickHandler);
+			this.gridClickHandlers.push(this.statusRowClickHandler);
 						
 			//build interface			
 			var $testingSelect = $('select[name="testing_id"]');					
@@ -260,23 +261,78 @@ var APP = {
 	},
 	
 	gridClickHandler: function(gridEvent) {		
+		var cell = this.grid.getCellFromEvent(gridEvent);
+		var columns = this.grid.getColumns();
+		
 		this.gridClickHandlers.forEach((handler) => {
 			if (typeof handler === 'function') {
-				handler.call(this, gridEvent);
+				handler.call(this, gridEvent, cell, columns);
 			}	
 		});
 	},
 	
-	idRowClickHandler: function(e) {
-		
-		var cell = this.grid.getCellFromEvent(e);
-		var columns = this.grid.getColumns();
+	idRowClickHandler: function(e, cell, columns) {
 
 	    if (columns[cell.cell].id === "tc_id") {
 	    	this.grid.flashCell(cell.row, cell.cell, 200);
 		    copyToClipboard(this.grid.getCellNode(cell.row, cell.cell).innerText);
 		}
 	    
+	},
+	
+	statusRowClickHandler: function(e, cell, columns) {
+		//console.log(columns[cell.cell].id);
+		
+		
+		if (columns[cell.cell].id === "edt_status") {
+			e.stopPropagation();
+            var statusMenu = $("#status-menu");
+            statusMenu.one('click', cell, this.setTcStatus.bind(this));
+            statusMenu.css({"top": e.pageY - 10,"left": e.pageX}).show();
+		
+		    $("body").one("click", function () {
+		    	statusMenu.hide();
+		    });
+		}
+	    
+	},
+	
+	setTcStatus: function(e) {
+		var rowData = this.dataView.getItemByIdx(e.data.row);
+		var newStatus = e.target.dataset.status;
+		
+		if (rowData.tcStatus == newStatus)
+			return;
+
+		var opts = {
+			method: 'post',  
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
+    		body: "action=edit&id="+rowData.id
+    				+ "&edt_status=" + newStatus
+    				+ "&edt_tqc_ver=" + view.appVer.tqcver
+    				+ "&edt_lab_ver=" + view.appVer.labver
+    				+ "&edt_gene_ver=" + view.appVer.genever
+   		};				
+
+		console.log('request ->', opts);	
+		
+		fetch(
+			this.dataUrl, opts
+		).then(
+			resp => resp.json()			
+		).then(
+			resp => {
+				console.log('response <-', resp);
+				rowData = resp;
+
+				this.grid.invalidateRow(e.data.row);
+				this.grid.render();
+			}
+		).catch(
+			function(err){
+				console.log(err);
+			}
+		);
 	},
 	
 	gridSortHandler: function (e, args) {

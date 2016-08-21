@@ -124,7 +124,7 @@ public class Testing extends HttpServlet {
 			hibernateSession.update(testingSheet);
 			tx.commit();
 			
-			response.getWriter().println("{\"updated\": true}");
+			response.getWriter().println(gson.toJson(utils.Utils.unproxy(testingSheet)));
 		}
 	}
 

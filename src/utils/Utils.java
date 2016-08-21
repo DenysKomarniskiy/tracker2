@@ -13,12 +13,15 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.query.Query;
 
 import models.entities.StorageTC;
+import models.entities.TestingSheet;
 
 public class Utils {
 
@@ -69,6 +72,18 @@ public class Utils {
 		}
 
 		return matches;
+	}
+	
+	public static TestingSheet unproxy(TestingSheet proxied)
+	{
+		TestingSheet entity = proxied;
+	    if (entity != null && entity instanceof HibernateProxy) {
+	        Hibernate.initialize(entity);
+	        entity = (TestingSheet) ((HibernateProxy) entity)
+	                  .getHibernateLazyInitializer()
+	                  .getImplementation();
+	    }
+	    return entity;
 	}
 
 	public void setRunOpts(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

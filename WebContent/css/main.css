@@ -1,4 +1,21 @@
 @CHARSET "UTF-8";
+/* fonts */
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Roboto'), local('Roboto-Regular'), url(./fonts/latin.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+    /*https://design.google.com/icons/#ic_settings*/
+    /*https://github.com/google/material-design-icons/blob/master/iconfont/codepoints*/
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Material Icons'), local('MaterialIcons-Regular'), url(./fonts/mdl-icons.woff2) format('woff2');
+}
+
 
 * {
 	font-family: arial;
@@ -37,8 +54,7 @@ li {
 /*default grid styles */
 #main-grid {
 	background: white;
-	outline: 0;
-	border: 1px solid gray;
+	outline: 0;	
 	height: calc(100vh - 66px)
 }
 
@@ -87,6 +103,53 @@ li {
 	position: absolute;
 	top: 0px;
 	left: 650px;
+}
+
+/*columns header*/
+
+.slick-header-columns {
+    background-color: #fff;
+    margin: 0 0 3px 0;    
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+}
+
+.slick-header-column {
+	background-color: #fff;
+	border-right: 1px solid silver;
+	transition: all .3s ease;
+}
+
+.slick-header-column:hover, 
+.slick-header-column-active {
+	background-color: rgba(63,81,181,0.16);
+	box-shadow: 5px 0px 6px 0 rgba(0, 0, 0, 0.18), 4px 3px 18px 0 rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 1;
+    border-right: 1px solid rgba(0,0,0,0);
+}
+
+.slick-header.ui-state-default, 
+.slick-headerrow.ui-state-default {
+	border: none;
+	background: none;
+}
+
+
+
+.slick-sort-indicator-asc:after {
+    content: 'arrow_drop_up';
+    font: 24px 'Material Icons';
+    position: absolute;
+    top: 0;
+    left: 0;		
+}
+
+.slick-sort-indicator-desc:after {
+    content: 'arrow_drop_down';
+    font: 24px 'Material Icons';
+    position: absolute;
+    top: 0;
+    left: 0;		
 }
 
 /* Individual cell styles */
@@ -292,23 +355,6 @@ input.editor-checkbox {
 
 
 /*mdl main*/
-/* fonts */
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Roboto'), local('Roboto-Regular'), url(./fonts/latin.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
-}
-@font-face {
-    /*https://design.google.com/icons/#ic_settings*/
-    /*https://github.com/google/material-design-icons/blob/master/iconfont/codepoints*/
-    font-family: 'Material Icons';
-    font-style: normal;
-    font-weight: 400;
-    src: local('Material Icons'), local('MaterialIcons-Regular'), url(./fonts/mdl-icons.woff2) format('woff2');
-}
-
 
 .mdl-layout__container {
     position: absolute;
@@ -341,7 +387,7 @@ input.editor-checkbox {
     min-height: 64px;
     max-height: 1000px;
     z-index: 3;
-    background-color: rgba(98,131,206,0.75);
+    background-color: #3f51b5;
     color: #fff;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
     transition-duration: .2s;
@@ -409,6 +455,7 @@ input.editor-checkbox {
     letter-spacing: .02em;
     font-weight: 400;
     box-sizing: border-box;
+    pointer-events: none;
 }
 
 .mdl-layout__header-item {
@@ -562,7 +609,7 @@ input.editor-checkbox {
 
 .mdl-textfield__input {
     border: none;
-    border-bottom: 1px solid rgba(0,0,0,.12);
+    border-bottom: 1px solid rgba(255,255,255,0.5);
     display: block;
     font-size: 16px;
     font-family: "Helvetica","Arial",sans-serif;
@@ -575,15 +622,13 @@ input.editor-checkbox {
     outline: none;
 }
 
-.mdl-textfield__input:valid { max-width: none; }
-.mdl-textfield__input:invalid { max-width: 0; }
-.mdl-textfield__input:focus {
-	max-width: none;
-}
+.mdl-textfield--expandable .mdl-textfield__input:valid { max-width: none; }
+.mdl-textfield--expandable .mdl-textfield__input:invalid { max-width: 0; }
+.mdl-textfield--expandable .mdl-textfield__input:focus {	max-width: none; }
 
 .mdl-textfield__label {
     bottom: 0;
-    color: rgba(0,0,0,.26);
+    color: rgba(255,255,255,0.26);
     font-size: 16px;
     left: 0;
     right: 0;
@@ -603,10 +648,22 @@ input.editor-checkbox {
 
 .float-palceholder {
 	position: absolute;
+    color: rgba(255,255,255,0.5);
+    font-size: 16px;
+    bottom: 25px;
+    transition: all .2s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+}
+
+.mdl-textfield__input:focus + .float-palceholder,
+.mdl-textfield__input:valid + .float-palceholder {
+	font-size: 12px;
+	bottom: 45px;	
+	color: #fff;
 }
 
 .mdl-textfield__label:after {
-    background-color: #3f51b5;
+    background-color: #fff;
     bottom: 0;
     content: '';
     height: 2px;
@@ -617,7 +674,8 @@ input.editor-checkbox {
     visibility: hidden;    
 }
 
-.mdl-textfield__input:focus + .mdl-textfield__label:after {
+.mdl-textfield__input:focus + .mdl-textfield__label:after,
+.mdl-textfield__input:focus + .float-palceholder + .mdl-textfield__label:after {
 	left: 0;
 	visibility: visible;
 	width: 100%;
@@ -686,6 +744,7 @@ input.editor-checkbox {
 
 /*control panel*/
 .control-panel {
+	color: #fff;
 	position: absolute;
     top: 0;
     left: 420px;
@@ -740,15 +799,14 @@ ul#status-menu{
 }
 
 #status-menu li.c:hover {
-    background-color: rgba(225, 55, 55, .8);
+    background-color: rgba(195, 34, 34, 0.4);
+    /* background-color: rgba(225, 55, 55, .8);*/
 }
 
 #status-menu li.i:hover {
-    background-color: rgba(222, 61, 167, .8);;
+	background-color: rgba(247, 100, 228, 0.4);
+    /* background-color: rgba(222, 61, 167, .8); */
 }
-
-
-
 
 
 
@@ -798,7 +856,7 @@ div.add #b-add:hover {
 	display:none;
 }
 
-.flex-container {
+.flex-container-row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;    
@@ -806,12 +864,10 @@ div.add #b-add:hover {
     align-items: flex-start;
 }
 
-.flex-container div {
-    width: 230px;
-    padding: 2px;
+.flex-container-row div {
+	margin: 0 10px 0 0;
 }
 
-.flex-container div span {
-    width: 60px;
+.flex-container-row div span {
     display: inline-block;
 }

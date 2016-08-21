@@ -1,4 +1,4 @@
-<div class="control-panel">
+<div class="control-panel flex-container-row">
 
 	<div class="testing-selector">
 		<form id="login-testing" action="testing" method="post">
@@ -9,19 +9,25 @@
 			</select> 
 			<input type="submit" name="submit" value="Go" />
 		</form>
-	</div>
-	
-	
+	</div>	
 
+	<div class="app-ver flex-container-row">
 		<div class="mdl-textfield floating-label">
+		   <input type="text" name="tqcver" id="tqc-ver" class="mdl-textfield__input" required>
 		   <label class="float-palceholder" for="tqc-ver">tqc ver</label>
-		   <input type="text" name="tqcver" id="tqc-ver" class="mdl-textfield__input">
 		   <label class="mdl-textfield__label" for="sample-expandable"></label>
-		</div>		
-						
-		
-		<span>LAB Ver:</span><input name="labver" id="lab-ver" type="text">
-		<span>GENE Ver:</span><input name="genever" id="gene-ver" type="text">
+		</div>	
+		<div class="mdl-textfield floating-label app-ver">
+		   <input type="text" name="labver" id="lab-ver" class="mdl-textfield__input" required>
+		   <label class="float-palceholder" for="tqc-ver">lab ver</label>
+		   <label class="mdl-textfield__label" for="sample-expandable"></label>
+		</div>	
+		<div class="mdl-textfield floating-label app-ver">
+		   <input type="text" name="genever" id="gene-ver" class="mdl-textfield__input" required>
+		   <label class="float-palceholder" for="tqc-ver">gene ver</label>
+		   <label class="mdl-textfield__label" for="sample-expandable"></label>
+		</div>	
+	</div>
 	
 </div>
 
