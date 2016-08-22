@@ -109,8 +109,7 @@ li {
 
 .slick-header-columns {
     background-color: #fff;
-    margin: 0 0 3px 0;    
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+    margin: 0;   
 }
 
 .slick-header-column {
@@ -132,6 +131,8 @@ li {
 .slick-headerrow.ui-state-default {
 	border: none;
 	background: none;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+    z-index: 1;
 }
 
 
@@ -741,7 +742,6 @@ input.editor-checkbox {
 
 
 
-
 /*control panel*/
 .control-panel {
 	color: #fff;
@@ -787,25 +787,23 @@ ul#status-menu{
 }
 
 #status-menu li.p:hover {
-    background-color: rgba(185, 245, 185, .8);
+    background-color: rgb(201,251,201);
 }
 
 #status-menu li.f:hover {
-    background-color: rgba(245, 185, 185, .8);
+    background-color: rgb(249,206,206);
 }
 
 #status-menu li.w:hover {
-    background-color: rgba(245, 185, 100, .8);
+    background-color: rgb(255,220,153);
 }
 
 #status-menu li.c:hover {
-    background-color: rgba(195, 34, 34, 0.4);
-    /* background-color: rgba(225, 55, 55, .8);*/
+	background-color: rgb(231,166,166);
 }
 
 #status-menu li.i:hover {
-	background-color: rgba(247, 100, 228, 0.4);
-    /* background-color: rgba(222, 61, 167, .8); */
+	background-color: rgb(252,193,244);
 }
 
 
@@ -816,7 +814,7 @@ div.add {
     padding: 23px 12px 23px 15px;
     /* pointer-events: none; */
     position: fixed;
-    right: 0;
+    right: 20px;
     white-space: nowrap;
     z-index: 1;
 }

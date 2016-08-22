@@ -36,6 +36,7 @@ var APP = {
 				item.storageTC.apps 	= item.storageTC.apps || ""; 
 				item.storageTC.features = item.storageTC.features || ""; 
 			}
+			item.tcStatus = item.tcStatus || "";
 		});
 		
 		return data;
@@ -53,7 +54,10 @@ var APP = {
 			
 			$.each($('div.app-ver input'), (i, item) => {		
 				view.appVer[item.name] = item.value = localStorage.getItem(item.name);
-				item.onblur = (e) => { localStorage.setItem(e.target.name, e.target.value);};
+				item.onblur = (e) => { 
+					localStorage.setItem(e.target.name, e.target.value);
+					view.appVer[e.target.name] = e.target.value;
+				};
 			});
 			
 			//init grid click handlers
@@ -83,7 +87,8 @@ var APP = {
 			.on('submit', this.loadData.bind(this))
 			.trigger('submit');
 			
-
+            this.$statusMenu = $("#status-menu");
+            this.$statusMenu.on('click', this.setTcStatus.bind(this));
 		},
 		
 		"storage": function() {
@@ -177,6 +182,16 @@ var APP = {
 		.catch(function(error) {
 		    console.log('Request failed', error);
 		});
+	},	
+	
+	updateGrid: function(data) {
+		
+		console.log('response <-');
+		console.dir(data);
+	    
+		this.dataView.setItems(this.validateData(data));
+		this.grid.invalidate();
+		this.grid.render();		
 	},
 	
 	metaDataFormatter: function(index)	{
@@ -217,16 +232,6 @@ var APP = {
 				this.faceName = 'default';
 		
 		}
-	},
-	
-	updateGrid: function(data) {
-		
-		console.log('response <-');
-		console.dir(data);
-	    
-		this.dataView.setItems(this.validateData(data));
-		this.grid.invalidate();
-		this.grid.render();		
 	},
 	
 	editCommandHandler: function(item, column, editCommand) {
@@ -286,32 +291,35 @@ var APP = {
 		
 		if (columns[cell.cell].id === "edt_status") {
 			e.stopPropagation();
-            var statusMenu = $("#status-menu");
-            statusMenu.one('click', cell, this.setTcStatus.bind(this));
-            statusMenu.css({"top": e.pageY - 10,"left": e.pageX}).show();
+
+			this.$statusMenu.css({"top": e.pageY - 10,"left": e.pageX}).show();
+			this.$statusMenu.data(cell)
 		
-		    $("body").one("click", function () {
-		    	statusMenu.hide();
-		    });
+		    $("body").one("click", () => {this.$statusMenu.hide()});
 		}
 	    
 	},
 	
 	setTcStatus: function(e) {
-		var rowData = this.dataView.getItemByIdx(e.data.row);
+		var data = this.$statusMenu.data();
+		var rowData = this.dataView.getItemByIdx(data.row);
 		var newStatus = e.target.dataset.status;
-		
+				
 		if (rowData.tcStatus == newStatus)
 			return;
+		
+		if ((newStatus=='P' || newStatus=='F') && !view.appVer.tqcver)
+			if (!confirm("Want to set status without TQC version?"))
+				return;
 
 		var opts = {
 			method: 'post',  
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
     		body: "action=edit&id="+rowData.id
     				+ "&edt_status=" + newStatus
-    				+ "&edt_tqc_ver=" + view.appVer.tqcver
-    				+ "&edt_lab_ver=" + view.appVer.labver
-    				+ "&edt_gene_ver=" + view.appVer.genever
+    				+ ((newStatus=='P' || newStatus=='F') ? "&edt_tqc_ver=" + view.appVer.tqcver : '')
+    				+ ((newStatus=='P' || newStatus=='F') ? "&edt_lab_ver=" + view.appVer.labver : '')
+    				+ ((newStatus=='P' || newStatus=='F') ? "&edt_gene_ver=" + view.appVer.genever : '')
    		};				
 
 		console.log('request ->', opts);	
@@ -322,10 +330,9 @@ var APP = {
 			resp => resp.json()			
 		).then(
 			resp => {
-				console.log('response <-', resp);
-				rowData = resp;
-
-				this.grid.invalidateRow(e.data.row);
+				console.log('response <-', resp);				
+				this.dataView.updateItem(rowData.id, resp);
+				this.grid.invalidate();
 				this.grid.render();
 			}
 		).catch(
