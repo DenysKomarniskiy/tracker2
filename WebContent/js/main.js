@@ -63,6 +63,7 @@ var APP = {
 			//init grid click handlers
 			this.gridClickHandlers.push(this.idRowClickHandler);
 			this.gridClickHandlers.push(this.statusRowClickHandler);
+			this.gridClickHandlers.push(this.softdevRowClickHandler);
 						
 			//build interface			
 			var $testingSelect = $('select[name="testing_id"]');					
@@ -286,8 +287,6 @@ var APP = {
 	},
 	
 	statusRowClickHandler: function(e, cell, columns) {
-		//console.log(columns[cell.cell].id);
-		
 		
 		if (columns[cell.cell].id === "edt_status") {
 			e.stopPropagation();
@@ -300,9 +299,47 @@ var APP = {
 	    
 	},
 	
+	softdevRowClickHandler: function(e, cell, columns) {		
+		
+		if (columns[cell.cell].id !== "softdev")
+			return;
+		
+		e.stopPropagation();
+		var rowData = this.grid.getDataItem(cell.row);
+		
+		if (!(rowData.tcStatus == 'F' || rowData.tcStatus == 'P')) {
+			alert('You have to pass or fail TC before post to SoftDev');
+			return;
+		}
+		
+		var opts = {
+			method: 'post',  
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
+    		body: "action=sdpost&id="+rowData.id
+   		};		
+		
+		console.log('request:', opts);
+		
+		fetch(
+			this.dataUrl, opts
+		).then(
+			resp => resp.json()			
+		).then(
+			resp => {
+				console.log('response <-', resp);				
+			}
+		).catch(
+			function(err){
+				console.log(err);
+			}
+		);
+		
+	    
+	},	
+	
 	setTcStatus: function(e) {
 		var data = this.$statusMenu.data();
-		var rowData = this.dataView.getItemByIdx(data.row);
+		var rowData = this.grid.getDataItem(data.row);
 		var newStatus = e.target.dataset.status;
 				
 		if (rowData.tcStatus == newStatus)
@@ -406,7 +443,7 @@ var APP = {
 		},
 		"testing": {
 			columns: [
-          	    {id: "tc_id", 			name: "TC ID", 			field: "storageTC", 	width: 120, sortable: true, formatter: (a, b, c) => c.tc_id },    
+          	    {id: "tc_id", 			name: "TC ID", 			field: "storageTC", 	width: 140, sortable: true, formatter: (a, b, c) => c.tc_id },    
           	    {id: "author", 			name: "Author", 		field: "storageTC", 	width: 50, 	formatter: (a, b, c) => c.author},
           	 	{id: "edt_runner", 		name: "Runner", 		field: "runner", 		width: 50, editor: Slick.Editors.Select, options: view.usersString},
           	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65, formatter: (a, b, c) => c.step_num	},
