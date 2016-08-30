@@ -19,22 +19,41 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import com.google.gson.Gson;
+import com.scc.softdev.services.TTestCase;
+import com.scc.softdev.services.impl.SDException;
+import com.scc.softdev.services.impl.SoftDevTestCase;
+import com.scc.softdev.services.impl.TestCaseImplService;
 
 import models.entities.StorageTC;
 import models.entities.TestingSheet;
 import models.entities.User;
+
 import models.entities.Testing;
 import utils.Distributor;
-
+import utils.HeaderHandlerResolver;
 
 @WebServlet("/controlpanel")
 public class ControlPanel extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
 
-		
+		TestCaseImplService service = new TestCaseImplService();
+		HeaderHandlerResolver handlerResolver = new HeaderHandlerResolver("opya", "gCPEWJRQuG6kW8g7pDnAecxchDY=");
+		service.setHandlerResolver(handlerResolver);
+		SoftDevTestCase port = service.getTestCaseImplPort();
+
+		try {
+			TTestCase tc = port.getTestCaseByUFI("STC-TQC-1652IS");
+			Gson gson = new Gson();
+
+			response.getWriter().println(gson.toJson(tc));
+
+		} catch (SDException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -47,7 +66,7 @@ public class ControlPanel extends HttpServlet {
 
 		String testCompleteRunner = "rovo";
 		String userWithMinTime = null;
-		
+
 		Testing testing = new Testing();
 		testing.setName("new_testing5");
 
@@ -102,23 +121,23 @@ public class ControlPanel extends HttpServlet {
 			newTestingSheet.add(testingSheetEntry);
 		}
 
-//		Gson gson = new Gson();
-//		response.getWriter().println(gson.toJson(newTestingSheet));
-//		return;
-		
+		// Gson gson = new Gson();
+		// response.getWriter().println(gson.toJson(newTestingSheet));
+		// return;
+
 		testing.setTestingSheet(newTestingSheet);
 
 		hibernateSession = sessionFactory.getCurrentSession();
 		tx = hibernateSession.beginTransaction();
 		hibernateSession.save(testing);
-		
+
 		for (TestingSheet testingSheetEntry : newTestingSheet) {
 			hibernateSession.save(testingSheetEntry);
 		}
 		tx.commit();
 
 		response.getWriter().println("{\"created\": true}");
-		
+
 	}
 
 }
