@@ -299,38 +299,69 @@ var APP = {
 	    
 	},
 	
-	softdevRowClickHandler: function(e, cell, columns) {		
-		
+	softdevRowClickHandler: function(e, cell, columns) {	
+				
 		if (columns[cell.cell].id !== "softdev")
 			return;
 		
 		e.stopPropagation();
 		var rowData = this.grid.getDataItem(cell.row);
-		
+
 		if (!(rowData.tcStatus == 'F' || rowData.tcStatus == 'P')) {
 			alert('You have to pass or fail TC before post to SoftDev');
 			return;
+		}		
+		
+		if (rowData.softdev == 1 ) 
+			if (!confirm('re-post result?')) 
+				return;		
+		
+		if (rowData.softdev == 'wait' ) {
+			alert('please wait...');
+			return;	
 		}
+		
+		rowData.softdev = 'wait';		
+		this.dataView.updateItem(rowData.id, rowData);
+		this.grid.invalidateRow(cell.row);
+		this.grid.render();
 		
 		var opts = {
 			method: 'post',  
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
-    		body: "action=sdpost&id="+rowData.id
+    		body: "action=sdpost&sheetentityid="+rowData.id+"&runner="+rowData.runner
    		};		
 		
-		console.log('request:', opts);
+		console.log('request ->', opts);
 		
 		fetch(
 			this.dataUrl, opts
 		).then(
-			resp => resp.json()			
+			resp => resp.text()			
 		).then(
-			resp => {
-				console.log('response <-', resp);				
+			resp => {				
+				try {
+					var jresp = JSON.parse(resp);
+					console.log('response <-', jresp);
+					if (jresp.status == "Passed"){
+						rowData.softdev = '1';
+					} else {
+						alert(resp);
+						rowData.softdev = '0';	
+					}
+					
+				} catch (e){
+					alert(resp);					
+					rowData.softdev = '0';
+				}
+				
+				this.dataView.updateItem(rowData.id, rowData);
+				this.grid.invalidateRow(cell.row);
+				this.grid.render();
 			}
 		).catch(
 			function(err){
-				console.log(err);
+				alert(err);
 			}
 		);
 		

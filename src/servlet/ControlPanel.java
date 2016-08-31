@@ -38,21 +38,7 @@ public class ControlPanel extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		TestCaseImplService service = new TestCaseImplService();
-		HeaderHandlerResolver handlerResolver = new HeaderHandlerResolver("opya", "gCPEWJRQuG6kW8g7pDnAecxchDY=");
-		service.setHandlerResolver(handlerResolver);
-		SoftDevTestCase port = service.getTestCaseImplPort();
 
-		try {
-			TTestCase tc = port.getTestCaseByUFI("STC-TQC-1652IS");
-			Gson gson = new Gson();
-
-			response.getWriter().println(gson.toJson(tc));
-
-		} catch (SDException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 	}
 

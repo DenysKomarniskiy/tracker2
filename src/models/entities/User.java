@@ -22,6 +22,29 @@ public class User  {
 	
 	@Column(name="full_name", length=50, nullable=true)
 	private String full_name;
+	
+	@Column(name="sd_enc_pass", length=50, nullable=true)
+	private String sdEncPass;
+	
+	@Column(name="active", length=50, nullable=true)
+	private int active;
+	
+
+	public int getActive() {
+		return active;
+	}
+
+	public void setActive(int active) {
+		this.active = active;
+	}
+
+	public String getSdEncPass() {
+		return sdEncPass;
+	}
+
+	public void setSdEncPass(String sdEncPass) {
+		this.sdEncPass = sdEncPass;
+	}
 
 	public void setEmail(String email) {
 		this.email = email;

@@ -1,29 +1,31 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.query.Query;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import async.actions.AsyncRequestProcessor;
+import async.actions.AsyncSoftDevProcessor;
 import async.listener.AppAsyncListener;
 import models.entities.TestingSheet;
+import models.entities.User;
 import utils.TestingSerializer;
 
 @WebServlet(name = "Testing", urlPatterns = "/testing", asyncSupported = true)
@@ -31,7 +33,7 @@ public class Testing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		ServletContext asd = request.getServletContext();
 		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
@@ -86,11 +88,24 @@ public class Testing extends HttpServlet {
 			asyncCtx.addListener(new AppAsyncListener());
 			asyncCtx.setTimeout(5 * 60000); // 5 minutes
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
-			executor.execute(new AsyncRequestProcessor(asyncCtx, 5000));
-
-			String id = request.getParameter("id");
-			response.getWriter().println(id);
-
+					
+			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+			Session hibernateSession = sessionFactory.getCurrentSession();
+			Transaction tx;
+			tx = hibernateSession.beginTransaction();
+			TestingSheet sheetTc = (TestingSheet) hibernateSession
+					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.id = :id")
+					.setParameter("id", Integer.valueOf(request.getParameter("sheetentityid")))
+					.getSingleResult();
+			
+			User user = (User) hibernateSession
+					.createQuery("SELECT DISTINCT usr FROM User usr WHERE usr.id = :usr_id")
+					.setParameter("usr_id", request.getParameter("runner"))
+					.getSingleResult();
+			tx.commit();
+			
+			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, user));
+			
 			return;
 
 		} else if (action.equals("edit")) {

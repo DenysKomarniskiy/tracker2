@@ -5,8 +5,6 @@ import java.io.IOException;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 
-import java.io.PrintWriter;
-
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebListener;
 
@@ -36,8 +34,7 @@ public class AppAsyncListener implements AsyncListener {
 		System.out.println("AppAsyncListener onTimeout");
 		// we can send appropriate response to client
 		ServletResponse response = asyncEvent.getAsyncContext().getResponse();
-		PrintWriter out = response.getWriter();
-		out.write("TimeOut Error in Processing");
+		response.getWriter().println("{\"error\":\"TimeOut Error in Processing\"");		
 	}
 
 }

@@ -45,13 +45,13 @@ public class HeaderHandler implements SOAPHandler<SOAPMessageContext> {
 			try {
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				message.writeTo(out);
-				System.out.println("before insert security::" + new String(out.toByteArray()));
+//				System.out.println("before insert security::" + new String(out.toByteArray()));
 
 				addSecurityHeader(message);
 
 				out = new ByteArrayOutputStream();
 				message.writeTo(out);
-				System.out.println("after insert security::" + new String(out.toByteArray()));
+//				System.out.println("after insert security::" + new String(out.toByteArray()));
 
 			} catch (SOAPException e) {
 				e.printStackTrace();
