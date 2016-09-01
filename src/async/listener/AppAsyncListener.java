@@ -34,7 +34,7 @@ public class AppAsyncListener implements AsyncListener {
 		System.out.println("AppAsyncListener onTimeout");
 		// we can send appropriate response to client
 		ServletResponse response = asyncEvent.getAsyncContext().getResponse();
-		response.getWriter().println("{\"error\":\"TimeOut Error in Processing\"");		
+		response.getWriter().println("{\"error\":\"TimeOut Error in Processing\"}");		
 	}
 
 }

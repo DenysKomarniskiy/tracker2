@@ -1,9 +1,7 @@
 package servlet;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.servlet.AsyncContext;
@@ -33,7 +31,6 @@ public class Testing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ServletContext asd = request.getServletContext();
 		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
@@ -80,14 +77,17 @@ public class Testing extends HttpServlet {
 			response.getWriter().println(gson.toJson(testSheet));
 
 			return;
-
-		} else if (action.equals("sdpost")) {
-
+			
+		} else if (action.equals("sdping")) {
+			
 			request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 			AsyncContext asyncCtx = request.startAsync();
 			asyncCtx.addListener(new AppAsyncListener());
-			asyncCtx.setTimeout(5 * 60000); // 5 minutes
+			asyncCtx.setTimeout(30000); // 30 sec
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
+			executor.execute(new AsyncSoftDevProcessor(asyncCtx, "ping"));
+
+		} else if (action.equals("sdpost")) {	
 					
 			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 			Session hibernateSession = sessionFactory.getCurrentSession();
@@ -104,6 +104,11 @@ public class Testing extends HttpServlet {
 					.getSingleResult();
 			tx.commit();
 			
+			request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
+			AsyncContext asyncCtx = request.startAsync();
+			asyncCtx.addListener(new AppAsyncListener());
+			asyncCtx.setTimeout(5 * 60000); // 5 minutes
+			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
 			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, user));
 			
 			return;
@@ -170,13 +175,13 @@ public class Testing extends HttpServlet {
 		Query<TestingSheet> query = null;
 
 		if (runner.toLowerCase().equals("all")) {
-			query = hibernateSession.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId")
+			query = hibernateSession
+					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId")
 					.setParameter("testingId", testingId);
 		} else {
 
 			query = hibernateSession
-					.createQuery(
-							"SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
+					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
 					.setParameter("testingId", testingId).setParameter("runner", runner);
 
 		}

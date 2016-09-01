@@ -88,6 +88,7 @@ var APP = {
 			.on('submit', this.loadData.bind(this))
 			.trigger('submit');
 			
+			//init status-tc menu
             this.$statusMenu = $("#status-menu");
             this.$statusMenu.on('click', this.setTcStatus.bind(this));
 		},
@@ -130,7 +131,7 @@ var APP = {
 						Modal.close();
 						this.grid.scrollRowToTop(0);
 					})
-					.catch(Modal.printMsg.bind(Modal));					
+					.catch(Modal.alert.bind(Modal));					
 				};
 				
 				Modal
@@ -202,7 +203,7 @@ var APP = {
 	    };		
 	},
 	
-	dataViewFilter: function (item, args) {							
+	dataViewFilter: function (item, args) {
 		if (!args || args.q == "")
 			return true;		
 		
@@ -261,7 +262,7 @@ var APP = {
 			}
 		).catch(
 			function(err){
-				console.log(err);
+				Modal.alert(err);
 			}
 		);
 	},
@@ -305,19 +306,23 @@ var APP = {
 			return;
 		
 		e.stopPropagation();
+				
+		if (!confirm('post result?')) 
+			return;		
+		
 		var rowData = this.grid.getDataItem(cell.row);
 
 		if (!(rowData.tcStatus == 'F' || rowData.tcStatus == 'P')) {
-			alert('You have to pass or fail TC before post to SoftDev');
+			Modal.alert('You have to pass or fail TC before post to SoftDev');			
 			return;
 		}		
 		
 		if (rowData.softdev == 1 ) 
-			if (!confirm('re-post result?')) 
+			if (!confirm('RE-post result?')) 
 				return;		
 		
 		if (rowData.softdev == 'wait' ) {
-			alert('please wait...');
+			Modal.alert('please wait...');
 			return;	
 		}
 		
@@ -333,7 +338,7 @@ var APP = {
    		};		
 		
 		console.log('request ->', opts);
-		
+						
 		fetch(
 			this.dataUrl, opts
 		).then(
@@ -346,12 +351,12 @@ var APP = {
 					if (jresp.status == "Passed"){
 						rowData.softdev = '1';
 					} else {
-						alert(resp);
+						Modal.alert(resp);
 						rowData.softdev = '0';	
 					}
 					
 				} catch (e){
-					alert(resp);					
+					Modal.alert(resp);					
 					rowData.softdev = '0';
 				}
 				
@@ -361,7 +366,7 @@ var APP = {
 			}
 		).catch(
 			function(err){
-				alert(err);
+				Modal.alert(err);
 			}
 		);
 		
@@ -445,7 +450,6 @@ var APP = {
 	    this.grid.invalidate();
 	    this.grid.render();
 	},
-	
 
 	SETTINGS: {
 		"storage": {
@@ -484,7 +488,7 @@ var APP = {
           	 	{id: "apps", 			name: "Application", 	field: "storageTC", 	width: 80, 	formatter: (a, b, c) => c.apps},   	    
           	 	{id: "edt_comment", 	name: "Comment", 		field: "comment", 		width: 200, editor: Slick.Editors.LongText},
           	    {id: "features", 		name: "Features", 		field: "storageTC", 	width: 200, formatter: (a, b, c) => c.features},
-          	    {id: "softdev", 		name: "SoftDev", 		field: "softdev", 		width: 50},
+          	    {id: "softdev", 		name: "SoftDev", 		field: "softdev", 		width: 50, formatter: sdFormatter},
           	 	{id: "edt_tqc_ver", 	name: "TQC ver", 		field: "tqcVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_lab_ver", 	name: "LAB ver", 		field: "labVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_gene_ver", 	name: "GENE ver", 		field: "geneVer", 		width: 60, editor: Slick.Editors.Text}, 
@@ -519,6 +523,8 @@ var APP = {
 		}
 	},
 	
+
+	
 }
 		
 APP.init();
@@ -549,6 +555,17 @@ init();
 
 
 /* helpers */
+function sdFormatter (row, cell, value) {
+    switch (value) {
+        case '1'    : return '&#10004';
+        case 1      : return '&#10004';
+        case '0'	: return '<a href="#">post</a>';
+        case 0	    : return '<a href="#">post</a>';
+        case 'wait' : return '<div class="loader"></div>';
+        default : return value;
+    }
+}
+
 function copyToClipboard(text) {
     var textArea = document.createElement("textarea");
     textArea.style = {

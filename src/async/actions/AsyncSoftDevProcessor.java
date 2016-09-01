@@ -9,6 +9,10 @@ import javax.servlet.AsyncContext;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
 import com.google.gson.Gson;
 import com.scc.softdev.services.PairArray;
 import com.scc.softdev.services.TTestCase;
@@ -38,6 +42,11 @@ public class AsyncSoftDevProcessor implements Runnable {
 		this.user = user;
 	}
 
+	public AsyncSoftDevProcessor(AsyncContext asyncCtx, String action) {
+		this.asyncContext = asyncCtx;
+		this.action = action;
+	}
+
 	@Override
 	public void run() {
 		System.out.println("AsyncSoftDevProcessor: start run");
@@ -45,8 +54,22 @@ public class AsyncSoftDevProcessor implements Runnable {
 		try {
 			PrintWriter responseWriter = asyncContext.getResponse().getWriter();			
 			switch (action) {
+			case "ping":
+				responseWriter.println("{\"error\":\"AsyncSoftDevProcessor: unknown action\"}");
+				break;
+			
 			case "pass-tc":				
 				tTestRun = passTc();
+				
+				if (tTestRun.getStatus().equals("Passed")) {
+					SessionFactory sessionFactory = (SessionFactory) asyncContext.getRequest().getServletContext().getAttribute("HibernateSessionFactory");
+					Session hibernateSession = sessionFactory.getCurrentSession();		
+					Transaction tx = hibernateSession.beginTransaction();
+					sheetTc.setSoftdev(1);
+					hibernateSession.update(sheetTc);
+					tx.commit();					
+				}
+				
 				responseWriter.println((new Gson()).toJson(tTestRun));
 				break;
 
@@ -71,7 +94,6 @@ public class AsyncSoftDevProcessor implements Runnable {
 		String[] splittedId = tc_id.split(":");
 		tc_id = splittedId.length == 1 ? splittedId[0] : splittedId[1];
 		TTestCase tTestCase;
-		TTestRun tRun = null;
 		long testsetId;
 		long testRunId;
 
@@ -96,38 +118,41 @@ public class AsyncSoftDevProcessor implements Runnable {
 		);
 
 		testsetId = (Long) testSets.getItem().get(0).getLeft();
+		UserFieldArray userFields = new UserFieldArray(); 		
 				
 		UserField tqcver = new UserField();
 		tqcver.setNumber(1);
 		tqcver.setName("TQC_Version_Tested");
 		tqcver.setValue(sheetTc.getTqcVer());
+		userFields.getItem().add(tqcver);
 		
 		UserField env = new UserField();
 		env.setNumber(2);
 		env.setName("Environment");
 		env.setValue(sheetTc.getTesting().getEnvironment());
+		userFields.getItem().add(env);
 		
 		UserField runtime = new UserField();
 		runtime.setNumber(3);
 		runtime.setName("Actual_Run_Time");
 		runtime.setValue(String.valueOf(sheetTc.getDuration()));
-		
-		UserField labver = new UserField();
-		labver.setNumber(4);
-		labver.setName("Lab_Version_Tested");
-		labver.setValue(sheetTc.getLabVer());
-		
-		UserField genever = new UserField();
-		genever.setNumber(7);
-		genever.setName("Gene_Version_Tested");
-		genever.setValue(sheetTc.getGeneVer());
-		
-		UserFieldArray userFields = new UserFieldArray(); 		
-		userFields.getItem().add(tqcver);
-		userFields.getItem().add(env);
 		userFields.getItem().add(runtime);
-		userFields.getItem().add(labver);
-		userFields.getItem().add(genever);
+		
+		if (sheetTc.getLabVer() != null) {
+			UserField labver = new UserField();
+			labver.setNumber(4);
+			labver.setName("Lab_Version_Tested");
+			labver.setValue(sheetTc.getLabVer());
+			userFields.getItem().add(labver);
+		}
+
+		if (sheetTc.getGeneVer() != null) {
+			UserField genever = new UserField();
+			genever.setNumber(7);
+			genever.setName("Gene_Version_Tested");
+			genever.setValue(sheetTc.getGeneVer());
+			userFields.getItem().add(genever);
+		}
 
 		testRunId = port.startTestRun(tTestCase.getEntityID(), testsetId);
 		
@@ -141,9 +166,7 @@ public class AsyncSoftDevProcessor implements Runnable {
 			port.updateTestRunStepByStepId(testRunId, tstep.getStepId(), "Passed", "", executionDate);
 		}
 		
-		tRun = port.getTestRun(testRunId);
-		
-		return tRun;
+		return port.getTestRun(testRunId);
 	}
 
 }

@@ -44,6 +44,14 @@
 			return this;
 		},
 		
+		alert: function(text) {
+			this.setHeader("Alert")
+			this.msg.innerText = text;
+			this.show();
+			
+			return this;
+		},
+		
 		setContent: function(node) {
 			
 			while (this.body.firstChild) {
