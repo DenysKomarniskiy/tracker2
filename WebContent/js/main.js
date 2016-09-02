@@ -317,12 +317,12 @@ var APP = {
 			return;
 		}		
 		
-		if (rowData.softdev == 1 ) 
+		if (rowData.softdev == 1) 
 			if (!confirm('RE-post result?')) 
 				return;		
 		
-		if (rowData.softdev == 'wait' ) {
-			Modal.alert('please wait...');
+		if (rowData.softdev == 'wait') {
+			Modal.alert('Please wait...');
 			return;	
 		}
 		
@@ -349,15 +349,15 @@ var APP = {
 					var jresp = JSON.parse(resp);
 					console.log('response <-', jresp);
 					if (jresp.status == "Passed"){
-						rowData.softdev = '1';
+						rowData.softdev = 1;
 					} else {
 						Modal.alert(resp);
-						rowData.softdev = '0';	
+						rowData.softdev = 0;	
 					}
 					
 				} catch (e){
 					Modal.alert(resp);					
-					rowData.softdev = '0';
+					rowData.softdev = 0;
 				}
 				
 				this.dataView.updateItem(rowData.id, rowData);
@@ -491,7 +491,9 @@ var APP = {
           	    {id: "softdev", 		name: "SoftDev", 		field: "softdev", 		width: 50, formatter: sdFormatter},
           	 	{id: "edt_tqc_ver", 	name: "TQC ver", 		field: "tqcVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_lab_ver", 	name: "LAB ver", 		field: "labVer", 		width: 60, editor: Slick.Editors.Text}, 
-          		{id: "edt_gene_ver", 	name: "GENE ver", 		field: "geneVer", 		width: 60, editor: Slick.Editors.Text}, 
+          		{id: "edt_gene_ver", 	name: "GENE ver", 		field: "geneVer", 		width: 60, editor: Slick.Editors.Text},
+          		{id: "edt_fail_info", 	name: "Fail Info", 		field: "failInfo", 		width: 60, editor: Slick.Editors.FailInfo},
+          		
           	],
           	options: {
       	   	    autoEdit: true,
@@ -556,10 +558,8 @@ init();
 
 /* helpers */
 function sdFormatter (row, cell, value) {
-    switch (value) {
-        case '1'    : return '&#10004';
-        case 1      : return '&#10004';
-        case '0'	: return '<a href="#">post</a>';
+    switch (value) {        
+        case 1      : return '&#10004';        
         case 0	    : return '<a href="#">post</a>';
         case 'wait' : return '<div class="loader"></div>';
         default : return value;

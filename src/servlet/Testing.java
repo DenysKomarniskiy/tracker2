@@ -76,16 +76,7 @@ public class Testing extends HttpServlet {
 
 			response.getWriter().println(gson.toJson(testSheet));
 
-			return;
-			
-		} else if (action.equals("sdping")) {
-			
-			request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
-			AsyncContext asyncCtx = request.startAsync();
-			asyncCtx.addListener(new AppAsyncListener());
-			asyncCtx.setTimeout(30000); // 30 sec
-			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
-			executor.execute(new AsyncSoftDevProcessor(asyncCtx, "ping"));
+			return;			
 
 		} else if (action.equals("sdpost")) {	
 					

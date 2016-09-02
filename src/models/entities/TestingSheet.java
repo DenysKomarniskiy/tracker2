@@ -14,20 +14,9 @@ import javax.persistence.Table;
 @Table(name = "Testing_sheet")
 public class TestingSheet {
 
-	public TestingSheet() {
-	}
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	@Column(name = "testing_id", insertable = false, updatable = false)
 	private int testingId;
@@ -56,6 +45,9 @@ public class TestingSheet {
 	@Column(name = "gene_ver", nullable = true)
 	private String geneVer;
 
+	@Column(name = "fail_info", nullable = true)
+	private String failInfo;
+
 	@ManyToOne
 	@JoinColumn(name = "testing_id")
 	private Testing testing;
@@ -64,91 +56,108 @@ public class TestingSheet {
 	@JoinColumn(name = "strg_id", nullable = false)
 	private StorageTC storageTC;
 
-	public Testing getTesting() {
-		return testing;
-	}
 
-	public void setTesting(Testing testing) {
-		this.testing = testing;
-	}
-
-	public int getTestingId() {
-		return testingId;
-	}
-
-	public void setTestingId(int testingId) {
-		this.testingId = testingId;
-	}
-
-	public String getRunner() {
-		return runner;
-	}
-
-	public void setRunner(String runner) {
-		this.runner = runner;
-	}
-
-	public String getTcStatus() {
-		return tcStatus;
-	}
-
-	public void setTcStatus(String tcStatus) {
-		this.tcStatus = tcStatus;
+	public String getComment() {
+		return comment;
 	}
 
 	public int getDuration() {
 		return tduration;
 	}
 
-	public void setDuration(int duration) {
-		this.tduration = duration;
-	}
-
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
-	public int getSoftdev() {
-		return softdev;
-	}
-
-	public void setSoftdev(int softdev) {
-		this.softdev = softdev;
-	}
-
-	public String getTqcVer() {
-		return tqcVer;
-	}
-
-	public void setTqcVer(String tqcVer) {
-		this.tqcVer = tqcVer;
-	}
-
-	public String getLabVer() {
-		return labVer;
-	}
-
-	public void setLabVer(String labVer) {
-		this.labVer = labVer;
+	public String getFailInfo() {
+		return failInfo;
 	}
 
 	public String getGeneVer() {
 		return geneVer;
 	}
 
-	public void setGeneVer(String geneVer) {
-		this.geneVer = geneVer;
+	public int getId() {
+		return id;
+	}
+
+	public String getLabVer() {
+		return labVer;
+	}
+
+	public String getRunner() {
+		return runner;
+	}
+
+	public int getSoftdev() {
+		return softdev;
 	}
 
 	public StorageTC getStorageTC() {
 		return storageTC;
 	}
 
+	public String getTcStatus() {
+		return tcStatus;
+	}
+
+	public Testing getTesting() {
+		return testing;
+	}
+
+	public int getTestingId() {
+		return testingId;
+	}
+
+	public String getTqcVer() {
+		return tqcVer;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	public void setDuration(int duration) {
+		this.tduration = duration;
+	}
+
+	public void setFailInfo(String failInfo) {
+		this.failInfo = failInfo;
+	}
+
+	public void setGeneVer(String geneVer) {
+		this.geneVer = geneVer;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setLabVer(String labVer) {
+		this.labVer = labVer;
+	}
+
+	public void setRunner(String runner) {
+		this.runner = runner;
+	}
+
+	public void setSoftdev(int softdev) {
+		this.softdev = softdev;
+	}
+
 	public void setStorageTC(StorageTC storageTC) {
 		this.storageTC = storageTC;
+	}
+
+	public void setTcStatus(String tcStatus) {
+		this.tcStatus = tcStatus;
+	}
+
+	public void setTesting(Testing testing) {
+		this.testing = testing;
+	}
+
+	public void setTestingId(int testingId) {
+		this.testingId = testingId;
+	}
+
+	public void setTqcVer(String tqcVer) {
+		this.tqcVer = tqcVer;
 	}
 }

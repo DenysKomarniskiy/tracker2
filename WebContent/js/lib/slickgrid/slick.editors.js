@@ -16,7 +16,8 @@
                 "Checkbox": CheckboxEditor,
                 "PercentComplete": PercentCompleteEditor,
                 "LongText": LongTextEditor,
-                "Select": SelectCellEditor
+                "Select": SelectCellEditor,
+                "FailInfo": FailInfoEditor
             }
         }
     });
@@ -468,6 +469,142 @@
         this.init();
     }
 
+    function FailInfoEditor(args) {
+    	var scope = this;
+    	var $wrapper, 
+    		$container, 
+	    	$form, 
+	    	$steps, 
+	    	$step,
+	    	$issues;
+    	
+    	this.init = function() {
+    		var $container = $("body");
+    		
+    		$wrapper = $("<DIV style='z-index:10000;position:absolute;background:white;padding:5px;border:3px solid gray; border-radius:10px;'/>");
+    		$form = $('<form/>').appendTo($wrapper);
+    		$('<label for="steps">Failed steps<label/>').appendTo($form);
+    		$addStep = $('<BUTTON>Add Step</BUTTON>').appendTo($form);
+    		$steps = $('<div id="steps" class="steps"/>').appendTo($form);
+    		$('<label for="issues">Issues<label/>').appendTo($form);
+    		$addIssue = $('<BUTTON>Add Issue</BUTTON>').appendTo($form);
+    		$issues = $('<div id="issues" class="issues"/>').appendTo($form);    		
+    		
+    		$("<DIV style='text-align:left'><BUTTON id='save-fail-info'>Save</BUTTON><BUTTON id='cancel-fail-info'>Cancel</BUTTON></DIV>").appendTo($wrapper);
+    		$wrapper.find("#save-fail-info").bind("click", this.save);
+            $wrapper.find("#cancel-fail-info").bind("click", this.cancel);
+            $addStep.bind("click", this.addStep);
+            $addIssue.bind("click", this.addIssue);
+    		
+    		$wrapper.appendTo($container);
+    		
+    		scope.position(args.position);
+    	}
+    	
+
+    	
+    	this.save = function () {
+    		console.log('save');
+            args.commitChanges();
+        };
+        
+        this.cancel = function () {
+            //destroy fields
+            args.cancelChanges();
+        };
+        
+        this.hide = function () {
+            $wrapper.hide();
+        };
+
+        this.show = function () {
+            $wrapper.show();
+        };
+
+        this.position = function (position) {
+            $wrapper
+                .css("top", position.top - 5)
+                .css("left", position.left - 5)
+        };
+        
+        this.destroy = function () {
+            $wrapper.remove();
+        };
+
+        this.focus = function () {
+            $input.focus();
+        };
+        
+        this.deleteEmpty = function() {
+        	var input = $(this);        	
+        	if (input.val() == "")
+        		input.parent().detach();
+        };
+        
+    	this.addStep = function(e) {
+    		e.preventDefault();
+    		var step = $step.clone();
+    		step.find('input[name="stepnum"]').on('blur', this.deleteEmpty);
+    		step.appendTo($steps);
+    	};
+    	
+    	this.addIssue = function(e) {
+    		e.preventDefault();
+    		var issue = $issue.clone()
+    		issue.find('input').on('blur', this.deleteEmpty);
+    		issue.appendTo($issues);
+    	};
+    	
+        this.loadValue = function(item) {
+			$step = $('<div class="step"><input type="text" name="stepnum"/><input type="text" name="stepactres"/></div>');
+			$issue = $('<div class="issue"><input type="text" name="issue"/></div>');
+			
+			
+			if (item[args.column.field]) {
+				var val = JSON.parse(item[args.column.field])
+				$.each(val.steps, (i, v) => {
+					var step = $step.clone();
+					step.find('input[name="stepnum"]').val(i).on('blur', this.deleteEmpty);
+					step.find('input[name="stepactres"]').val(v)
+					step.appendTo($steps);
+				});
+				
+				$.each(val.issues, (i, v) => {
+					var issue = $issue.clone();
+					issue.find('input').val(v).on('blur', this.deleteEmpty);
+					issue.appendTo($issues);
+				});				
+			} else {
+				$step.clone().appendTo($steps);
+				$issue.clone().appendTo($issues);
+			}
+		};
+
+        this.serializeValue = function () {
+        	console.log('serializeValue'); 
+            return 'serialized'
+        };
+
+        this.applyValue = function (item, state) {
+        	console.log('applyValue', state); 
+            item[args.column.field] = state;
+        };
+
+        this.isValueChanged = function () {
+        	console.log('isValueChanged'); 
+            return false;
+        };
+
+        this.validate = function () {
+            return {
+                valid: true,
+                msg: null
+            };
+        };
+
+        this.init();
+    }
+    
     /*
      * An example of a "detached" editor.
      * The UI is added onto document BODY and .position(), .show() and .hide() are implemented.
