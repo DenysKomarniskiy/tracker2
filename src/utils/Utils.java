@@ -176,5 +176,20 @@ public class Utils {
 		}
 
 	}
+	
+	public static String GetTotalTimeFromDB(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("HibernateSessionFactory");
+		Session hibernateSession = sessionFactory.getCurrentSession();
+		Transaction tx;
+
+		tx = hibernateSession.beginTransaction();
+
+		List<TestingSheet> tcList = (List<TestingSheet>) hibernateSession.createQuery("select * from TestingSheet where id= 2").getResultList();
+		tx.commit();
+		System.out.println(tcList);
+		
+		return null;
+		
+	}
 
 }
