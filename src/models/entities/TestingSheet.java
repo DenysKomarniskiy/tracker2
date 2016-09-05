@@ -34,7 +34,7 @@ public class TestingSheet {
 	private String comment;
 
 	@Column(name = "softdev", nullable = true)
-	private int softdev;
+	private Integer softdev;
 
 	@Column(name = "tqc_ver", nullable = true)
 	private String tqcVer;
@@ -47,6 +47,25 @@ public class TestingSheet {
 
 	@Column(name = "fail_info", nullable = true)
 	private String failInfo;
+	
+	@Column(name = "env_id", nullable = true)
+	private Integer envId;
+
+	public int getEnvId() {
+		return envId;
+	}
+
+	public void setEnvId(int envId) {
+		this.envId = envId;
+	}
+	
+	@OneToOne
+	@JoinColumn(name = "env_id", nullable = true , insertable = false, updatable = false)
+	private Env env;
+
+	public Env getEnv() {
+		return env;
+	}	
 
 	@ManyToOne
 	@JoinColumn(name = "testing_id")

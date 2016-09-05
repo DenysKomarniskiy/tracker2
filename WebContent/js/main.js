@@ -51,6 +51,7 @@ var APP = {
 			//load ver. stored values
 			var lastSelectedUser = localStorage.getItem('lastSelectedUser');
 			var lastSelectedTesting = localStorage.getItem('lastSelectedTesting');
+			var lastSelectedEnv = localStorage.getItem('lastSelectedEnv');
 			
 			$.each($('div.app-ver input'), (i, item) => {		
 				view.appVer[item.name] = item.value = localStorage.getItem(item.name);
@@ -83,6 +84,16 @@ var APP = {
 				} 
 				$userSelect.append($opt); 
 			});
+			
+			var $envSelect = $('select[name="env_id"]');					
+			$.each(view['envs'], (i, item) => { 
+				var $opt = $('<option></option>').val(item.id).html(item.name);
+				if (item.id == lastSelectedEnv) {
+					$opt.attr('selected', true);
+				} 
+				$envSelect.append($opt); 
+			});
+			$envSelect.on('blur', function() {localStorage.setItem('lastSelectedEnv', this.value);})
 			
 			$('form#login-testing')
 			.on('submit', this.loadData.bind(this))
@@ -388,7 +399,8 @@ var APP = {
 		var opts = {
 			method: 'post',  
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
-    		body: "action=edit&id="+rowData.id
+    		body: "action=edit&id=" + rowData.id
+    				+ "&edt_env_id=" + $('select[name="env_id"]').val()
     				+ "&edt_status=" + newStatus
     				+ ((newStatus=='P' || newStatus=='F') ? "&edt_tqc_ver=" + view.appVer.tqcver : '')
     				+ ((newStatus=='P' || newStatus=='F') ? "&edt_lab_ver=" + view.appVer.labver : '')
@@ -492,8 +504,8 @@ var APP = {
           	 	{id: "edt_tqc_ver", 	name: "TQC ver", 		field: "tqcVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_lab_ver", 	name: "LAB ver", 		field: "labVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_gene_ver", 	name: "GENE ver", 		field: "geneVer", 		width: 60, editor: Slick.Editors.Text},
-          		{id: "edt_fail_info", 	name: "Fail Info", 		field: "failInfo", 		width: 60, editor: Slick.Editors.FailInfo},
-          		
+          		{id: "edt_env_id", 		name: "Env", 			field: "envId", 		width: 50, },
+          		{id: "edt_fail_info", 	name: "Fail Info", 		field: "failInfo", 		width: 60, editor: Slick.Editors.FailInfo},          		
           	],
           	options: {
       	   	    autoEdit: true,

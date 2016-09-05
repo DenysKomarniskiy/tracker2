@@ -26,7 +26,10 @@
 		   <input type="text" name="genever" id="gene-ver" class="mdl-textfield__input" required>
 		   <label class="float-palceholder" for="tqc-ver">gene ver</label>
 		   <label class="mdl-textfield__label" for="sample-expandable"></label>
-		</div>	
+		</div>
+		
+		<select name="env_id">				
+		</select> 	
 	</div>
 	
 </div>
@@ -39,6 +42,7 @@
 	var view = {};
 	view['testings'] = ${jtestings};
 	view['users'] = ${jusers};
+	view['envs'] = ${jenvs};
 	view['data'] = [];
 	view['appVer'] = {};	
 </script>

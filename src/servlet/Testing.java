@@ -38,12 +38,14 @@ public class Testing extends HttpServlet {
 		Transaction tx = hibernateSession.beginTransaction();
 		List testings = hibernateSession.createQuery("SELECT tst.id, tst.name from Testing tst").getResultList();
 		List users = hibernateSession.createQuery("from User").getResultList();
+		List envs = hibernateSession.createQuery("from Env").getResultList();
 		tx.commit();
 
 		request.setAttribute("title", "Testing");
 
 		request.setAttribute("jtestings", gson.toJson(testings));
 		request.setAttribute("jusers", gson.toJson(users));
+		request.setAttribute("jenvs", gson.toJson(envs));
 
 		request.setAttribute("template", "testing.jsp");
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
@@ -85,7 +87,7 @@ public class Testing extends HttpServlet {
 			Transaction tx;
 			tx = hibernateSession.beginTransaction();
 			TestingSheet sheetTc = (TestingSheet) hibernateSession
-					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.id = :id")
+					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env LEFT JOIN FETCH tsh.testing WHERE tsh.id = :id")
 					.setParameter("id", Integer.valueOf(request.getParameter("sheetentityid")))
 					.getSingleResult();
 			
@@ -94,7 +96,7 @@ public class Testing extends HttpServlet {
 					.setParameter("usr_id", request.getParameter("runner"))
 					.getSingleResult();
 			tx.commit();
-			
+						
 			request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 			AsyncContext asyncCtx = request.startAsync();
 			asyncCtx.addListener(new AppAsyncListener());
@@ -116,6 +118,7 @@ public class Testing extends HttpServlet {
 			String labVerEdt = request.getParameter("edt_lab_ver");
 			String geneVerEdt = request.getParameter("edt_gene_ver");
 			String failInfo = request.getParameter("edt_fail_info");
+			String envId = request.getParameter("edt_env_id");
 			
 
 			if (id == null) {
@@ -154,6 +157,9 @@ public class Testing extends HttpServlet {
 			if (failInfo != null) {
 				testingSheet.setFailInfo(failInfo);
 			}
+			if (envId != null) {
+				testingSheet.setEnvId(new Integer(envId));
+			}
 
 			hibernateSession.update(testingSheet);
 			tx.commit();
@@ -172,12 +178,12 @@ public class Testing extends HttpServlet {
 
 		if (runner.toLowerCase().equals("all")) {
 			query = hibernateSession
-					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId")
+					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env WHERE tsh.testingId = :testingId")
 					.setParameter("testingId", testingId);
 		} else {
 
 			query = hibernateSession
-					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
+					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
 					.setParameter("testingId", testingId).setParameter("runner", runner);
 
 		}

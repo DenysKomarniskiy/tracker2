@@ -242,7 +242,7 @@ public class AsyncSoftDevProcessor implements Runnable {
 		UserField env = new UserField();
 		env.setNumber(2);
 		env.setName("Environment");
-		env.setValue(sheetTc.getTesting().getEnvironment());
+		env.setValue(sheetTc.getEnv().getName());
 		userFields.getItem().add(env);
 
 		UserField runtime = new UserField();
