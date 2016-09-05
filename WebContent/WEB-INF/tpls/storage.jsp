@@ -36,11 +36,11 @@
 	</div>
 	
 	<div>
-		<span>Step Count</span> <input name="edt_step_num" required pattern="[0-9]">
+		<span>Step Count</span> <input name="edt_step_num" required pattern="[0-9]+">
 	</div>
 
 	<div>
-		<span>Duration</span> <input name="edt_duration" required pattern="[0-9]">
+		<span>Duration</span> <input name="edt_duration" required pattern="[0-9]+">
 	</div>
 
 	<div>

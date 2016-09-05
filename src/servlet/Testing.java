@@ -115,6 +115,8 @@ public class Testing extends HttpServlet {
 			String tqcVerEdt = request.getParameter("edt_tqc_ver");
 			String labVerEdt = request.getParameter("edt_lab_ver");
 			String geneVerEdt = request.getParameter("edt_gene_ver");
+			String failInfo = request.getParameter("edt_fail_info");
+			
 
 			if (id == null) {
 				response.setStatus(400);
@@ -148,6 +150,9 @@ public class Testing extends HttpServlet {
 			}
 			if (geneVerEdt != null) {
 				testingSheet.setGeneVer(geneVerEdt);
+			}
+			if (failInfo != null) {
+				testingSheet.setFailInfo(failInfo);
 			}
 
 			hibernateSession.update(testingSheet);

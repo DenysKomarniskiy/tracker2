@@ -560,7 +560,7 @@ init();
 function sdFormatter (row, cell, value) {
     switch (value) {        
         case 1      : return '&#10004';        
-        case 0	    : return '<a href="#">post</a>';
+        case 0	    : return '<a href="">post</a>';
         case 'wait' : return '<div class="loader"></div>';
         default : return value;
     }

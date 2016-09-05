@@ -16,6 +16,7 @@ import org.hibernate.Transaction;
 
 import com.google.gson.Gson;
 import com.scc.softdev.services.PairArray;
+import com.scc.softdev.services.SDException;
 import com.scc.softdev.services.TIssue;
 import com.scc.softdev.services.TIssueArray;
 import com.scc.softdev.services.TTestCase;
@@ -185,16 +186,20 @@ public class AsyncSoftDevProcessor implements Runnable {
 	private ArrayList<TIssue> getSDIssues(FailInfo failInfo) throws Exception {
 
 		ArrayList<TIssue> sdIssues = new ArrayList<TIssue>();
+		
+		try {
+			for (String issueUFI : failInfo.getIssues()) {
+				StringArray arrayIssueUFI = new StringArray();
+				arrayIssueUFI.getItem().add(asyncContext.getRequest().getServletContext().getInitParameter("issuePrefix") + issueUFI);
 
-		for (String issueUFI : failInfo.getIssues()) {
-			StringArray arrayIssueUFI = new StringArray();
-			arrayIssueUFI.getItem().add(asyncContext.getRequest().getServletContext().getInitParameter("issuePrefix") + issueUFI);
+				TIssueArray sdIssue = issuePort.getIssuesByUFI(arrayIssueUFI);
 
-			TIssueArray sdIssue = issuePort.getIssuesByUFI(arrayIssueUFI);
-
-			sdIssues.add(sdIssue.getItem().get(0));
+				sdIssues.add(sdIssue.getItem().get(0));
+			}
+		} catch (Exception e) {
+			throw new Exception("No issue found");
 		}
-
+		
 		return sdIssues;
 	}
 

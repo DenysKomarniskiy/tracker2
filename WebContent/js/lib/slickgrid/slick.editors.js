@@ -475,8 +475,10 @@
     		$container, 
 	    	$form, 
 	    	$steps, 
-	    	$step,
-	    	$issues;
+			$step = $('<div class="step"><input type="text" name="stepnum" required/><input type="text" name="stepactres"/></div>'),
+	    	$issues,
+	    	$issue = $('<div class="issue"><input type="text" name="issue" required/></div>'),	
+	    	defaultValue = '';
     	
     	this.init = function() {
     		var $container = $("body");
@@ -484,10 +486,10 @@
     		$wrapper = $("<DIV style='z-index:10000;position:absolute;background:white;padding:5px;border:3px solid gray; border-radius:10px;'/>");
     		$form = $('<form/>').appendTo($wrapper);
     		$('<label for="steps">Failed steps<label/>').appendTo($form);
-    		$addStep = $('<BUTTON>Add Step</BUTTON>').appendTo($form);
+    		$addStep = $('<a href="">+</a>').appendTo($form);
     		$steps = $('<div id="steps" class="steps"/>').appendTo($form);
     		$('<label for="issues">Issues<label/>').appendTo($form);
-    		$addIssue = $('<BUTTON>Add Issue</BUTTON>').appendTo($form);
+    		$addIssue = $('<a href="">+</a>').appendTo($form);
     		$issues = $('<div id="issues" class="issues"/>').appendTo($form);    		
     		
     		$("<DIV style='text-align:left'><BUTTON id='save-fail-info'>Save</BUTTON><BUTTON id='cancel-fail-info'>Cancel</BUTTON></DIV>").appendTo($wrapper);
@@ -498,18 +500,14 @@
     		
     		$wrapper.appendTo($container);
     		
-    		scope.position(args.position);
+    		scope.position(args.position);    		
     	}
     	
-
-    	
-    	this.save = function () {
-    		console.log('save');
+    	this.save = function () {    		
             args.commitChanges();
         };
         
         this.cancel = function () {
-            //destroy fields
             args.cancelChanges();
         };
         
@@ -532,7 +530,7 @@
         };
 
         this.focus = function () {
-            $input.focus();
+        	$form.focus();
         };
         
         this.deleteEmpty = function() {
@@ -541,62 +539,83 @@
         		input.parent().detach();
         };
         
-    	this.addStep = function(e) {
+    	this.addStep = (e) => {
     		e.preventDefault();
     		var step = $step.clone();
     		step.find('input[name="stepnum"]').on('blur', this.deleteEmpty);
     		step.appendTo($steps);
     	};
     	
-    	this.addIssue = function(e) {
+    	this.addIssue = (e) => {
     		e.preventDefault();
     		var issue = $issue.clone()
     		issue.find('input').on('blur', this.deleteEmpty);
     		issue.appendTo($issues);
     	};
     	
-        this.loadValue = function(item) {
-			$step = $('<div class="step"><input type="text" name="stepnum"/><input type="text" name="stepactres"/></div>');
-			$issue = $('<div class="issue"><input type="text" name="issue"/></div>');
-			
+        this.loadValue = (item) => {
 			
 			if (item[args.column.field]) {
-				var val = JSON.parse(item[args.column.field])
-				$.each(val.steps, (i, v) => {
-					var step = $step.clone();
-					step.find('input[name="stepnum"]').val(i).on('blur', this.deleteEmpty);
-					step.find('input[name="stepactres"]').val(v)
-					step.appendTo($steps);
-				});
-				
-				$.each(val.issues, (i, v) => {
-					var issue = $issue.clone();
-					issue.find('input').val(v).on('blur', this.deleteEmpty);
-					issue.appendTo($issues);
-				});				
-			} else {
-				$step.clone().appendTo($steps);
-				$issue.clone().appendTo($issues);
-			}
+				defaultValue = item[args.column.field];
+				this.buildEditor(defaultValue);
+			} else 
+				this.buildEditor("{\"steps\":{\"\":\"\"},\"issues\":[\"\"]}");
 		};
+		
+		this.buildEditor = function(data) {
+			var val = JSON.parse(data)
+			$.each(val.steps, (i, v) => {
+				var step = $step.clone();
+				step.find('input[name="stepnum"]').val(i).on('blur', this.deleteEmpty);
+				step.find('input[name="stepactres"]').val(v)
+				step.appendTo($steps);
+			});
+			
+			$.each(val.issues, (i, v) => {
+				var issue = $issue.clone();
+				issue.find('input').val(v).on('blur', this.deleteEmpty);
+				issue.appendTo($issues);
+			});				
+		}
 
         this.serializeValue = function () {
-        	console.log('serializeValue'); 
-            return 'serialized'
+        	
+        	var ret = {"steps":{},"issues":[]};
+        	var stepnums = $form.find('input[name="stepnum"]');
+        	var stepactres = $form.find('input[name="stepactres"]');
+        	var issues = $form.find('input[name="issue"]');
+        	var isEdit = false;
+        	
+        	$.each(stepnums, (i, stepnum) => {
+        		if (stepnum.value != "") {
+        			ret.steps[stepnum.value] = stepactres[i].value;
+        			isEdit = true;
+    			}
+        	});        	
+        	
+        	$.each(issues, (i, issue) => {
+        		if (issue.value != "") {
+        			ret.issues.push(issue.value);
+        			isEdit = true;
+        		}
+        	});
+        	
+            return isEdit ? JSON.stringify(ret) : '';
         };
 
         this.applyValue = function (item, state) {
-        	console.log('applyValue', state); 
             item[args.column.field] = state;
         };
 
-        this.isValueChanged = function () {
-        	console.log('isValueChanged'); 
-            return false;
+        this.isValueChanged = () => {
+        	return (this.serializeValue() != defaultValue);
         };
 
         this.validate = function () {
-            return {
+        	
+    		console.log("validate", $form[0].checkValidity());
+    		
+        	return {
                 valid: true,
                 msg: null
             };
