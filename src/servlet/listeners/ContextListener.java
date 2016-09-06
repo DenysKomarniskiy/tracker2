@@ -13,6 +13,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import models.entities.Env;
 import models.entities.StorageTC;
 import models.entities.TestSet;
 import models.entities.Testing;
@@ -32,6 +33,7 @@ public class ContextListener implements ServletContextListener {
 		configuration.addAnnotatedClass(TestingSheet.class);
 		configuration.addAnnotatedClass(TestSet.class);
 		configuration.addAnnotatedClass(User.class);
+		configuration.addAnnotatedClass(Env.class);
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
 		SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 		servletContextEvent.getServletContext().setAttribute("HibernateSessionFactory", sessionFactory);
@@ -56,3 +58,4 @@ public class ContextListener implements ServletContextListener {
 	}
 
 }
+

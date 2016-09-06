@@ -46,6 +46,7 @@ public class Tools extends HttpServlet {
 		String action = request.getParameter("action");
 		
 		String PathFile = request.getSession().getServletContext().getRealPath("pie_chart.png");
+		System.out.println(PathFile);
 		//String PathFile = (String) getServletContext().getAttribute("FILES_DIR");
 		Mail mail = new Mail();
 		mail.setPathFile(PathFile);

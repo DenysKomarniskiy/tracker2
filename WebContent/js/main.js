@@ -42,6 +42,49 @@ var APP = {
 		return data;
 	},
 	
+	updateStats: function(){
+		
+		var data = this.dataView.getItems();
+		
+		var stats = {
+				"stats-total-pcs": data.length, 
+				"stats-total-min": 0,
+				"stats-processed-pcs": 0,
+				"stats-processed-min": 0,
+				"stats-processed-proc": 0,
+				"stats-passed-pcs": 0,
+				"stats-failed-pcs": 0,
+				"stats-wait-pcs": 0,
+				"stats-empty-pcs": 0,
+				"stats-correction-pcs": 0,
+		}
+		
+		data.forEach((tc) => {
+			stats["stats-total-min"] += tc.tduration;
+			
+			if (tc.tcStatus.includes("P")) {
+				stats["stats-processed-pcs"] += 1;
+				stats["stats-processed-min"] += tc.tduration;
+				stats["stats-passed-pcs"] += 1;
+			} else if (tc.tcStatus.includes("F")) {
+				stats["stats-processed-pcs"] += 1;
+				stats["stats-processed-min"] += tc.tduration;
+				stats["stats-failed-pcs"] += 1;
+			} else if (tc.tcStatus.includes("W")) {
+				stats["stats-wait-pcs"] += 1;
+			} else if (tc.tcStatus.includes("C")) {
+				stats["stats-correction-pcs"] += 1;
+			}			
+		});
+		stats["stats-processed-proc-pcs"] = Math.ceil((stats["stats-processed-pcs"] / stats["stats-total-pcs"]) * 100);
+		stats["stats-processed-proc-min"] = Math.ceil((stats["stats-processed-min"] / stats["stats-total-min"]) * 100);
+		stats["stats-empty-pcs"] = stats["stats-total-pcs"] - stats["stats-processed-pcs"] - stats["stats-wait-pcs"] - stats["stats-correction-pcs"];
+		console.log(stats);
+		$.each(this.$statsHeaderSpans, (i, spanEl) => {			
+			spanEl.innerText = stats[spanEl.id];
+		})
+	},
+	
 	initFace: {
 		"testing": function() {				
 			//init vars
@@ -51,6 +94,7 @@ var APP = {
 			//load ver. stored values
 			var lastSelectedUser = localStorage.getItem('lastSelectedUser');
 			var lastSelectedTesting = localStorage.getItem('lastSelectedTesting');
+			var lastSelectedEnv = localStorage.getItem('lastSelectedEnv');
 			
 			$.each($('div.app-ver input'), (i, item) => {		
 				view.appVer[item.name] = item.value = localStorage.getItem(item.name);
@@ -64,6 +108,13 @@ var APP = {
 			this.gridClickHandlers.push(this.idRowClickHandler);
 			this.gridClickHandlers.push(this.statusRowClickHandler);
 			this.gridClickHandlers.push(this.softdevRowClickHandler);
+			
+			//init status-tc menu
+            this.$statusMenu = $("#status-menu");
+            this.$statusMenu.on('click', this.setTcStatus.bind(this));
+            
+            //init stats header
+            this.$statsHeaderSpans = $(".stats span[id^='stats']");
 						
 			//build interface			
 			var $testingSelect = $('select[name="testing_id"]');					
@@ -84,13 +135,21 @@ var APP = {
 				$userSelect.append($opt); 
 			});
 			
+			var $envSelect = $('select[name="env_id"]');					
+			$.each(view['envs'], (i, item) => { 
+				var $opt = $('<option></option>').val(item.id).html(item.name);
+				if (item.id == lastSelectedEnv) {
+					$opt.attr('selected', true);
+				} 
+				$envSelect.append($opt); 
+			});
+			$envSelect.on('blur', function() {localStorage.setItem('lastSelectedEnv', this.value);})
+			
 			$('form#login-testing')
 			.on('submit', this.loadData.bind(this))
 			.trigger('submit');
 			
-			//init status-tc menu
-            this.$statusMenu = $("#status-menu");
-            this.$statusMenu.on('click', this.setTcStatus.bind(this));
+
 		},
 		
 		"storage": function() {
@@ -193,7 +252,9 @@ var APP = {
 	    
 		this.dataView.setItems(this.validateData(data));
 		this.grid.invalidate();
-		this.grid.render();		
+		this.grid.render();			
+
+        this.updateStats();
 	},
 	
 	metaDataFormatter: function(index)	{
@@ -388,7 +449,8 @@ var APP = {
 		var opts = {
 			method: 'post',  
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
-    		body: "action=edit&id="+rowData.id
+    		body: "action=edit&id=" + rowData.id
+    				+ "&edt_env_id=" + $('select[name="env_id"]').val()
     				+ "&edt_status=" + newStatus
     				+ ((newStatus=='P' || newStatus=='F') ? "&edt_tqc_ver=" + view.appVer.tqcver : '')
     				+ ((newStatus=='P' || newStatus=='F') ? "&edt_lab_ver=" + view.appVer.labver : '')
@@ -407,6 +469,7 @@ var APP = {
 				this.dataView.updateItem(rowData.id, resp);
 				this.grid.invalidate();
 				this.grid.render();
+				this.updateStats();
 			}
 		).catch(
 			function(err){
@@ -492,8 +555,8 @@ var APP = {
           	 	{id: "edt_tqc_ver", 	name: "TQC ver", 		field: "tqcVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_lab_ver", 	name: "LAB ver", 		field: "labVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_gene_ver", 	name: "GENE ver", 		field: "geneVer", 		width: 60, editor: Slick.Editors.Text},
-          		{id: "edt_fail_info", 	name: "Fail Info", 		field: "failInfo", 		width: 60, editor: Slick.Editors.FailInfo},
-          		
+          		{id: "edt_env_id", 		name: "Env", 			field: "env", 			width: 50, formatter: (a, b, c) =>  c ? c.name : ''},
+          		{id: "edt_fail_info", 	name: "Fail Info", 		field: "failInfo", 		width: 60, editor: Slick.Editors.FailInfo},          		
           	],
           	options: {
       	   	    autoEdit: true,
