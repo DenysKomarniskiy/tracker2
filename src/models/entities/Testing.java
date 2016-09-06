@@ -29,16 +29,16 @@ public class Testing {
 	@Column(name = "date_end", length = 50, nullable = true)
 	private String date_end;
 	
-	@Column(name = "environment", length = 50, nullable = true)
-	private String environment;	
-
-	public String getEnvironment() {
-		return environment;
-	}
-
-	public void setEnvironment(String environment) {
-		this.environment = environment;
-	}
+//	@Column(name = "environment", length = 50, nullable = true)
+//	private String environment;	
+//
+//	public String getEnvironment() {
+//		return environment;
+//	}
+//
+//	public void setEnvironment(String environment) {
+//		this.environment = environment;
+//	}
 
 	@OneToMany(mappedBy = "testing")
 	private List<TestingSheet> testingSheet;

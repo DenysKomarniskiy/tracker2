@@ -48,7 +48,6 @@ public class Tools extends HttpServlet {
 		String PathFile = request.getSession().getServletContext().getRealPath("pie_chart.png");
 		//String PathFile = (String) getServletContext().getAttribute("FILES_DIR");
 		Mail mail = new Mail();
-		//mail.setPathFile(PathFile + "\\pie_chart.png");
 		mail.setPathFile(PathFile);
 		mail.setAddressFrom("tqc.autobot@isd.dp.ua");
 		mail.setAddressTo(new String[]{ "deko@isd.dp.ua" });
@@ -61,7 +60,7 @@ public class Tools extends HttpServlet {
 				"<br>" +
 				"<b>- total TCs: [720] - [34166 min]</b>" +
 				"<br>" +
-				"<b>- processed TCs: [712 - 98%] [33447 min - 97%]</b>" +
+				"<b>- processed TCs: [710 - 98%] [33447 min - 97%]</b>" +
 				"<br><br>" +
 				"<table border='0'>" + 
 					"<tr>" + 
@@ -80,12 +79,12 @@ public class Tools extends HttpServlet {
 
 		if (action.equals("Send Mail")) {
 
-			ChartFormationJFreeChart chartFormationJFreeChart = new ChartFormationJFreeChart(PathFile);
-			chartFormationJFreeChart.createChart();
-//Utils.GetTotalTimeFromDB(request, response);
+//			ChartFormationJFreeChart chartFormationJFreeChart = new ChartFormationJFreeChart(PathFile);
+//			chartFormationJFreeChart.createChart();
+Utils.GetTotalTimeFromDB(request, response);
 
 			try {
-				mail.send();
+//				mail.send();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -32,7 +32,7 @@ public class ChartFormationJFreeChart {
 
 	public void createChart() {
 
-		String empty = "Empty [500 min]";
+		String empty = "Empty [510 min]";
 		String passed = "Passed [9999 min]";
 		String waiting = "Waiting [50 min]";
 		String failed = "Failed [1000 min]";

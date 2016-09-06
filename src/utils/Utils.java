@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +22,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.query.Query;
 
 import models.entities.StorageTC;
+import models.entities.Testing;
 import models.entities.TestingSheet;
 
 public class Utils {
@@ -73,35 +75,36 @@ public class Utils {
 
 		return matches;
 	}
-	
-	public static TestingSheet unproxy(TestingSheet proxied)
-	{
+
+	public static TestingSheet unproxy(TestingSheet proxied) {
 		TestingSheet entity = proxied;
-	    if (entity != null && entity instanceof HibernateProxy) {
-	        Hibernate.initialize(entity);
-	        entity = (TestingSheet) ((HibernateProxy) entity)
-	                  .getHibernateLazyInitializer()
-	                  .getImplementation();
-	    }
-	    return entity;
+		if (entity != null && entity instanceof HibernateProxy) {
+			Hibernate.initialize(entity);
+			entity = (TestingSheet) ((HibernateProxy) entity).getHibernateLazyInitializer().getImplementation();
+		}
+		return entity;
 	}
 
-	public void setRunOpts(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void setRunOpts(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
 		List<String> listTc = new ArrayList<String>();
 		List<String> listOfFiles = new ArrayList<String>();
-		String sTestCaseNumber, sTestCase, sIssueNumber = "", sTestCaseNameInSilkTest, sPattern, sFullPath = "", sShortPath;
+		String sTestCaseNumber, sTestCase, sIssueNumber = "", sTestCaseNameInSilkTest, sPattern, sFullPath = "",
+				sShortPath;
 		List<String> lsFullPath = new ArrayList<String>();
 
 		boolean bFake = false, bCritical = false;
 
-		SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("HibernateSessionFactory");
+		SessionFactory sessionFactory = (SessionFactory) request.getServletContext()
+				.getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		Transaction tx;
 
 		tx = hibernateSession.beginTransaction();
 
-		List<StorageTC> tcList = (List<StorageTC>) hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
+		List<StorageTC> tcList = (List<StorageTC>) hibernateSession
+				.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
 		tx.commit();
 
 		for (StorageTC tc : tcList) {
@@ -176,20 +179,95 @@ public class Utils {
 		}
 
 	}
-	
-	public static String GetTotalTimeFromDB(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("HibernateSessionFactory");
+
+	@SuppressWarnings("unchecked")
+	public static DataFromCurrentTestingTableDB GetTotalTimeFromDB(HttpServletRequest request,
+			HttpServletResponse response) throws ServletException, IOException {
+
+		DataFromCurrentTestingTableDB dataFromCurrentTestingTableDB = new DataFromCurrentTestingTableDB();
+		SessionFactory sessionFactory = (SessionFactory) request.getServletContext()
+				.getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		Transaction tx;
-
 		tx = hibernateSession.beginTransaction();
 
-		List<TestingSheet> tcList = (List<TestingSheet>) hibernateSession.createQuery("select * from TestingSheet where id= 2").getResultList();
-		tx.commit();
-		System.out.println(tcList);
+		int idCurrentTesting;
 		
+		// Getting id of current testing
+		Testing queryTesting;
+		queryTesting = (Testing) hibernateSession.createQuery("from Testing where name= :name")
+				.setParameter("name", "new_testing6").getSingleResult();
+		idCurrentTesting = queryTesting.getId();
+
+		// Getting Total duration of each TC status (Passed, Failed, Waiting,
+		// etc.)
+		String[] statusTC = { "P", "F", "W", "C", "E", "N", "I" };
+		List<TestingSheet> queryDurationOfTCs;
+
+		for (int i = 0; i < statusTC.length; i++) {
+			if (statusTC[i] == "E") {
+				statusTC[i] = "";
+			} 
+			queryDurationOfTCs = (List<TestingSheet>) hibernateSession
+					.createQuery("from TestingSheet where testing_id= :testing_id and tc_status = :tc_status")
+					.setParameter("testing_id", idCurrentTesting).setParameter("tc_status", statusTC[i])
+					.getResultList();
+			int durationTotal = 0;
+			for (TestingSheet duration : queryDurationOfTCs) {
+
+				durationTotal = duration.getDuration() + durationTotal;
+				// System.out.println(duration.getDuration());
+
+			}
+			if (statusTC[i] == "P") {
+				dataFromCurrentTestingTableDB.setCountPassedTC(durationTotal);
+			}
+			if (statusTC[i] == "F") {
+				dataFromCurrentTestingTableDB.setCountFailedTC(durationTotal);
+			}
+			if (statusTC[i] == "W") {
+				dataFromCurrentTestingTableDB.setCountWaitingTC(durationTotal);
+			}
+			if (statusTC[i] == "C") {
+				dataFromCurrentTestingTableDB.setCountCorrectionTC(durationTotal);
+			}
+			if (statusTC[i] == "E") {
+				dataFromCurrentTestingTableDB.setCountEmptyTC(durationTotal);
+			}
+			if (statusTC[i] == "N") {
+				dataFromCurrentTestingTableDB.setCountNoNeedTC(durationTotal);
+			}
+			if (statusTC[i] == "I") {
+				dataFromCurrentTestingTableDB.setCountInvestigatingTC(durationTotal);
+			}
+			System.out.println(statusTC[i] + durationTotal);
+
+		}
+		// List<TestingSheet> queryDurationWaitingTC;
+		// List<TestingSheet> queryDurationEmptyTC;
+		// List<TestingSheet> queryDurationCorrectionTC;
+		// queryDurationFailedTC = (List<TestingSheet>) hibernateSession
+		// .createQuery("from TestingSheet where testing_id= :testing_id and
+		// tc_status = :tc_status")
+		// .setParameter("testing_id",
+		// idCurrentTesting).setParameter("tc_status", "F").getResultList();
+		// tx.commit();
+		// for (TestingSheet duration : queryDurationFailedTC) {
+		//
+		// durationFailedTC = duration.getDuration() + durationFailedTC;
+		//
+		// }
+		// // System.out.println(idCurrentTesting);
+		// System.out.println("Passed Total" + durationPassedTC);
+		// System.out.println("Failed Total" + durationFailedTC);
+		return dataFromCurrentTestingTableDB;
+
+	}
+
+	private List<TestingSheet> GetDurationOfTCs(String statusTC) {
+
 		return null;
-		
+
 	}
 
 }
