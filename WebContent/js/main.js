@@ -42,6 +42,49 @@ var APP = {
 		return data;
 	},
 	
+	updateStats: function(){
+		
+		var data = this.dataView.getItems();
+		
+		var stats = {
+				"stats-total-pcs": data.length, 
+				"stats-total-min": 0,
+				"stats-processed-pcs": 0,
+				"stats-processed-min": 0,
+				"stats-processed-proc": 0,
+				"stats-passed-pcs": 0,
+				"stats-failed-pcs": 0,
+				"stats-wait-pcs": 0,
+				"stats-empty-pcs": 0,
+				"stats-correction-pcs": 0,
+		}
+		
+		data.forEach((tc) => {
+			stats["stats-total-min"] += tc.tduration;
+			
+			if (tc.tcStatus.includes("P")) {
+				stats["stats-processed-pcs"] += 1;
+				stats["stats-processed-min"] += tc.tduration;
+				stats["stats-passed-pcs"] += 1;
+			} else if (tc.tcStatus.includes("F")) {
+				stats["stats-processed-pcs"] += 1;
+				stats["stats-processed-min"] += tc.tduration;
+				stats["stats-failed-pcs"] += 1;
+			} else if (tc.tcStatus.includes("W")) {
+				stats["stats-wait-pcs"] += 1;
+			} else if (tc.tcStatus.includes("C")) {
+				stats["stats-correction-pcs"] += 1;
+			}			
+		});
+		stats["stats-processed-proc-pcs"] = Math.ceil((stats["stats-processed-pcs"] / stats["stats-total-pcs"]) * 100);
+		stats["stats-processed-proc-min"] = Math.ceil((stats["stats-processed-min"] / stats["stats-total-min"]) * 100);
+		stats["stats-empty-pcs"] = stats["stats-total-pcs"] - stats["stats-processed-pcs"] - stats["stats-wait-pcs"] - stats["stats-correction-pcs"];
+		console.log(stats);
+		$.each(this.$statsHeaderSpans, (i, spanEl) => {			
+			spanEl.innerText = stats[spanEl.id];
+		})
+	},
+	
 	initFace: {
 		"testing": function() {				
 			//init vars
@@ -65,6 +108,13 @@ var APP = {
 			this.gridClickHandlers.push(this.idRowClickHandler);
 			this.gridClickHandlers.push(this.statusRowClickHandler);
 			this.gridClickHandlers.push(this.softdevRowClickHandler);
+			
+			//init status-tc menu
+            this.$statusMenu = $("#status-menu");
+            this.$statusMenu.on('click', this.setTcStatus.bind(this));
+            
+            //init stats header
+            this.$statsHeaderSpans = $(".stats span[id^='stats']");
 						
 			//build interface			
 			var $testingSelect = $('select[name="testing_id"]');					
@@ -99,9 +149,7 @@ var APP = {
 			.on('submit', this.loadData.bind(this))
 			.trigger('submit');
 			
-			//init status-tc menu
-            this.$statusMenu = $("#status-menu");
-            this.$statusMenu.on('click', this.setTcStatus.bind(this));
+
 		},
 		
 		"storage": function() {
@@ -204,7 +252,9 @@ var APP = {
 	    
 		this.dataView.setItems(this.validateData(data));
 		this.grid.invalidate();
-		this.grid.render();		
+		this.grid.render();			
+
+        this.updateStats();
 	},
 	
 	metaDataFormatter: function(index)	{
@@ -419,6 +469,7 @@ var APP = {
 				this.dataView.updateItem(rowData.id, resp);
 				this.grid.invalidate();
 				this.grid.render();
+				this.updateStats();
 			}
 		).catch(
 			function(err){

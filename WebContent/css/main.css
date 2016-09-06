@@ -321,6 +321,9 @@ input.editor-checkbox {
 	transition: background-color 0.2s;
 }
 
+.slick-cell a {
+    pointer-events: none;
+}
 .slick-cell select {
 	border: none;
 	outline: none;
