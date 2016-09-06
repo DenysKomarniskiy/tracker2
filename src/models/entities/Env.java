@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "envs", uniqueConstraints = { @UniqueConstraint(columnNames = { "id" }) })
+@Table(name = "Envs", uniqueConstraints = { @UniqueConstraint(columnNames = { "id" }) })
 public class Env {
 
 	@Id

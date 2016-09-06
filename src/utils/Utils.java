@@ -201,7 +201,7 @@ public class Utils {
 
 		// Getting Total duration of each TC status (Passed, Failed, Waiting,
 		// etc.)
-		String[] statusTC = { "P", "F", "W", "C", "E", "N", "I" };
+		String[] statusTC = { "P", "F", "E", "W", "C", "N", "I" };
 		List<TestingSheet> queryDurationOfTCs;
 
 		for (int i = 0; i < statusTC.length; i++) {
@@ -209,7 +209,8 @@ public class Utils {
 				statusTC[i] = "";
 			} 
 			queryDurationOfTCs = (List<TestingSheet>) hibernateSession
-					.createQuery("from TestingSheet where testing_id= :testing_id and tc_status = :tc_status")
+					//.createQuery("from TestingSheet where testing_id= :testing_id and tc_status = :tc_status")
+					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env LEFT JOIN FETCH tsh.testing where testing_id= :testing_id and tc_status = :tc_status")
 					.setParameter("testing_id", idCurrentTesting).setParameter("tc_status", statusTC[i])
 					.getResultList();
 			int durationTotal = 0;
