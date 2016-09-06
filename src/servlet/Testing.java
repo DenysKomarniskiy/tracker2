@@ -22,6 +22,7 @@ import com.google.gson.GsonBuilder;
 
 import async.actions.AsyncSoftDevProcessor;
 import async.listener.AppAsyncListener;
+import models.entities.Env;
 import models.entities.TestingSheet;
 import models.entities.User;
 import utils.TestingSerializer;
@@ -118,8 +119,7 @@ public class Testing extends HttpServlet {
 			String labVerEdt = request.getParameter("edt_lab_ver");
 			String geneVerEdt = request.getParameter("edt_gene_ver");
 			String failInfo = request.getParameter("edt_fail_info");
-			String envId = request.getParameter("edt_env_id");
-			
+			String envId = request.getParameter("edt_env_id");			
 
 			if (id == null) {
 				response.setStatus(400);
@@ -158,7 +158,8 @@ public class Testing extends HttpServlet {
 				testingSheet.setFailInfo(failInfo);
 			}
 			if (envId != null) {
-				testingSheet.setEnvId(new Integer(envId));
+				Env env = hibernateSession.get(Env.class, new Integer(envId));
+				testingSheet.setEnv(env);
 			}
 
 			hibernateSession.update(testingSheet);

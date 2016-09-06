@@ -47,21 +47,14 @@ public class TestingSheet {
 
 	@Column(name = "fail_info", nullable = true)
 	private String failInfo;
-	
-	@Column(name = "env_id", nullable = true)
-	private Integer envId;
 
-	public int getEnvId() {
-		return envId;
-	}
-
-	public void setEnvId(int envId) {
-		this.envId = envId;
-	}
-	
 	@OneToOne
-	@JoinColumn(name = "env_id", nullable = true , insertable = false, updatable = false)
+	@JoinColumn(name = "env_id", nullable = true)
 	private Env env;
+
+	public void setEnv(Env env) {
+		this.env = env;
+	}
 
 	public Env getEnv() {
 		return env;

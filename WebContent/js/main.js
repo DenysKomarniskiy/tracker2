@@ -504,7 +504,7 @@ var APP = {
           	 	{id: "edt_tqc_ver", 	name: "TQC ver", 		field: "tqcVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_lab_ver", 	name: "LAB ver", 		field: "labVer", 		width: 60, editor: Slick.Editors.Text}, 
           		{id: "edt_gene_ver", 	name: "GENE ver", 		field: "geneVer", 		width: 60, editor: Slick.Editors.Text},
-          		{id: "edt_env_id", 		name: "Env", 			field: "envId", 		width: 50, },
+          		{id: "edt_env_id", 		name: "Env", 			field: "env", 			width: 50, formatter: (a, b, c) =>  c ? c.name : ''},
           		{id: "edt_fail_info", 	name: "Fail Info", 		field: "failInfo", 		width: 60, editor: Slick.Editors.FailInfo},          		
           	],
           	options: {
