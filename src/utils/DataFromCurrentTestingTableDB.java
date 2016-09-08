@@ -9,7 +9,17 @@ public class DataFromCurrentTestingTableDB {
 	private Long countNoNeedTC;
 	private Long countTotalTC;
 	private Long durationTotalTC;
+	private Long durationPassedTC;
+	private Long durationFailedTC;
+	private Long durationWaitingTC;
+	private Long durationCorrectionTC;
+	private Long durationEmptyTC;
+	private Long durationNoNeedTC;
+	private Long durationInvestigatingTC;
 	private Long countInvestigatingTC;
+	
+	
+	
 	public Long getCountPassedTC() {
 		return countPassedTC;
 	}
@@ -64,6 +74,48 @@ public class DataFromCurrentTestingTableDB {
 	}
 	public void setDurationTotalTC(Long durationTotalTC) {
 		this.durationTotalTC = durationTotalTC;
+	}
+	public Long getDurationPassedTC() {
+		return durationPassedTC;
+	}
+	public void setDurationPassedTC(Long durationPassedTC) {
+		this.durationPassedTC = durationPassedTC;
+	}
+	public Long getDurationFailedTC() {
+		return durationFailedTC;
+	}
+	public void setDurationFailedTC(Long durationFailedTC) {
+		this.durationFailedTC = durationFailedTC;
+	}
+	public Long getDurationWaitingTC() {
+		return durationWaitingTC;
+	}
+	public void setDurationWaitingTC(Long durationWaitingTC) {
+		this.durationWaitingTC = durationWaitingTC;
+	}
+	public Long getDurationCorrectionTC() {
+		return durationCorrectionTC;
+	}
+	public void setDurationCorrectionTC(Long durationCorrectionTC) {
+		this.durationCorrectionTC = durationCorrectionTC;
+	}
+	public Long getDurationEmptyTC() {
+		return durationEmptyTC;
+	}
+	public void setDurationEmptyTC(Long durationEmptyTC) {
+		this.durationEmptyTC = durationEmptyTC;
+	}
+	public Long getDurationNoNeedTC() {
+		return durationNoNeedTC;
+	}
+	public void setDurationNoNeedTC(Long durationNoNeedTC) {
+		this.durationNoNeedTC = durationNoNeedTC;
+	}
+	public Long getDurationInvestigatingTC() {
+		return durationInvestigatingTC;
+	}
+	public void setDurationInvestigatingTC(Long durationInvestigatingTC) {
+		this.durationInvestigatingTC = durationInvestigatingTC;
 	}
 	
 	

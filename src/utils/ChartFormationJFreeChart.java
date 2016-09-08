@@ -5,6 +5,7 @@ import java.awt.Font;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
@@ -20,7 +21,10 @@ import org.jfree.data.general.DefaultPieDataset;
  */
 public class ChartFormationJFreeChart {
 
-	String PathFile;
+	private String PathFile;
+	private String [] ListOflabel;
+	private ArrayList ListOfCountTC;
+	
 
 	public ChartFormationJFreeChart(String PathFile) {
 		// System.out.println("----------------------------------");
