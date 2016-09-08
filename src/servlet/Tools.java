@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,12 +10,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import com.google.gson.Gson;
 
-import utils.ChartFormationJFreeChart;
 import utils.DataFromCurrentTestingTableDB;
 import utils.Mail;
 import utils.Utils;
@@ -34,6 +33,16 @@ public class Tools extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+		Session hibernateSession = sessionFactory.getCurrentSession();
+
+		Transaction tx = hibernateSession.beginTransaction();
+		List testings = hibernateSession.createQuery("from Testing").getResultList();
+		tx.commit();
+
+		request.setAttribute("title", "Testing");
+
+		request.setAttribute("testings", testings);
 		
 		request.setAttribute("title", "Tools");
 		request.setAttribute("template", "tools.jsp");

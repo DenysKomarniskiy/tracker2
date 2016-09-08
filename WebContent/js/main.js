@@ -105,7 +105,12 @@ var APP = {
 			case !!~path.indexOf('testset'):
 				this.dataUrl = 'testset';
 				this.faceName = 'testset';
-				break;				
+				break;		
+				
+			case !!~path.indexOf('tools'):
+				this.dataUrl = 'tools';
+				this.faceName = 'tools';
+				break;	
 			
 			default:
 				this.faceName = 'default';
@@ -114,6 +119,13 @@ var APP = {
 	},
 	
 	initFace: {
+		
+		"tools": function() {
+			
+
+			
+		},
+		
 		"testing": function() {				
 			//init vars
 			this.dataUrl = 'testing';
