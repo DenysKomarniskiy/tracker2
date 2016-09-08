@@ -45,7 +45,43 @@ public class ControlPanel extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String action = request.getParameter("action");
+		
+		if (action.equals("generate")) {
+			generateTesting(request, response);
+			return;
+		} else if(action.equals("delete")){
+			
+			String testingId = request.getParameter("testing_id");
+			deleteTesting(request, Integer.valueOf(testingId));
+			response.sendRedirect("/tracker2/tools");
+			return;
+		}
 
+
+	}
+	
+	private void deleteTesting(HttpServletRequest request, int testingId) throws IOException{
+		
+		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+		Session hibernateSession = sessionFactory.getCurrentSession();
+		Transaction tx = hibernateSession.beginTransaction();
+		hibernateSession
+			.createQuery("DELETE FROM TestingSheet tsh WHERE tsh.testingId= :testingId")
+			.setParameter("testingId", testingId)
+			.executeUpdate();
+		hibernateSession
+			.createQuery("DELETE FROM Testing tst WHERE tst.id= :id")
+			.setParameter("id", testingId)
+			.executeUpdate();		
+		tx.commit();		
+	}
+	
+	private void generateTesting(HttpServletRequest request, HttpServletResponse response) throws IOException{
+		
+		String testingName = request.getParameter("testing_name");
+		
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		List<TestingSheet> newTestingSheet = new ArrayList<TestingSheet>();
@@ -56,7 +92,7 @@ public class ControlPanel extends HttpServlet {
 		String userWithMinTime = null;
 
 		Testing testing = new Testing();
-		testing.setName("new_testing5");
+		testing.setName(testingName);
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List<StorageTC> allTestComplTCs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet WHERE stc.auto_ide = :ide").setParameter("ide", "TC").getResultList();
@@ -91,7 +127,6 @@ public class ControlPanel extends HttpServlet {
 		}
 
 		for (StorageTC storageTc : allOtherTCs) {
-
 			TestingSheet testingSheetEntry = new TestingSheet();
 			userWithMinTime = Distributor.getUserIdWithMinTime(timePerUser, new ArrayList<String>());
 			testingSheetEntry.setTesting(testing);
@@ -109,10 +144,6 @@ public class ControlPanel extends HttpServlet {
 			newTestingSheet.add(testingSheetEntry);
 		}
 
-		// Gson gson = new Gson();
-		// response.getWriter().println(gson.toJson(newTestingSheet));
-		// return;
-
 		testing.setTestingSheet(newTestingSheet);
 
 		hibernateSession = sessionFactory.getCurrentSession();
@@ -124,8 +155,8 @@ public class ControlPanel extends HttpServlet {
 		}
 		tx.commit();
 
-		response.getWriter().println("{\"created\": true}");
-
+		Gson gson = new Gson();
+		response.getWriter().println(gson.toJson(timePerUser));		
 	}
 
 }
