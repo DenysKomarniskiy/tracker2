@@ -8,5 +8,6 @@
 
 <script type="text/javascript">	
 	var view = {};
+	view['data'] = [];
 	
 </script>

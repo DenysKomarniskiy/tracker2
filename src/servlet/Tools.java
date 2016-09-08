@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,10 +11,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+
 import org.hibernate.SessionFactory;
 
+import com.google.gson.Gson;
 
 import utils.ChartFormationJFreeChart;
+import utils.DataFromCurrentTestingTableDB;
 import utils.Mail;
 import utils.Utils;
 
@@ -28,10 +32,9 @@ public class Tools extends HttpServlet {
 	 * @see HttpServlet#HttpServlet()
 	 */
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		
 		request.setAttribute("title", "Tools");
 		request.setAttribute("template", "tools.jsp");
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
@@ -82,8 +85,8 @@ public class Tools extends HttpServlet {
 
 //			ChartFormationJFreeChart chartFormationJFreeChart = new ChartFormationJFreeChart(PathFile);
 //			chartFormationJFreeChart.createChart();
-Utils.GetTotalTimeFromDB(request, response);
-
+			DataFromCurrentTestingTableDB data = Utils.GetTotalTimeFromDB(request);
+			response.getWriter().println((new Gson()).toJson(data));
 			try {
 //				mail.send();
 			} catch (Exception e) {

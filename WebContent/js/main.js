@@ -16,17 +16,21 @@ var APP = {
 		
 		$("#search-tc").keyup(this.search.bind(this));		
 		
-		this.dataView = new Slick.Data.DataView();		
-		this.dataView.setItems(view.data);
-		this.dataView.getItemMetadata = this.metaDataFormatter.bind(this);
-		this.dataView.setFilter(this.dataViewFilter);		
-		
-		this.SETTINGS[this.faceName].options.editCommandHandler = this.editCommandHandler.bind(this);
-		
-		this.grid = new Slick.Grid("#main-grid", this.dataView, this.SETTINGS[this.faceName].columns, this.SETTINGS[this.faceName].options);    
-		this.grid.registerPlugin(new Slick.AutoTooltips({}));
-		this.grid.onClick.subscribe(this.gridClickHandler.bind(this));	
-		this.grid.onSort.subscribe(this.gridSortHandler.bind(this));		
+		if (view.data) {
+			this.dataView = new Slick.Data.DataView();		
+			this.dataView.setItems(view.data);
+			this.dataView.getItemMetadata = this.metaDataFormatter.bind(this);
+			this.dataView.setFilter(this.dataViewFilter);		
+		}
+				
+		if (this.SETTINGS[this.faceName]){
+			this.SETTINGS[this.faceName].options.editCommandHandler = this.editCommandHandler.bind(this);
+			
+			this.grid = new Slick.Grid("#main-grid", this.dataView, this.SETTINGS[this.faceName].columns, this.SETTINGS[this.faceName].options);    
+			this.grid.registerPlugin(new Slick.AutoTooltips({}));
+			this.grid.onClick.subscribe(this.gridClickHandler.bind(this));	
+			this.grid.onSort.subscribe(this.gridSortHandler.bind(this));
+		}		
 		
 	},
 	
@@ -83,6 +87,30 @@ var APP = {
 		$.each(this.$statsHeaderSpans, (i, spanEl) => {			
 			spanEl.innerText = stats[spanEl.id];
 		})
+	},
+
+	resolveRoute: function() {
+		
+		var path = window.location.pathname;
+		
+		switch (true) {
+			case !!~path.indexOf('testing'):				
+				this.faceName = 'testing';
+				break;
+				
+			case !!~path.indexOf('storage'):
+				this.faceName = 'storage';
+				break;
+				
+			case !!~path.indexOf('testset'):
+				this.dataUrl = 'testset';
+				this.faceName = 'testset';
+				break;				
+			
+			default:
+				this.faceName = 'default';
+		
+		}
 	},
 	
 	initFace: {
@@ -271,30 +299,6 @@ var APP = {
 		var data = args.path.reduce((prev, curr) => prev[curr], item);		 
 			 
 		return data.includes(args.q);
-	},
-	
-	resolveRoute: function() {
-		
-		var path = window.location.pathname;
-		
-		switch (true) {
-			case !!~path.indexOf('testing'):				
-				this.faceName = 'testing';
-				break;
-				
-			case !!~path.indexOf('storage'):
-				this.faceName = 'storage';
-				break;
-				
-			case !!~path.indexOf('testset'):
-				this.dataUrl = 'testset';
-				this.faceName = 'testset';
-				break;				
-			
-			default:
-				this.faceName = 'default';
-		
-		}
 	},
 	
 	editCommandHandler: function(item, column, editCommand) {

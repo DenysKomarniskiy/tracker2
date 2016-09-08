@@ -52,7 +52,7 @@
 					<a class="mdl-navigation__link" href="storage"><i class="material-icons">storage</i> Storage</a> 
 					<a class="mdl-navigation__link" href="testing"><i class="material-icons">accessible<!-- bug_report --></i> Testing</a> 
 					<a class="mdl-navigation__link" href=""><i class="material-icons">settings</i> Settings</a>
-					<a class="mdl-navigation__link" href="tools"><i class="material-icons">tools</i> Tools</a>
+					<a class="mdl-navigation__link" href="tools"><i class="material-icons">restaurant</i> Tools</a>
 				</nav>
 			</div>
 			<main class="mdl-layout__content">
