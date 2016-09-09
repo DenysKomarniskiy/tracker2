@@ -40,7 +40,6 @@ var APP = {
 				item.storageTC.apps 	= item.storageTC.apps || ""; 
 				item.storageTC.features = item.storageTC.features || ""; 
 			}
-			item.tcStatus = item.tcStatus || "";
 		});
 		
 		return data;

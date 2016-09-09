@@ -1,57 +1,86 @@
 package servlet.auth;
 
 import java.io.IOException;
-import java.util.List;
 
+import javax.naming.AuthenticationException;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import models.entities.User;
+import utils.Ldap;
+
 @WebServlet("/loginpage")
 public class LoginPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	public LoginPage() {
-
-	}
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
-		Session hibernateSession = sessionFactory.getCurrentSession();
-
-		Transaction tx = hibernateSession.beginTransaction();
-		List users = hibernateSession.createQuery("from User").getResultList();
-		List testings = hibernateSession.createQuery("from Testing tst ORDER BY tst.id DESC").getResultList();
-		tx.commit();
-
-		request.setAttribute("title", "Login to the system");		
-		request.setAttribute("users", users);
-		request.setAttribute("testings", testings);
+		
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			request.setAttribute("logged", session.getAttribute("user"));
+		}
 
 		request.getRequestDispatcher("/WEB-INF/tpls/login-page.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		Cookie userCookie = new Cookie("runner", request.getParameter("user_id"));
-		Cookie testingCookie = new Cookie("testing_id", request.getParameter("testing_id"));
-		userCookie.setMaxAge(60*60*24*175);
-		testingCookie.setMaxAge(60*60*24*175);
-		response.addCookie(userCookie);
-		response.addCookie(testingCookie);
-		
-		response.sendRedirect("/tracker2/testing");
 
+		String action = request.getParameter("action");
+		String login = request.getParameter("login");
+		String passw = request.getParameter("passw");
+
+		if (action.equals("Logout")) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				session.invalidate();
+			}
+			response.sendRedirect("/tracker2/loginpage");
+			return;
+		}
+
+		try {
+
+			Ldap ldap = new Ldap(login, passw);
+			User ldapUser = ldap.search(login);
+
+			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+			Session hibernateSession = sessionFactory.getCurrentSession();
+			Transaction tx = hibernateSession.beginTransaction();
+			User dbUser = hibernateSession.get(User.class, ldapUser.getId());
+			tx.commit();
+
+			if (dbUser != null) {
+				HttpSession session = request.getSession();
+				session.setAttribute("user", dbUser.getId());
+				// session will expire in 30 days
+				session.setMaxInactiveInterval(30 * 24 * 60 * 60);
+			}
+			
+		} catch (AuthenticationException e) {
+
+			e.printStackTrace();
+			if (e.getMessage().contains("error code 49")) {
+				response.getWriter().println("Invalid credentials");
+			} else {
+				response.getWriter().println(e.getMessage().trim());
+			}
+
+		} catch (NamingException e) {
+
+			e.printStackTrace();
+			e.printStackTrace(response.getWriter());
+
+		}
 
 	}
 
 }
-

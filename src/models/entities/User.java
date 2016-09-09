@@ -2,33 +2,40 @@ package models.entities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = { "id" }) })
-public class User  {
+public class User {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="id", nullable=false, unique=true, length=10)
-	private String id;	
-	
-	@Column(name="email", length=50, nullable=false)
+	@Column(name = "id", nullable = false, unique = true, length = 10)
+	private String id;
+
+	@Column(name = "email", length = 50, nullable = false)
 	private String email;
-	
-	@Column(name="full_name", length=50, nullable=true)
+
+	@Column(name = "full_name", length = 50, nullable = true)
 	private String full_name;
-	
-	@Column(name="sd_enc_pass", length=50, nullable=true)
+
+	@Column(name = "sd_enc_pass", length = 50, nullable = true)
 	private String sdEncPass;
-	
-	@Column(name="active", length=50, nullable=true)
+
+	@Column(name = "department", length = 50, nullable = true)
+	private String department;
+
+	@Column(name = "active", length = 50, nullable = true)
 	private int active;
-	
+
+	public String getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
 
 	public int getActive() {
 		return active;
@@ -58,7 +65,6 @@ public class User  {
 		this.full_name = full_name;
 	}
 
-
 	public String getEmail() {
 		return email;
 	}
@@ -73,7 +79,7 @@ public class User  {
 
 	@Override
 	public String toString() {
-		return "id=" + this.id + ", Email=" + this.email + ", Fullname=" + this.full_name;
+		return "login=" + id + ", Email=" + email + ", Fullname=" + full_name + ", Department=" + department;
 	}
 
 }

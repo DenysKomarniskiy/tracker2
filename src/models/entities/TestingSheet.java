@@ -30,35 +30,20 @@ public class TestingSheet {
 	@Column(name = "duration")
 	private int tduration;
 
-	@Column(name = "comment", nullable = true)
+	@Column(name = "comment", nullable = true, insertable = false)
 	private String comment;
 
-	@Column(name = "softdev", nullable = true)
+	@Column(name = "softdev", nullable = true, insertable = false)
 	private Integer softdev;
 
-	@Column(name = "tqc_ver", nullable = true)
+	@Column(name = "tqc_ver", nullable = true, insertable = false)
 	private String tqcVer;
 
-	@Column(name = "lab_ver", nullable = true)
+	@Column(name = "lab_ver", nullable = true, insertable = false)
 	private String labVer;
 
-	@Column(name = "gene_ver", nullable = true)
+	@Column(name = "gene_ver", nullable = true, insertable = false)
 	private String geneVer;
-
-	@Column(name = "fail_info", nullable = true)
-	private String failInfo;
-
-	@OneToOne
-	@JoinColumn(name = "env_id", nullable = true)
-	private Env env;
-
-	public void setEnv(Env env) {
-		this.env = env;
-	}
-
-	public Env getEnv() {
-		return env;
-	}	
 
 	@ManyToOne
 	@JoinColumn(name = "testing_id")
@@ -68,6 +53,20 @@ public class TestingSheet {
 	@JoinColumn(name = "strg_id", nullable = false)
 	private StorageTC storageTC;
 
+	@Column(name = "fail_info", nullable = true, insertable = false)
+	private String failInfo;
+
+	@OneToOne
+	@JoinColumn(name = "env_id", nullable = true, insertable = false)
+	private Env env;
+
+	public void setEnv(Env env) {
+		this.env = env;
+	}
+
+	public Env getEnv() {
+		return env;
+	}
 
 	public String getComment() {
 		return comment;

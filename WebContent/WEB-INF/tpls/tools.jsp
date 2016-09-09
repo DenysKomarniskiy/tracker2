@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<div class="content flex-container-row">
+<div class="tools content flex-container-row">
 
 	<div class="widget send-mail">
 		<h3>Send mail</h3>

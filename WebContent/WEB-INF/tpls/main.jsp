@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="./js/lib/slickgrid/slick-default-theme.css" />
 <link rel="stylesheet" type="text/css" href="./css/main.css" />
 <link rel="stylesheet" type="text/css" href="./css/modal.css" />
-
+<link href="./favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>${title}</title>
@@ -57,15 +57,15 @@
 			<main class="mdl-layout__content">
 			
 			
-			<div class="page-content">
-
-				<!-- content goes here -->
-
-				<c:if test="${not empty template}">
-					<jsp:include page="${template}" />
-				</c:if>
-
-			</div>
+				<div class="page-content">
+	
+					<!-- content goes here -->
+	
+					<c:if test="${not empty template}">
+						<jsp:include page="${template}" />
+					</c:if>
+	
+				</div>
 			
 			
 			</main>
@@ -74,15 +74,6 @@
 	</div>
 
 	<jsp:include page="modal.jsp" />
-
-	<ul id="status-menu" style="display: none; position: absolute">
-		<li class="n" data-status="">No run</li>
-		<li class="p" data-status="P">Passed</li>
-		<li class="f" data-status="F">Failed</li>
-		<li class="w" data-status="W">Waiting</li>
-		<li class="c" data-status="C">Correction</li>
-		<li class="i" data-status="I">Investigate</li>
-	</ul>	
 	
 	<script src="./js/lib/jquery/jquery-3.1.0.min.js"></script>
 	<script src="./js/lib/jquery/jquery-ui.min.js"></script>

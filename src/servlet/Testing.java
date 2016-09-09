@@ -32,6 +32,7 @@ public class Testing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
@@ -50,11 +51,10 @@ public class Testing extends HttpServlet {
 
 		request.setAttribute("template", "testing.jsp");
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
-
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		
 		String action = request.getParameter("action");
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
