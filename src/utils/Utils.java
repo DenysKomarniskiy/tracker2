@@ -180,7 +180,7 @@ public class Utils {
 	}
 
 	
-	public static DataFromCurrentTestingTableDB GetTotalTimeFromDB (HttpServletRequest request) throws ServletException, IOException {
+	public static DataFromCurrentTestingTableDB GetDurationAndCountTCFromDB (HttpServletRequest request, int testinigId) throws ServletException, IOException {
 				
 		SessionFactory sessionFactory = (SessionFactory) request.getServletContext()
 				.getAttribute("HibernateSessionFactory");
@@ -193,7 +193,7 @@ public class Utils {
 		queryDurationOfTCs = hibernateSession
 //			.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration FROM TestingSheet tsh  WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")
 				.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration  FROM TestingSheet tsh LEFT JOIN  tsh.storageTC stc LEFT JOIN  stc.testSet LEFT JOIN  tsh.env	LEFT JOIN  tsh.testing WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")
-			.setParameter("testing_id", 5)
+			.setParameter("testing_id", 8)
 			.getResultList()
             .iterator();	
 		tx.commit();
@@ -253,10 +253,5 @@ public class Utils {
 		
 	}
 	
-	private List<TestingSheet> GetDurationOfTCs(String statusTC) {
-
-		return null;
-
-	}
-
+	
 }

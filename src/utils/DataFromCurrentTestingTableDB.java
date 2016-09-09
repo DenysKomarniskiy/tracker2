@@ -1,22 +1,22 @@
 package utils;
 
 public class DataFromCurrentTestingTableDB {
-	private Long countPassedTC;
-	private Long countFailedTC;
-	private Long countWaitingTC;
-	private Long countCorrectionTC;
-	private Long countEmptyTC;
-	private Long countNoNeedTC;
-	private Long countTotalTC;
-	private Long durationTotalTC;
-	private Long durationPassedTC;
-	private Long durationFailedTC;
-	private Long durationWaitingTC;
-	private Long durationCorrectionTC;
-	private Long durationEmptyTC;
-	private Long durationNoNeedTC;
-	private Long durationInvestigatingTC;
-	private Long countInvestigatingTC;
+	private Long countPassedTC = (long) 0;
+	private Long countFailedTC = (long) 0;
+	private Long countWaitingTC = (long) 0;
+	private Long countCorrectionTC = (long) 0;
+	private Long countEmptyTC = (long) 0;
+	private Long countNoNeedTC = (long) 0;
+	private Long countTotalTC = (long) 0;
+	private Long durationTotalTC = (long) 0;
+	private Long durationPassedTC = (long) 0;
+	private Long durationFailedTC = (long) 0;
+	private Long durationWaitingTC = (long) 0;
+	private Long durationCorrectionTC = (long) 0;
+	private Long durationEmptyTC = (long) 0;
+	private Long durationNoNeedTC = (long) 0;
+	private Long durationInvestigatingTC = (long) 0;
+	private Long countInvestigatingTC = (long) 0;
 	
 	
 	

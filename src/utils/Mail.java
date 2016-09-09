@@ -75,7 +75,7 @@ public class Mail extends javax.mail.Authenticator {
 	public Mail() {
 		props = new Properties();
 		props.put("mail.smtp.host", "webmail.isd.dp.ua");
-		props.put("mail.debug", "false");
+		props.put("mail.debug", "true");
 		props.put("mail.smtp.auth", "false");
 		props.put("mail.smtp.port", 25);
 		props.put("mail.smtp.socketFactory.port", 25);

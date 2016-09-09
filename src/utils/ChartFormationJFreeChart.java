@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.mail.internet.InternetAddress;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -21,43 +23,52 @@ import org.jfree.data.general.DefaultPieDataset;
  */
 public class ChartFormationJFreeChart {
 
-	private String PathFile;
-	private String [] ListOflabel;
-	private ArrayList ListOfCountTC;
-	
+	private String pathFile;
+	private String[] listOflabel;
+	private Long[] listOfCountTC;
 
-	public ChartFormationJFreeChart(String PathFile) {
-		// System.out.println("----------------------------------");
-		// System.out.println(PathFile);
+	public String getPathFile() {
+		return pathFile;
+	}
 
-		this.PathFile = PathFile;
+	public void setPathFile(String value) {
+		pathFile = value;
+	}
 
+	public String[] getListOflabel() {
+		return listOflabel;
+	}
+
+	public void setListOflabel(String[] listOfValue) {
+		listOflabel = listOfValue;
+	}
+
+	public Long[] getListOfCountTC() {
+		return listOfCountTC;
+	}
+
+	public void setListOfCountTC(Long[] listOfValue) {
+		listOfCountTC = listOfValue;
 	}
 
 	public void createChart() {
 
-		String empty = "Empty [510 min]";
-		String passed = "Passed [9999 min]";
-		String waiting = "Waiting [50 min]";
-		String failed = "Failed [1000 min]";
-		String noNeed = "NoNeed [5 min]";
-		String correction = "Correction [50 min]";
-
+		String[] ListOflabel = getListOflabel();
+		Long[] listOfCountTC = getListOfCountTC();
 		DefaultPieDataset dataset = new DefaultPieDataset();
-		dataset.setValue(empty, 22);
-		dataset.setValue(passed, 626);
-		dataset.setValue(waiting, 20);
-		dataset.setValue(failed, 84);
-		dataset.setValue(noNeed, 2);
-		dataset.setValue(correction, 320);
+
+		for (int i = 0; i < ListOflabel.length; i++) {
+			dataset.setValue(ListOflabel[i], listOfCountTC[i]);
+		}
+
 		JFreeChart chart = ChartFactory.createPieChart("", // chart title
 				dataset, // data
 				false, // include legend
 				false, false);
-		// chart.setBorderPaint(Color.white);
+
 		chart.setNotify(false);
-		File file = new File(this.PathFile);
-		//File file = new File(this.PathFile + "\\pie_chart.png");
+		File file = new File(getPathFile());
+
 		chart.setBackgroundPaint(Color.white);
 
 		PiePlot plot = (PiePlot) chart.getPlot();
@@ -69,12 +80,13 @@ public class ChartFormationJFreeChart {
 		plot.setCircular(true);
 		plot.setBackgroundPaint(Color.white);
 		plot.setBaseSectionOutlinePaint(Color.BLACK);
-		plot.setSectionPaint(dataset.getIndex(empty), Color.white);
-		plot.setSectionPaint(dataset.getIndex(passed), Color.green);
-		plot.setSectionPaint(dataset.getIndex(waiting), Color.orange);
-		plot.setSectionPaint(dataset.getIndex(failed), Color.red);
-		plot.setSectionPaint(dataset.getIndex(noNeed), Color.gray);
-		plot.setSectionPaint(dataset.getIndex(correction), Color.pink);
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[5]), Color.white);
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[0]), Color.green);
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[2]), Color.orange);
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[1]), Color.red);
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[4]), Color.gray);
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[3]), Color.pink);
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[6]), Color.magenta);
 
 		plot.setMaximumLabelWidth(.3);
 		plot.setCircular(true);
