@@ -19,10 +19,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
 import com.google.gson.Gson;
-import com.scc.softdev.services.TTestCase;
-import com.scc.softdev.services.impl.SDException;
-import com.scc.softdev.services.impl.SoftDevTestCase;
-import com.scc.softdev.services.impl.TestCaseImplService;
 
 import models.entities.StorageTC;
 import models.entities.TestingSheet;
@@ -30,7 +26,6 @@ import models.entities.User;
 
 import models.entities.Testing;
 import utils.Distributor;
-import utils.HeaderHandlerResolver;
 
 @WebServlet("/controlpanel")
 public class ControlPanel extends HttpServlet {

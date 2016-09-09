@@ -187,12 +187,11 @@ public class Utils {
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		DataFromCurrentTestingTableDB dataFromCurrentTestingTableDB = new DataFromCurrentTestingTableDB();
 		Transaction tx;
-//		FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env	LEFT JOIN FETCH tsh.testing
+
 		Iterator queryDurationOfTCs;		
 		tx = hibernateSession.beginTransaction();		
 		queryDurationOfTCs = hibernateSession
-//			.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration FROM TestingSheet tsh  WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")
-				.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration  FROM TestingSheet tsh LEFT JOIN  tsh.storageTC stc LEFT JOIN  stc.testSet LEFT JOIN  tsh.env	LEFT JOIN  tsh.testing WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")
+			.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration FROM TestingSheet tsh  WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")				
 			.setParameter("testing_id", 5)
 			.getResultList()
             .iterator();	
@@ -203,47 +202,37 @@ public class Utils {
 		Long countTotalTC = (long) 0;
 		while ( queryDurationOfTCs.hasNext() ) {
 		    Object[] tuple = (Object[]) queryDurationOfTCs.next();
+		    
+		    countTotalTC =  countTotalTC + (Long)tuple[1];
+		    durationTotalTC = durationTotalTC + (Long)tuple[2];
+		    
 		    if (tuple[0].equals("P")) {
 				dataFromCurrentTestingTableDB.setCountPassedTC((Long) tuple[1]);
 				dataFromCurrentTestingTableDB.setDurationPassedTC((Long) tuple[2]);
-				countTotalTC = countTotalTC + dataFromCurrentTestingTableDB.getCountPassedTC();
-				durationTotalTC = durationTotalTC + dataFromCurrentTestingTableDB.getDurationPassedTC();
 			}
 			if (tuple[0].equals("F")) {
 				dataFromCurrentTestingTableDB.setCountFailedTC((Long) tuple[1]);
 				dataFromCurrentTestingTableDB.setDurationFailedTC((Long) tuple[2]);
-				countTotalTC = countTotalTC + dataFromCurrentTestingTableDB.getCountFailedTC();
-				durationTotalTC = durationTotalTC + dataFromCurrentTestingTableDB.getDurationFailedTC();
 			}
 			if (tuple[0].equals("W")) {
 				dataFromCurrentTestingTableDB.setCountWaitingTC((Long) tuple[1]);
 				dataFromCurrentTestingTableDB.setDurationWaitingTC((Long) tuple[2]);
-				countTotalTC = countTotalTC + dataFromCurrentTestingTableDB.getCountWaitingTC();
-				durationTotalTC = durationTotalTC + dataFromCurrentTestingTableDB.getDurationWaitingTC();
 			}
 			if (tuple[0].equals("C")) {
 				dataFromCurrentTestingTableDB.setCountCorrectionTC((Long) tuple[1]);
 				dataFromCurrentTestingTableDB.setDurationCorrectionTC((Long) tuple[2]);
-				countTotalTC = countTotalTC + dataFromCurrentTestingTableDB.getCountCorrectionTC();
-				durationTotalTC = durationTotalTC + dataFromCurrentTestingTableDB.getDurationCorrectionTC();
 			}
 			if (tuple[0].equals("")) {
 				dataFromCurrentTestingTableDB.setCountEmptyTC((Long) tuple[1]);
 				dataFromCurrentTestingTableDB.setDurationEmptyTC((Long) tuple[2]);
-				countTotalTC = countTotalTC + dataFromCurrentTestingTableDB.getCountEmptyTC();
-				durationTotalTC = durationTotalTC + dataFromCurrentTestingTableDB.getDurationEmptyTC();
 			}
 			if (tuple[0].equals("N")) {
 				dataFromCurrentTestingTableDB.setCountNoNeedTC((Long) tuple[1]);
 				dataFromCurrentTestingTableDB.setDurationNoNeedTC((Long) tuple[2]);
-				countTotalTC = countTotalTC + dataFromCurrentTestingTableDB.getCountNoNeedTC();
-				durationTotalTC = durationTotalTC + dataFromCurrentTestingTableDB.getDurationNoNeedTC();
 			}
 			if (tuple[0].equals("I")) {
 				dataFromCurrentTestingTableDB.setCountInvestigatingTC((Long) tuple[1]);
 				dataFromCurrentTestingTableDB.setDurationInvestigatingTC((Long) tuple[2]);
-				countTotalTC = countTotalTC + dataFromCurrentTestingTableDB.getCountInvestigatingTC();
-				durationTotalTC = durationTotalTC + dataFromCurrentTestingTableDB.getDurationInvestigatingTC();
 			}
 		}
 		dataFromCurrentTestingTableDB.setCountTotalTC(countTotalTC);
