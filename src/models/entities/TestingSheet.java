@@ -24,7 +24,7 @@ public class TestingSheet {
 	@Column(name = "runner")
 	private String runner;
 
-	@Column(name = "tc_status", nullable = true)
+	@Column(name = "tc_status", insertable = false)
 	private String tcStatus;
 
 	@Column(name = "duration")
