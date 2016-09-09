@@ -118,7 +118,7 @@ public class Testing extends HttpServlet {
 			return;
 
 		} else if (action.equals("edit")) {
-
+						
 			// edit parameters
 			String id = request.getParameter("id");
 			String runnerEdt = request.getParameter("edt_runner");
