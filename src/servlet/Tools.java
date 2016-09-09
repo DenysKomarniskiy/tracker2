@@ -68,7 +68,7 @@ public class Tools extends HttpServlet {
 
 		if (action.equals("Send Mail")) {
 			String testingId = request.getParameter("testing_id");
-			String PathFile = request.getSession().getServletContext().getRealPath("pie_chart.png");
+			String PathFile = getServletContext().getRealPath("pie_chart.png");
 System.out.println("Testing ID is:" + testingId);
 			// Getting data (duration and count of TC) from current testing table
 			DataFromCurrentTestingTableDB data = Utils.GetDurationAndCountTCFromDB(request, (int) 8);

@@ -24,14 +24,15 @@ public class AuthenticationFilter implements Filter {
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		System.out.println("do AuthenticationFilter");
 		
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;		
 		HttpSession session = req.getSession(false);
 		String uri = req.getRequestURI();
+		String method = req.getMethod();		
+		
 
-		if (uri.contains("loginpage") || uri.endsWith("register")) {
+		if (uri.contains("loginpage") || uri.contains(".") || method.equals("POST")) {
 
 			chain.doFilter(request, response);
 

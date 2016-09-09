@@ -65,6 +65,8 @@ public class LoginPage extends HttpServlet {
 				session.setMaxInactiveInterval(30 * 24 * 60 * 60);
 			}
 			
+			response.sendRedirect("/tracker2/loginpage");
+			
 		} catch (AuthenticationException e) {
 
 			e.printStackTrace();
