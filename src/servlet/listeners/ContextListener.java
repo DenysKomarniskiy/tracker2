@@ -8,6 +8,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.apache.log4j.xml.DOMConfigurator;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -42,6 +43,12 @@ public class ContextListener implements ServletContextListener {
 		// Initializing Worker Thread Pool
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(100, 200, 50000L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(100));
 		servletContextEvent.getServletContext().setAttribute("executor", executor);
+		
+		//Initializing log4j
+		String webAppPath = servletContextEvent.getServletContext().getRealPath("/");
+		String log4jFilePath = webAppPath + "WEB-INF/log4j.xml";
+		DOMConfigurator.configure(log4jFilePath);
+		System.out.println("Log4j configurated from file:" + log4jFilePath);
 	}
 
 	public void contextDestroyed(ServletContextEvent servletContextEvent) {
