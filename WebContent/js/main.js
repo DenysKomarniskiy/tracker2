@@ -120,7 +120,48 @@ var APP = {
 	
 	initFace: {
 		
-		"tools": function() {
+		"tools": function() {			
+			console.log('init tools..');
+			
+			$genTestingForm = $('#gen-testing');
+			$genTestingForm.on('submit', (e) => {
+				e.preventDefault();
+				
+				var opts = {
+					method: 'post',  
+					headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
+		    		body: $genTestingForm.serialize()
+		   		};				
+
+				console.log('request ->',  opts);
+				
+				fetch(
+					$genTestingForm.attr("action"), opts
+				).then(
+					resp => resp.text()			
+				).then(
+					respText => {						
+						console.log(respText);					
+						
+						$table = $('<table />');
+						$table.append('<tr><th>User</th><th>TC count</th><th>Total duration</th></tr>')
+						$.each(JSON.parse(respText), (k, v) => {
+							$table.append('<tr><td>' + k + '</td><td>' + v[0] + '</td><td>' + v[1] + '</td></tr>');
+						});
+						
+						Modal
+						.setHeader('New Testing was generated')
+						.setContent($table[0])
+						.show();						
+					}
+				).catch(
+					function(err){
+						Modal.alert(err);
+					}
+				);
+				
+			});
+			
 			
 
 			

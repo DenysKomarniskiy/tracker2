@@ -16,7 +16,6 @@ import org.hibernate.Transaction;
 
 import com.google.gson.Gson;
 import com.scc.softdev.services.PairArray;
-import com.scc.softdev.services.SDException;
 import com.scc.softdev.services.TIssue;
 import com.scc.softdev.services.TIssueArray;
 import com.scc.softdev.services.TTestCase;
