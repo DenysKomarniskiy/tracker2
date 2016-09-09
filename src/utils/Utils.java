@@ -14,6 +14,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -242,5 +243,10 @@ public class Utils {
 		
 	}
 	
+
+	public static void LogMessage (Logger logger, String LogMessage, HttpServletRequest request) {
+	
+		logger.info(LogMessage);
+	}
 	
 }

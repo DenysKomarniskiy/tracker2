@@ -17,7 +17,5 @@
 		<param-name>issuePrefix</param-name>
 		<param-value>ISS-TQC-</param-value>
 	</context-param>	
-	
-	
-	
+
 </web-app>
