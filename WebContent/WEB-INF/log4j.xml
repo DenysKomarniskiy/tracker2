@@ -31,17 +31,21 @@
         <appender-ref ref="file" />
     </logger>
      
-  <!--  
+    <logger name="org.jboss.logging" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="file" />
+    </logger>
+       
     <logger name="servlet" additivity="false">
         <level value="DEBUG" />
         <appender-ref ref="file" />
-        <appender-ref ref="console" />
     </logger>
- -->
  
+ 
+ <!-- 
     <root>
         <priority value="DEBUG" />
         <appender-ref ref="file" />
     </root>
- 
+ -->
 </log4j:configuration>

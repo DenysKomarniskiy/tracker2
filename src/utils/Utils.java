@@ -24,6 +24,7 @@ import org.hibernate.query.Query;
 
 import models.entities.StorageTC;
 import models.entities.TestingSheet;
+import models.entities.User;
 
 public class Utils {
 
@@ -245,8 +246,9 @@ public class Utils {
 	
 
 	public static void LogMessage (Logger logger, String LogMessage, HttpServletRequest request) {
-	
-		logger.info(LogMessage);
+	    User user;
+		user =  (User) request.getSession().getAttribute("user");
+		logger.info(user.getId() + " : "  +  LogMessage);
 	}
 	
 }

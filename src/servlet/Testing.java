@@ -62,7 +62,7 @@ public class Testing extends HttpServlet {
 		String action = request.getParameter("action");
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
-		String tcId, tcStatus, editMsg;
+		String editMsg;
 
 		if (action == null) {
 			response.setStatus(400);
@@ -98,8 +98,7 @@ public class Testing extends HttpServlet {
 					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env LEFT JOIN FETCH tsh.testing WHERE tsh.id = :id")
 					.setParameter("id", Integer.valueOf(request.getParameter("sheetentityid")))
 					.getSingleResult();
-			tcId = sheetTc.getStorageTC().getTc_id();
-			tcStatus = sheetTc.getTcStatus();
+			
 			User user = (User) hibernateSession
 					.createQuery("SELECT DISTINCT usr FROM User usr WHERE usr.id = :usr_id")
 					.setParameter("usr_id", request.getParameter("runner"))
@@ -113,7 +112,7 @@ public class Testing extends HttpServlet {
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
 			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, user));
 			
-			Utils.LogMessage(logger, "<< TC-" + tcId + ">> has been posted in SoftDev with status "  + tcStatus, request);
+			Utils.LogMessage(logger, "<< TC-" + sheetTc.getStorageTC().getTc_id() + ">> has been posted in SoftDev with status "  + sheetTc.getTcStatus(), request);
 			
 			return;
 
