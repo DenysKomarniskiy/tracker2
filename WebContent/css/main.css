@@ -448,6 +448,13 @@ input.editor-checkbox {
     outline: none;
 }
 
+.mdl-layout__header .user-data {
+    position: absolute;
+    right: 0;
+    color: rgba(255,255,255,0.5);
+    padding: 3px;    
+}
+
 .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
@@ -487,6 +494,7 @@ input.editor-checkbox {
     font-weight: 400;
     box-sizing: border-box;
     pointer-events: none;
+    -webkit-user-select: none;
 }
 
 .mdl-layout__header-item {

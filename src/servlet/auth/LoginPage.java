@@ -53,17 +53,24 @@ public class LoginPage extends HttpServlet {
 			Ldap ldap = new Ldap(login, passw);
 			User ldapUser = ldap.search(login);
 
+			HttpSession session = request.getSession();
+			// session will expire in 30 days			
+			session.setMaxInactiveInterval(30 * 24 * 60 * 60);
+			
 			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 			Session hibernateSession = sessionFactory.getCurrentSession();
 			Transaction tx = hibernateSession.beginTransaction();
 			User dbUser = hibernateSession.get(User.class, ldapUser.getId());
 			tx.commit();
 
-			if (dbUser != null) {
-				HttpSession session = request.getSession();
-				session.setAttribute("user", dbUser);
-				// session will expire in 30 days
-				session.setMaxInactiveInterval(30 * 24 * 60 * 60);
+			if (dbUser != null) {				
+				session.setAttribute("user", dbUser);					
+			} else {
+				hibernateSession = sessionFactory.getCurrentSession();
+				tx = hibernateSession.beginTransaction();
+				hibernateSession.save(ldapUser);
+				tx.commit();				
+				session.setAttribute("user", ldapUser);		
 			}
 
 			response.sendRedirect("/tracker2/loginpage");

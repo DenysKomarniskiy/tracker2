@@ -16,6 +16,9 @@
 			<c:if test="${not empty logged}">
 				You are logged as <strong>${logged}</strong> 
 				<input type="submit" name="action" value="Logout" />
+				<div>
+				<a href="/tracker2/testing">Work</a>
+				</div>
 			</c:if>
 			
 			<c:if test="${empty logged}">

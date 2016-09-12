@@ -16,7 +16,6 @@
 <title>${title}</title>
 </head>
 <body>
-
 	<div class="mdl-layout__container">
 		<div class="mdl-layout">
 			<header class="mdl-layout__header">
@@ -39,8 +38,11 @@
 								<label class="mdl-textfield__label" for="sample-expandable"></label>
 							</div>
 						</div>					
-					</div>
-					
+					</div>					
+				</div>
+				
+				<div class="user-data">
+					<span class="mdl-layout__title">${sessionScope.user}</span>
 				</div>
 				
 			</header>
