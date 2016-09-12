@@ -46,7 +46,7 @@ public class ContextListener implements ServletContextListener {
 		
 		//Initializing log4j
 		String webAppPath = servletContextEvent.getServletContext().getRealPath("/");
-		String log4jFilePath = webAppPath + "WEB-INF/log4j.xml";
+		String log4jFilePath = webAppPath + "WEB-INF\\log4j.xml";
 		DOMConfigurator.configure(log4jFilePath);
 		System.out.println("Log4j configurated from file:" + log4jFilePath);
 	}
