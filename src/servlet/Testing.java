@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.servlet.AsyncContext;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -97,14 +96,17 @@ public class Testing extends HttpServlet {
 			TestingSheet sheetTc = (TestingSheet) hibernateSession
 					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env LEFT JOIN FETCH tsh.testing WHERE tsh.id = :id")
 					.setParameter("id", Integer.valueOf(request.getParameter("sheetentityid")))
-					.getSingleResult();
-			
+					.getSingleResult();			
 			User user = (User) hibernateSession
 					.createQuery("SELECT DISTINCT usr FROM User usr WHERE usr.id = :usr_id")
 					.setParameter("usr_id", request.getParameter("runner"))
 					.getSingleResult();
 			tx.commit();
-			
+
+			User sessionUser = (User) request.getSession().getAttribute("user");
+			if (user.getId() != sessionUser.getId())
+				throw new ServletException("Set runner yourself first");
+
 			if (user.getSdEncPass() == null)
 				throw new ServletException("Please define SoftDev password");
 						
@@ -113,7 +115,7 @@ public class Testing extends HttpServlet {
 			asyncCtx.addListener(new AppAsyncListener());
 			asyncCtx.setTimeout(5 * 60000); // 5 minutes
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
-			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, user));
+			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, sessionUser));
 			
 			Utils.LogMessage(logger, "<< TC-" + sheetTc.getStorageTC().getTc_id() + ">> has been posted in SoftDev with status "  + sheetTc.getTcStatus(), request);
 			
