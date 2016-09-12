@@ -23,7 +23,7 @@ public class LoginPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		HttpSession session = request.getSession(false);
 		if (session != null) {
 			request.setAttribute("logged", session.getAttribute("user"));
@@ -49,6 +49,7 @@ public class LoginPage extends HttpServlet {
 
 		try {
 
+			// throws AuthenticationException if credentials are invalid
 			Ldap ldap = new Ldap(login, passw);
 			User ldapUser = ldap.search(login);
 
@@ -60,13 +61,13 @@ public class LoginPage extends HttpServlet {
 
 			if (dbUser != null) {
 				HttpSession session = request.getSession();
-				session.setAttribute("user", dbUser.getId());
+				session.setAttribute("user", dbUser);
 				// session will expire in 30 days
 				session.setMaxInactiveInterval(30 * 24 * 60 * 60);
 			}
-			
+
 			response.sendRedirect("/tracker2/loginpage");
-			
+
 		} catch (AuthenticationException e) {
 
 			e.printStackTrace();

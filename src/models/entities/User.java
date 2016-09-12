@@ -79,7 +79,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "login=" + id + ", Email=" + email + ", Fullname=" + full_name + ", Department=" + department;
+		return full_name;
 	}
 
 }

@@ -13,6 +13,10 @@ import javax.naming.ldap.LdapContext;
 
 import models.entities.User;
 
+/*
+ * //https://docs.oracle.com/javase/tutorial/jndi/ldap/exceptions.html
+ */
+
 public class Ldap {
 
 	private String server = "ldap://lv-dc1.isd.dp.ua:389";
@@ -29,26 +33,26 @@ public class Ldap {
 		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		env.put(Context.PROVIDER_URL, server);
 		env.put("java.naming.ldap.attributes.binary", "objectSID");
-		// env.put("com.sun.jndi.ldap.trace.ber", System.err);
+		// env.put("com.sun.jndi.ldap.trace.ber", System.err); //for debug
 
 		ctx = new InitialLdapContext(env, null);
 	}
 
-	//https://docs.oracle.com/javase/tutorial/jndi/ldap/exceptions.html
 	public User search(String login) throws NamingException {
 
 		SearchControls searchControls = new SearchControls();
 		searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+		String searchFilter = "(&(objectClass=user)(sAMAccountName=" + login + "))";
 
-		NamingEnumeration<SearchResult> results = ctx.search(searchBase, "(&(objectClass=user)(sAMAccountName=" + login + "))", searchControls);
+		NamingEnumeration<SearchResult> results = ctx.search(searchBase, searchFilter, searchControls);
 
 		if (results.hasMoreElements()) {
-			Attributes attr = ((SearchResult) results.next()).getAttributes();
+			Attributes attrs = ((SearchResult) results.next()).getAttributes();
 			User user = new User();
-			user.setId(attr.get("sAMAccountName").get().toString());
-			user.setEmail(attr.get("mail").get().toString());
-			user.setFullname(attr.get("CN").get().toString());
-			user.setDepartment(attr.get("department").get().toString());
+			user.setId(attrs.get("sAMAccountName").get().toString());
+			user.setEmail(attrs.get("mail").get().toString());
+			user.setFullname(attrs.get("CN").get().toString());
+			user.setDepartment(attrs.get("department").get().toString());
 			user.setActive(1);
 			return user;
 		}

@@ -28,11 +28,9 @@ public class AuthenticationFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;		
 		HttpSession session = req.getSession(false);
-		String uri = req.getRequestURI();
-		String method = req.getMethod();		
-		
+		String uri = req.getRequestURI();		
 
-		if (uri.contains("loginpage") || uri.contains(".") || method.equals("POST")) {
+		if (uri.contains("loginpage") || uri.contains(".")) {
 
 			chain.doFilter(request, response);
 

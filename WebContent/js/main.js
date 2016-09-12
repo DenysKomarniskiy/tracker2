@@ -126,16 +126,12 @@ var APP = {
 			$genTestingForm.on('submit', (e) => {
 				e.preventDefault();
 				
-				var opts = {
-					method: 'post',  
-					headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
-		    		body: $genTestingForm.serialize()
-		   		};				
+				this.SETTINGS.fetchOpts.body = $genTestingForm.serialize();				
 
-				console.log('request ->',  opts);
+				console.log('request ->',  this.SETTINGS.fetchOpts);
 				
 				fetch(
-					$genTestingForm.attr("action"), opts
+					$genTestingForm.attr("action"), this.SETTINGS.fetchOpts
 				).then(
 					resp => resp.text()			
 				).then(
@@ -252,23 +248,19 @@ var APP = {
 						return;
 					}
 					
-					var opts = {
-					    method: 'post',
-					    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-					    body: $(form).serialize() + '&action=add'					    
-					};
+					this.SETTINGS.fetchOpts.body = $(form).serialize() + '&action=add';
 					
-					console.log('request ->', opts);
+					console.log('request ->', this.SETTINGS.fetchOpts);
 					
-					fetch(APP.dataUrl, opts)
+					fetch(APP.dataUrl, this.SETTINGS.fetchOpts)
 					.then(resp => resp.json())
 					.then(resp => {
 						console.log('response <-', resp);
 						this.dataView.insertItem(0, resp);
 						this.grid.invalidate();
 						this.grid.render();						
-						Modal.close();
 						this.grid.scrollRowToTop(0);
+						Modal.close();
 					})
 					.catch(Modal.alert.bind(Modal));					
 				};
