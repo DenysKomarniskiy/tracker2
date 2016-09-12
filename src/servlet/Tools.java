@@ -41,8 +41,6 @@ public class Tools extends HttpServlet {
 		List testings = hibernateSession.createQuery("from Testing").getResultList();
 		tx.commit();
 
-		request.setAttribute("title", "Testing");
-
 		request.setAttribute("testings", testings);
 		
 		request.setAttribute("title", "Tools");

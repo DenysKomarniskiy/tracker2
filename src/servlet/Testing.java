@@ -105,6 +105,9 @@ public class Testing extends HttpServlet {
 					.setParameter("usr_id", request.getParameter("runner"))
 					.getSingleResult();
 			tx.commit();
+			
+			if (user.getSdEncPass() == null)
+				throw new ServletException("Please define SoftDev password");
 						
 			request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 			AsyncContext asyncCtx = request.startAsync();

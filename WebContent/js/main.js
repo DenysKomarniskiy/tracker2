@@ -110,6 +110,11 @@ var APP = {
 				this.dataUrl = 'tools';
 				this.faceName = 'tools';
 				break;	
+				
+			case !!~path.indexOf('settings'):
+				this.dataUrl = 'settings';
+				this.faceName = 'settings';
+				break;	
 			
 			default:
 				this.faceName = 'default';
@@ -119,7 +124,42 @@ var APP = {
 	
 	initFace: {
 		
-		"tools": function() {			
+		"settings": function() {
+			console.log('init settings..');
+			var excludedFields = ['id', 'active'];
+			
+			var data = [], id = 0;
+			$.each(view.userSettings, (key, val) => {
+				if (!excludedFields.includes(key))
+					data.push({	id: key, val: val});
+			});
+			
+			console.log(data);
+			
+			$('#user-settings-grid').css({				
+				width: 301,
+				height: data.length*25 + 30
+			});
+			
+			this.dataView = new Slick.Data.DataView();		
+			this.dataView.setItems(data);
+			
+			var cols = [	            
+	            {id: "id",  name: "Setting", field: "id",  width: 100,},
+                {id: "val", name: "Value", 	 field: "val", width: 200, editor: Slick.Editors.Text}
+           	];
+			
+			var opts = {
+				autoEdit: true,
+    		    editable: true,
+				editCommandHandler: this.editCommandHandler.bind(this)
+			}
+			
+			this.grid = new Slick.Grid("#user-settings-grid", this.dataView, cols, opts); 
+		},
+		
+		"tools": function() {	
+			
 			console.log('init tools..');
 			
 			$genTestingForm = $('#gen-testing');
@@ -129,6 +169,9 @@ var APP = {
 				this.SETTINGS.fetchOpts.body = $genTestingForm.serialize();				
 
 				console.log('request ->',  this.SETTINGS.fetchOpts);
+				
+				$genTestingForm.find('input[type="submit"]')[0].disabled = true;
+				
 				
 				fetch(
 					$genTestingForm.attr("action"), this.SETTINGS.fetchOpts
@@ -143,6 +186,8 @@ var APP = {
 						$.each(JSON.parse(respText), (k, v) => {
 							$table.append('<tr><td>' + k + '</td><td>' + v[0] + '</td><td>' + v[1] + '</td></tr>');
 						});
+						
+						$genTestingForm.find('input[type="submit"]')[0].disabled = false;
 						
 						Modal
 						.setHeader('New Testing was generated')
@@ -355,10 +400,18 @@ var APP = {
 			resp => resp.text()			
 		).then(
 			respText => {
-				console.log('response <-', respText);
-				editCommand.execute();
-				this.grid.invalidateRow(editCommand.row);
-				this.grid.render();
+				
+				try {
+					var jresp = JSON.parse(respText);
+					console.log('response <-', jresp);
+					editCommand.execute();
+					this.grid.invalidateRow(editCommand.row);
+					this.grid.render();
+					
+				} catch (e){
+					Modal.alert(respText);		
+				}				
+				
 			}
 		).catch(
 			function(err){
