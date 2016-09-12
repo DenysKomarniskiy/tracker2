@@ -35,8 +35,6 @@ public class ControlPanel extends HttpServlet {
 		
 		System.out.println(request.getParameter("testing_id"));
 
-
-
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

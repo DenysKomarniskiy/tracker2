@@ -14,6 +14,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,6 +24,7 @@ import org.hibernate.query.Query;
 
 import models.entities.StorageTC;
 import models.entities.TestingSheet;
+import models.entities.User;
 
 public class Utils {
 
@@ -242,5 +244,11 @@ public class Utils {
 		
 	}
 	
+
+	public static void LogMessage (Logger logger, String LogMessage, HttpServletRequest request) {
+	    User user;
+		user =  (User) request.getSession().getAttribute("user");
+		logger.info(user.getId() + " : "  +  LogMessage);
+	}
 	
 }

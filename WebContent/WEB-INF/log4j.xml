@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+ 
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+    debug="false">
+ 
+    <!-- console appender -->
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%-5p %c{1} - %m%n" />
+        </layout>
+    </appender>
+     
+    <!-- rolling file appender -->
+    <appender name="file" class="org.apache.log4j.RollingFileAppender">
+        <param name="File" value="${catalina.home}/logs/main.log" />
+        <param name="Append" value="true" />
+        <param name="ImmediateFlush" value="true" />
+        <param name="MaxFileSize" value="100MB" />
+        <param name="MaxBackupIndex" value="5" />
+ 
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %d{Z} [%t] %-5p (%F:%L) - %m%n" />
+        </layout>
+    </appender>
+ 
+
+    <logger name="org.hibernate" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="file" />
+    </logger>
+     
+    <logger name="org.jboss.logging" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="file" />
+    </logger>
+       
+    <logger name="servlet" additivity="false">
+        <level value="DEBUG" />
+        <appender-ref ref="file" />
+    </logger>
+ 
+ 
+ <!-- 
+    <root>
+        <priority value="DEBUG" />
+        <appender-ref ref="file" />
+    </root>
+ -->
+</log4j:configuration>

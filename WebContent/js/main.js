@@ -40,7 +40,6 @@ var APP = {
 				item.storageTC.apps 	= item.storageTC.apps || ""; 
 				item.storageTC.features = item.storageTC.features || ""; 
 			}
-			item.tcStatus = item.tcStatus || "";
 		});
 		
 		return data;
@@ -127,16 +126,12 @@ var APP = {
 			$genTestingForm.on('submit', (e) => {
 				e.preventDefault();
 				
-				var opts = {
-					method: 'post',  
-					headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
-		    		body: $genTestingForm.serialize()
-		   		};				
+				this.SETTINGS.fetchOpts.body = $genTestingForm.serialize();				
 
-				console.log('request ->',  opts);
+				console.log('request ->',  this.SETTINGS.fetchOpts);
 				
 				fetch(
-					$genTestingForm.attr("action"), opts
+					$genTestingForm.attr("action"), this.SETTINGS.fetchOpts
 				).then(
 					resp => resp.text()			
 				).then(
@@ -253,23 +248,19 @@ var APP = {
 						return;
 					}
 					
-					var opts = {
-					    method: 'post',
-					    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-					    body: $(form).serialize() + '&action=add'					    
-					};
+					this.SETTINGS.fetchOpts.body = $(form).serialize() + '&action=add';
 					
-					console.log('request ->', opts);
+					console.log('request ->', this.SETTINGS.fetchOpts);
 					
-					fetch(APP.dataUrl, opts)
+					fetch(APP.dataUrl, this.SETTINGS.fetchOpts)
 					.then(resp => resp.json())
 					.then(resp => {
 						console.log('response <-', resp);
 						this.dataView.insertItem(0, resp);
 						this.grid.invalidate();
 						this.grid.render();						
-						Modal.close();
 						this.grid.scrollRowToTop(0);
+						Modal.close();
 					})
 					.catch(Modal.alert.bind(Modal));					
 				};
@@ -307,16 +298,11 @@ var APP = {
 		localStorage.setItem('lastSelectedUser', $form.find('select[name="user_id"]').val());
 		localStorage.setItem('lastSelectedTesting', $form.find('select[name="testing_id"]').val());
 		
-		var opts = {
-		    method: 'post',
-		    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-		    body: $form.serialize() + '&action=get'
-		    
-		};
+		this.SETTINGS.fetchOpts.body = $form.serialize() + '&action=get';
 		
-		console.log('request ->', opts);
+		console.log('request ->', this.SETTINGS.fetchOpts);
 		
-		fetch(APP.dataUrl, opts)
+		fetch(APP.dataUrl, this.SETTINGS.fetchOpts)
 		.then(function(response) {
 		    return response.json();
 		})
@@ -359,16 +345,12 @@ var APP = {
 		var id = item.id;
 		var field = column.id;
 		var data = editCommand.serializedValue;
-		var opts = {
-			method: 'post',  
-			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
-    		body: "action=edit&id="+id+"&"+field+"="+data
-   		};				
+		this.SETTINGS.fetchOpts.body = "action=edit&id=" + id + "&" + field + "=" + data;				
 
-		console.log('request ->', opts);
+		console.log('request ->', this.SETTINGS.fetchOpts);
 		
 		fetch(
-			this.dataUrl, opts
+			this.dataUrl, this.SETTINGS.fetchOpts
 		).then(
 			resp => resp.text()			
 		).then(
@@ -424,16 +406,16 @@ var APP = {
 			return;
 		
 		e.stopPropagation();
-				
-		if (!confirm('post result?')) 
-			return;		
 		
 		var rowData = this.grid.getDataItem(cell.row);
 
 		if (!(rowData.tcStatus == 'F' || rowData.tcStatus == 'P')) {
 			Modal.alert('You have to pass or fail TC before post to SoftDev');			
 			return;
-		}		
+		}	
+		
+		if (!confirm('post result?')) 
+			return;		
 		
 		if (rowData.softdev == 1) 
 			if (!confirm('RE-post result?')) 
@@ -449,16 +431,12 @@ var APP = {
 		this.grid.invalidateRow(cell.row);
 		this.grid.render();
 		
-		var opts = {
-			method: 'post',  
-			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
-    		body: "action=sdpost&sheetentityid="+rowData.id+"&runner="+rowData.runner
-   		};		
+		this.SETTINGS.fetchOpts.body = "action=sdpost&sheetentityid="+rowData.id+"&runner="+rowData.runner;		
 		
-		console.log('request ->', opts);
+		console.log('request ->', this.SETTINGS.fetchOpts);
 						
 		fetch(
-			this.dataUrl, opts
+			this.dataUrl, this.SETTINGS.fetchOpts
 		).then(
 			resp => resp.text()			
 		).then(
@@ -503,21 +481,18 @@ var APP = {
 			if (!confirm("Want to set status without TQC version?"))
 				return;
 
-		var opts = {
-			method: 'post',  
-			headers: {'Content-Type': 'application/x-www-form-urlencoded'},       
-    		body: "action=edit&id=" + rowData.id
-    				+ "&edt_env_id=" + $('select[name="env_id"]').val()
-    				+ "&edt_status=" + newStatus
-    				+ ((newStatus=='P' || newStatus=='F') ? "&edt_tqc_ver=" + view.appVer.tqcver : '')
-    				+ ((newStatus=='P' || newStatus=='F') ? "&edt_lab_ver=" + view.appVer.labver : '')
-    				+ ((newStatus=='P' || newStatus=='F') ? "&edt_gene_ver=" + view.appVer.genever : '')
-   		};				
+		this.SETTINGS.fetchOpts.body = 
+			"action=edit&id=" + rowData.id
+			+ "&edt_env_id=" + $('select[name="env_id"]').val()
+			+ "&edt_status=" + newStatus
+			+ ((newStatus=='P' || newStatus=='F') ? "&edt_tqc_ver=" + view.appVer.tqcver : '')
+			+ ((newStatus=='P' || newStatus=='F') ? "&edt_lab_ver=" + view.appVer.labver : '')
+			+ ((newStatus=='P' || newStatus=='F') ? "&edt_gene_ver=" + view.appVer.genever : '');   		
 
-		console.log('request ->', opts);	
+		console.log('request ->', this.SETTINGS.fetchOpts);	
 		
 		fetch(
-			this.dataUrl, opts
+			this.dataUrl, this.SETTINGS.fetchOpts
 		).then(
 			resp => resp.json()			
 		).then(
@@ -642,6 +617,11 @@ var APP = {
         		enableCellNavigation: true,
         		editCommandHandler: this.editCommandHandler
       	   	}
+		},
+		fetchOpts: {
+			method: 'post',  
+			credentials: 'include',
+			headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 		}
 	},
 	

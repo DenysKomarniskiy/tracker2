@@ -1,27 +1,36 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
 <!DOCTYPE html>
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="./css/main.css" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>${title}</title>
+<link href="./favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+<title>Please Login</title>
 </head>
 
 <body>
+	<div class="login-form widget">
+		<h3>Please login</h3>
+		<form action="loginpage" method="post">
 
-	<form action="loginpage" method="post">
-		<select name="user_id">
-			<c:forEach items="${users}" var="user">
-				<option value="${user.id}">${user.id}</option>
-			</c:forEach>
-		</select> <select name="testing_id">
-			<c:forEach items="${testings}" var="testing">
-				<option value="${testing.id}">${testing.name}</option>
-			</c:forEach>
-		</select> <input type="submit" name="testing" value="Testing" /> <a href="storage">Storage</a>
-	</form>
-
-
+			<c:if test="${not empty logged}">
+				You are logged as <strong>${logged}</strong> 
+				<input type="submit" name="action" value="Logout" />
+				<div>
+				<a href="/tracker2/testing">Work</a>
+				</div>
+			</c:if>
+			
+			<c:if test="${empty logged}">
+				<div class="row">
+					<label>ISD login</label><input type="text" name="login" required />
+				</div>
+				<div class="row">
+					<label>ISD password</label><input type="password" name="passw" required />
+				</div>
+				<input type="submit" name="action" value="Enter" />
+			</c:if>			
+		</form>
+	</div>
 </body>
 </html>

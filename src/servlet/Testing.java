@@ -19,6 +19,7 @@ import org.hibernate.query.Query;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.log4j.Logger;
 
 import async.actions.AsyncSoftDevProcessor;
 import async.listener.AppAsyncListener;
@@ -26,12 +27,16 @@ import models.entities.Env;
 import models.entities.TestingSheet;
 import models.entities.User;
 import utils.TestingSerializer;
+import utils.Utils;
 
 @WebServlet(name = "Testing", urlPatterns = "/testing", asyncSupported = true)
 public class Testing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	private static Logger logger = Logger.getLogger(Testing.class);
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
@@ -41,7 +46,7 @@ public class Testing extends HttpServlet {
 		List users = hibernateSession.createQuery("from User").getResultList();
 		List envs = hibernateSession.createQuery("from Env").getResultList();
 		tx.commit();
-
+		 
 		request.setAttribute("title", "Testing");
 
 		request.setAttribute("jtestings", gson.toJson(testings));
@@ -50,14 +55,14 @@ public class Testing extends HttpServlet {
 
 		request.setAttribute("template", "testing.jsp");
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
-
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+		
 		String action = request.getParameter("action");
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
+		String editMsg;
 
 		if (action == null) {
 			response.setStatus(400);
@@ -78,7 +83,9 @@ public class Testing extends HttpServlet {
 			List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(testingId), runner);
 
 			response.getWriter().println(gson.toJson(testSheet));
-
+						
+			Utils.LogMessage(logger, "Testing Sheet is loaded for User:" + runner + " ||Testing id: " + testingId, request);
+			
 			return;			
 
 		} else if (action.equals("sdpost")) {	
@@ -105,10 +112,12 @@ public class Testing extends HttpServlet {
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
 			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, user));
 			
+			Utils.LogMessage(logger, "<< TC-" + sheetTc.getStorageTC().getTc_id() + ">> has been posted in SoftDev with status "  + sheetTc.getTcStatus(), request);
+			
 			return;
 
 		} else if (action.equals("edit")) {
-
+						
 			// edit parameters
 			String id = request.getParameter("id");
 			String runnerEdt = request.getParameter("edt_runner");
@@ -132,40 +141,52 @@ public class Testing extends HttpServlet {
 
 			tx = hibernateSession.beginTransaction();
 			TestingSheet testingSheet = (TestingSheet) hibernateSession.load(TestingSheet.class, new Integer(id));
-
+    
+			editMsg = "<< TC-" + testingSheet.getStorageTC().getTc_id() + " >>";
+			
 			if (runnerEdt != null) {
 				testingSheet.setRunner(runnerEdt);
+				editMsg = editMsg + " New runner: " + runnerEdt + " || "; 
 			}
 			if (tcStatusEdt != null) {
 				testingSheet.setTcStatus(tcStatusEdt);
+				editMsg = editMsg + " New status: " + tcStatusEdt + " || ";
 			}
 			if (durationEdt != null) {
 				testingSheet.setDuration(new Integer(durationEdt));
+				editMsg = editMsg + " New duration: " + durationEdt + " || ";
 			}
 			if (commentEdt != null) {
 				testingSheet.setComment(commentEdt);
+				editMsg = editMsg + " New Comment: " + commentEdt + " || ";
 			}
 			if (tqcVerEdt != null) {
 				testingSheet.setTqcVer(tqcVerEdt);
+				editMsg = editMsg + "New tqcver: " + tqcVerEdt + " || ";
 			}
 			if (labVerEdt != null) {
 				testingSheet.setLabVer(labVerEdt);
+				editMsg = editMsg + " New labver: " + labVerEdt + " || ";
 			}
 			if (geneVerEdt != null) {
 				testingSheet.setGeneVer(geneVerEdt);
+				editMsg = editMsg + " New genever: " + geneVerEdt + " || ";
 			}
 			if (failInfo != null) {
 				testingSheet.setFailInfo(failInfo);
+				editMsg = editMsg + " New failInfo: " + failInfo + "|| ";
 			}
 			if (envId != null) {
 				Env env = hibernateSession.get(Env.class, new Integer(envId));
 				testingSheet.setEnv(env);
+				editMsg = editMsg + " New env: " + env.getName() + " || ";
 			}
 
 			hibernateSession.update(testingSheet);
 			tx.commit();
 
 			response.getWriter().println(gson.toJson(utils.Utils.unproxy(testingSheet)));
+			Utils.LogMessage(logger, editMsg, request);
 		}
 	}
 

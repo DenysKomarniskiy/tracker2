@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -16,13 +17,14 @@ import org.hibernate.Transaction;
 import com.google.gson.Gson;
 
 import models.entities.StorageTC;
+import utils.Utils;
 
 @WebServlet("/storage")
 public class Storage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger(Storage.class);
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
@@ -51,7 +53,8 @@ public class Storage extends HttpServlet {
 		Gson gson = new Gson();
 		String action = request.getParameter("action");
 		String id = request.getParameter("id");
-
+		String editMsg, addMsg;
+		
 		if (action == null) {
 			response.setStatus(400);
 			response.getWriter().println("error: action is missing");
@@ -79,27 +82,36 @@ public class Storage extends HttpServlet {
 
 			tx = hibernateSession.beginTransaction();
 			StorageTC storageTC = (StorageTC) hibernateSession.load(StorageTC.class, new Integer(id));
+			
+			editMsg = "<< TC-" + storageTC.getTc_id() + " >>";
 
 			if (authorEdt != null) {
 				storageTC.setAuthor(authorEdt);
+				editMsg = editMsg + " New author: " + authorEdt + " || "; 
 			}
 			if (featuresEdt != null) {
 				storageTC.setFeatures(featuresEdt);
+				editMsg = editMsg + " New features: " + featuresEdt + " || "; 
 			}
 			if (runPathEdt != null) {
 				storageTC.setRun_path(runPathEdt);
+				editMsg = editMsg + " New run path: " + runPathEdt + " || "; 
 			}
 			if (runParamEdt != null) {
 				storageTC.setRun_param(runParamEdt);
+				editMsg = editMsg + " New run param: " + runParamEdt + " || ";
 			}
 			if (stepNumEdt != null) {
 				storageTC.setStep_num(new Integer(stepNumEdt));
+				editMsg = editMsg + " New step number: " + stepNumEdt + " || ";
 			}
 			if (durationEdt != null) {
 				storageTC.setDuration(new Integer(durationEdt));
+				editMsg = editMsg + " New duration: " + durationEdt + " || ";
 			}
 			hibernateSession.update(storageTC);
 			tx.commit();
+			Utils.LogMessage(logger, editMsg, request);
 
 		} else if (action.equals("add")) {
 
@@ -137,6 +149,8 @@ public class Storage extends HttpServlet {
 			tx.commit();
 
 			response.getWriter().println(gson.toJson(addedTc));
+			
+			addMsg = "<< TC-" + stc.getTc_id() + " >> has benn added";
 		}
 
 	}
