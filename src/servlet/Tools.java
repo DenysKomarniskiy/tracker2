@@ -21,17 +21,11 @@ import utils.DataFromCurrentTestingTableDB;
 import utils.Mail;
 import utils.Utils;
 
-/**
- * Servlet implementation class Tools
- */
-@WebServlet("/tools")
+
+@WebServlet(name = "Tools", urlPatterns = "/tools")
 public class Tools extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-
+	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
@@ -50,10 +44,6 @@ public class Tools extends HttpServlet {
 		request.getRequestDispatcher("/WEB-INF/tpls/main.jsp").forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String action = request.getParameter("action");
@@ -68,34 +58,50 @@ public class Tools extends HttpServlet {
 
 		if (action.equals("Send Mail")) {
 			String testingId = request.getParameter("testing_id");
+			String verTQC = request.getParameter("tqc_version");
 			String PathFile = request.getSession().getServletContext().getRealPath("pie_chart.png");
 System.out.println("Testing ID is:" + testingId);
 			// Getting data (duration and count of TC) from current testing table
-			DataFromCurrentTestingTableDB data = Utils.GetDurationAndCountTCFromDB(request, (int) 8);
+			DataFromCurrentTestingTableDB data = Utils.GetDurationAndCountTCFromDB(request, Integer.parseInt(testingId));
 //			response.getWriter().println((new Gson()).toJson(data));
 			
+			Long DurationNoNeedTC =  data.getDurationNoNeedTC();
+			Long DurationInvestigatingTC =  data.getDurationInvestigatingTC();
+			Long DurationCorrectionTC =  data.getDurationCorrectionTC();
+			Long DurationWaitingTC =  data.getDurationWaitingTC();
+			Long DurationFailedTC =  data.getDurationFailedTC();
+			Long DurationPassedTC =  data.getDurationPassedTC();
+			Long DurationEmptyTC =  data.getDurationEmptyTC();
 			
-			String labelPassed = "Passed [" + data.getDurationPassedTC() + " min]";
-			String labelFailed = "Failed [" + data.getDurationFailedTC() + " min]";
-			String labelWaiting = "Waiting [" + data.getDurationWaitingTC() + " min]";
-			String labelCorrection = "Correction [" + data.getDurationCorrectionTC() + " min]";
-			String labelNoNeed = "NoNeed [" + data.getDurationNoNeedTC() + " min]";
-			String labelEmpty = "Empty [" + data.getDurationEmptyTC() + " min]";
-			String labelInvestigating = "Investigating [" + data.getDurationInvestigatingTC() + " min]";
-			
-			Long CountPassedTC =  data.getCountPassedTC();
-			Long CountFailedTC =  data.getCountFailedTC();
-			Long CountWaitingTC =  data.getCountWaitingTC();
-			Long CountCorrectionTC =  data.getCountCorrectionTC();
 			Long CountNoNeedTC =  data.getCountNoNeedTC();
-			Long CountEmptyTC =  data.getCountEmptyTC();
 			Long CountInvestigatingTC =  data.getCountInvestigatingTC();
+			Long CountCorrectionTC =  data.getCountCorrectionTC();
+			Long CountWaitingTC =  data.getCountWaitingTC();
+			Long CountFailedTC =  data.getCountFailedTC();
+			Long CountPassedTC =  data.getCountPassedTC();
+			Long CountEmptyTC =  data.getCountEmptyTC();
+			
+			Long CountTotalTC =  data.getCountTotalTC();
+			Long DurationTotalTC =  data.getDurationTotalTC();
+			
+			Long CountProcessedTC = CountPassedTC + CountFailedTC;
+			Long DurationProcessedTC = DurationPassedTC + DurationFailedTC;
+			int PercentOfCountProcessedTC = (int)((CountProcessedTC * 100) / CountTotalTC);
+			int PercentOfDurationProcessedTC = (int)((DurationProcessedTC * 100) / DurationTotalTC);
+			
+			String labelNoNeed = "NoNeed [" + DurationNoNeedTC + " min]";
+			String labelInvestigating = "Investigating [" + DurationInvestigatingTC + " min]";
+			String labelCorrection = "Correction [" + DurationCorrectionTC + " min]";
+			String labelWaiting = "Waiting [" + DurationWaitingTC + " min]";
+			String labelFailed = "Failed [" + DurationFailedTC + " min]";
+			String labelPassed = "Passed [" + DurationPassedTC + " min]";
+			String labelEmpty = "Empty [" + DurationEmptyTC + " min]";
 			
 			ChartFormationJFreeChart chart = new ChartFormationJFreeChart();
 			
 			chart.setPathFile(PathFile);
-			chart.setListOflabel(new String[]{labelPassed, labelFailed, labelWaiting, labelCorrection, labelNoNeed, labelEmpty, labelInvestigating});
-			chart.setListOfCountTC(new Long[]{CountPassedTC, CountFailedTC, CountWaitingTC, CountCorrectionTC, CountNoNeedTC, CountEmptyTC, CountInvestigatingTC});
+			chart.setListOflabel(new String[]{labelNoNeed, labelInvestigating, labelCorrection, labelWaiting, labelFailed, labelPassed, labelEmpty});
+			chart.setListOfCountTC(new Long[]{CountNoNeedTC, CountInvestigatingTC, CountCorrectionTC, CountWaitingTC, CountFailedTC, CountPassedTC, CountEmptyTC});
 			chart.createChart();
 			
 			System.out.println(PathFile);
@@ -105,15 +111,15 @@ System.out.println("Testing ID is:" + testingId);
 			mail.setAddressFrom("tqc.autobot@isd.dp.ua");
 			mail.setAddressTo(new String[]{ "deko@isd.dp.ua" });
 			mail.setAddressCc(new String[]{ "deko@isd.dp.ua" });
-			mail.setSubjectText("Current statistics for testing on zw10_pt92(TQC version: 1.0.5.0.6)");
+			mail.setSubjectText("Current statistics for testing on zw10_pt92(TQC version: " + verTQC + ")");
 			mail.setBodyText("<html> " + 
 					"<body> " + 
-					"<H3>Hello!! Here you can find current statistics for testing on lv66(TQC version: 1.0.4.0.1): </H3>" + 
+					"<H3>Hello!! Here you can find current statistics for testing of SoftTotalQC: </H3>" + 
 					"<b>Testing progress:</b>" +
 					"<br>" +
-					"<b>- total TCs: [720] - [34166 min]</b>" +
+					"<b>- total TCs: [" + CountTotalTC + "] - [" + DurationTotalTC + " min]</b>" +
 					"<br>" +
-					"<b>- processed TCs: [710 - 98%] [33447 min - 97%]</b>" +
+					"<b>- processed TCs: [" + CountProcessedTC + " - " + PercentOfCountProcessedTC + "%] [" + DurationProcessedTC + " min - " + PercentOfDurationProcessedTC + "%]</b>" +
 					"<br><br>" +
 					"<table border='0'>" + 
 					"<tr>" + 
@@ -125,7 +131,6 @@ System.out.println("Testing ID is:" + testingId);
 			try {
 				mail.send();
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 

@@ -192,7 +192,7 @@ public class Utils {
 		tx = hibernateSession.beginTransaction();		
 		queryDurationOfTCs = hibernateSession
 			.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration FROM TestingSheet tsh  WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")				
-			.setParameter("testing_id", 5)
+			.setParameter("testing_id", testinigId)
 			.getResultList()
             .iterator();	
 		tx.commit();

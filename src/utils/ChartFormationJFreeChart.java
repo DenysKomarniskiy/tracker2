@@ -80,18 +80,16 @@ public class ChartFormationJFreeChart {
 		plot.setCircular(true);
 		plot.setBackgroundPaint(Color.white);
 		plot.setBaseSectionOutlinePaint(Color.BLACK);
-		plot.setSectionPaint(dataset.getIndex(ListOflabel[5]), Color.white);
-		plot.setSectionPaint(dataset.getIndex(ListOflabel[0]), Color.green);
-		plot.setSectionPaint(dataset.getIndex(ListOflabel[2]), Color.orange);
-		plot.setSectionPaint(dataset.getIndex(ListOflabel[1]), Color.red);
-		plot.setSectionPaint(dataset.getIndex(ListOflabel[4]), Color.gray);
-		plot.setSectionPaint(dataset.getIndex(ListOflabel[3]), Color.pink);
-		plot.setSectionPaint(dataset.getIndex(ListOflabel[6]), Color.magenta);
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[0]), Color.gray); //NoNeed
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[1]), Color.magenta);//Investigating
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[2]), Color.pink); //Correction
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[3]), Color.orange); //Waiting
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[4]), Color.red); //Failed
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[5]), Color.green); //Passed
+		plot.setSectionPaint(dataset.getIndex(ListOflabel[6]), Color.white); //Empty
 
 		plot.setMaximumLabelWidth(.3);
 		plot.setCircular(true);
-
-		plot.setBaseSectionPaint(Color.GREEN);
 
 		try {
 			ChartUtilities.saveChartAsPNG(file, chart, 600, 300);
