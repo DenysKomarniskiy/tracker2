@@ -884,20 +884,33 @@ div.add #b-add:hover {
 }
 
 
-
+#add-testcase-form div span {
+	display: inline-block;
+	width: 100px;
+}
 
 
 /* common */
 .hide {
-	display:none;
+	display:none !important;
 }
 
+
+.flex-container-col,
 .flex-container-row {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;    
     justify-content:flex-start;    
     align-items: flex-start;
+}
+
+.flex-container-col{
+	flex-direction: column;
+}
+
+.flex-container-col > div{
+	margin: 10px 0 0 0;
 }
 
 .flex-container-row > div {

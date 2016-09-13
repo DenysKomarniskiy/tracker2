@@ -11,7 +11,7 @@
 	</div>
 </div>
 
-<form id="add-testcase-form" class="flex-container" style="display:none" onsubmit="return false;">
+<form id="add-testcase-form" class="flex-container-col hide" onsubmit="return false;">
 	<!-- don't change position of this input -->
 	<input type="submit" class="hide" id="f-submit"> 
 	
@@ -47,6 +47,14 @@
 		<span>Auto IDE</span> <input name="edt_auto_ide" required>
 	</div>
 
+	<div>
+		<span>Apps</span> <input name="apps">
+	</div>
+
+	<div>
+		<span>Tags</span> <input name="tags">
+	</div>
+	
 	<div>
 		<span>Features</span> <input name="edt_features">
 	</div>

@@ -22,6 +22,8 @@ import org.hibernate.Transaction;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.query.Query;
 
+import com.google.gson.JsonElement;
+
 import models.entities.StorageTC;
 import models.entities.TestingSheet;
 import models.entities.User;
@@ -86,26 +88,31 @@ public class Utils {
 		return entity;
 	}
 
-	public void setRunOpts(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	public static StorageTC unproxy(StorageTC proxied) {
+		StorageTC entity = proxied;
+		if (entity != null && entity instanceof HibernateProxy) {
+			Hibernate.initialize(entity);
+			entity = (StorageTC) ((HibernateProxy) entity).getHibernateLazyInitializer().getImplementation();
+		}
+		return entity;
+	}
+
+	public void setRunOpts(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		List<String> listTc = new ArrayList<String>();
 		List<String> listOfFiles = new ArrayList<String>();
-		String sTestCaseNumber, sTestCase, sIssueNumber = "", sTestCaseNameInSilkTest, sPattern, sFullPath = "",
-				sShortPath;
+		String sTestCaseNumber, sTestCase, sIssueNumber = "", sTestCaseNameInSilkTest, sPattern, sFullPath = "", sShortPath;
 		List<String> lsFullPath = new ArrayList<String>();
 
 		boolean bFake = false, bCritical = false;
 
-		SessionFactory sessionFactory = (SessionFactory) request.getServletContext()
-				.getAttribute("HibernateSessionFactory");
+		SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		Transaction tx;
 
 		tx = hibernateSession.beginTransaction();
 
-		List<StorageTC> tcList = (List<StorageTC>) hibernateSession
-				.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
+		List<StorageTC> tcList = (List<StorageTC>) hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
 		tx.commit();
 
 		for (StorageTC tc : tcList) {
@@ -181,34 +188,29 @@ public class Utils {
 
 	}
 
-	
-	public static DataFromCurrentTestingTableDB GetDurationAndCountTCFromDB (HttpServletRequest request, int testinigId) throws ServletException, IOException {
-				
-		SessionFactory sessionFactory = (SessionFactory) request.getServletContext()
-				.getAttribute("HibernateSessionFactory");
+	public static DataFromCurrentTestingTableDB GetDurationAndCountTCFromDB(HttpServletRequest request, int testinigId) throws ServletException, IOException {
+
+		SessionFactory sessionFactory = (SessionFactory) request.getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		DataFromCurrentTestingTableDB dataFromCurrentTestingTableDB = new DataFromCurrentTestingTableDB();
 		Transaction tx;
 
-		Iterator queryDurationOfTCs;		
-		tx = hibernateSession.beginTransaction();		
-		queryDurationOfTCs = hibernateSession
-			.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration FROM TestingSheet tsh  WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")				
-			.setParameter("testing_id", 5)
-			.getResultList()
-            .iterator();	
+		Iterator queryDurationOfTCs;
+		tx = hibernateSession.beginTransaction();
+		queryDurationOfTCs = hibernateSession.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration FROM TestingSheet tsh  WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")
+				.setParameter("testing_id", 5).getResultList().iterator();
 		tx.commit();
-		
-		//[["W",4,98],["F",9,249],["C",2,122],["",666,30335],["P",43,2624],["I",1,88]]
+
+		// [["W",4,98],["F",9,249],["C",2,122],["",666,30335],["P",43,2624],["I",1,88]]
 		Long durationTotalTC = (long) 0;
 		Long countTotalTC = (long) 0;
-		while ( queryDurationOfTCs.hasNext() ) {
-		    Object[] tuple = (Object[]) queryDurationOfTCs.next();
-		    
-		    countTotalTC =  countTotalTC + (Long)tuple[1];
-		    durationTotalTC = durationTotalTC + (Long)tuple[2];
-		    
-		    if (tuple[0].equals("P")) {
+		while (queryDurationOfTCs.hasNext()) {
+			Object[] tuple = (Object[]) queryDurationOfTCs.next();
+
+			countTotalTC = countTotalTC + (Long) tuple[1];
+			durationTotalTC = durationTotalTC + (Long) tuple[2];
+
+			if (tuple[0].equals("P")) {
 				dataFromCurrentTestingTableDB.setCountPassedTC((Long) tuple[1]);
 				dataFromCurrentTestingTableDB.setDurationPassedTC((Long) tuple[2]);
 			}
@@ -239,17 +241,16 @@ public class Utils {
 		}
 		dataFromCurrentTestingTableDB.setCountTotalTC(countTotalTC);
 		dataFromCurrentTestingTableDB.setDurationTotalTC(durationTotalTC);
-		
-		return dataFromCurrentTestingTableDB;
-		
-	}
-	
 
-	public static void LogMessage (Logger logger, String LogMessage, HttpServletRequest request) {
-	    User user;
-		user =  (User) request.getSession().getAttribute("user");
-		
-		logger.info((user != null? user.getId() : "unknown user") + " : "  +  LogMessage);
+		return dataFromCurrentTestingTableDB;
+
 	}
-	
+
+	public static void LogMessage(Logger logger, String LogMessage, HttpServletRequest request) {
+		User user;
+		user = (User) request.getSession().getAttribute("user");
+
+		logger.info((user != null ? user.getId() : "unknown user") + " : " + LogMessage);
+	}
+
 }
