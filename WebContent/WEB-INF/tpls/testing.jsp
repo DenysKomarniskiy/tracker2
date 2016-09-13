@@ -1,12 +1,18 @@
 <div class="control-panel flex-container-row">
 
 	<div class="testing-selector">
-		<form id="login-testing" action="testing" method="post">
-			<select name="user_id">
-				<option value="all">All</option>
-			</select> 
-			<select name="testing_id">
-			</select> 
+		<form id="login-testing" action="testing" method="post" class="flex-container-row">
+			<div class="mdl-select">			
+				<select id="testing_id" name="testing_id">
+				</select> 		
+				<label class="float-palceholder" for="testing_id">testing</label>
+			</div>
+			<div class="mdl-select">	
+				<select id="user_id" name="user_id">
+					<option value="all">All</option>
+				</select>				
+				<label class="float-palceholder" for="user_id">runner</label>
+			</div>
 			<input type="submit" name="submit" value="Go" />
 		</form>
 	</div>	
@@ -38,8 +44,19 @@
 		   <label class="mdl-textfield__label" for="sample-expandable"></label>
 		</div>
 		
-		<select name="env_id">				
-		</select> 	
+		<div class="mdl-select">			
+			<select id="env_id" name="env_id" required>
+				<option value=""></option>				
+			</select>			
+			<label class="float-palceholder" for="env_id">env</label>
+		</div>
+			
+	</div>
+	
+	<div class="actions flex-container-row">
+		<div class="button">
+		   <button id="get-testplan">Get Test Plan</button>
+		</div>
 	</div>
 	
 </div>

@@ -270,6 +270,7 @@ var APP = {
 			.on('submit', this.loadData.bind(this))
 			.trigger('submit');
 			
+			$('#get-testplan').on('click', this.getSTTestPlan.bind(this));			
 
 		},
 		
@@ -599,6 +600,37 @@ var APP = {
 	    this.grid.render();
 	},
 
+	getSTTestPlan: function (){
+		
+		var testCases = this.dataView.getItems();
+		var testPlan = '';
+		
+		var getSpaces = function (string){
+			var count = 30 - string.length;
+			return (new Array(count)).join(' ');
+		}
+		
+		testCases.forEach((testCase) => {
+			
+			if (testCase.storageTC.auto_ide !== "ST")
+				return;
+			
+			if (testCase.tcStatus !== "")
+				return;
+			
+			testPlan += '[+] ' + testCase.storageTC.tc_id + getSpaces(testCase.storageTC.tc_id) + '//' + '\t' + testCase.storageTC.run_path + '\n';
+			testPlan += '\t[ ] ' + 'script: ' + testCase.storageTC.run_path + '\n';
+			testPlan += '\t[ ] ' + 'testcase: ' + testCase.storageTC.run_param + '\n';			
+		});
+		
+		copyToClipboard(testPlan);		
+		
+		Modal
+		.setHeader('Test Plan')
+		.printMsg('Test Plan generated and copied to clipboard.')
+		.show();
+	},
+	
 	SETTINGS: {
 		"storage": {
 			columns: [
@@ -714,10 +746,9 @@ init();
 /* helpers */
 function sdFormatter (row, cell, value) {
     switch (value) {        
-        case 1      : return '&#10004';        
-        case 0	    : return '<a href="">post</a>';
+        case 1      : return '&#10004';
         case 'wait' : return '<div class="loader"></div>';
-        default : return value;
+        default : return '<a href="">post</a>';
     }
 }
 
