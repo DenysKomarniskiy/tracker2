@@ -46,7 +46,7 @@
 		
 		alert: function(text) {
 			this.setHeader("Alert")
-			this.msg.innerText = text;
+			this.msg.innerHTML = text;
 			this.show();
 			
 			return this;

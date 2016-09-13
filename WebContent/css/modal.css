@@ -38,6 +38,9 @@ display: table;
     to {top:0; opacity:1}
 }
 
+#m-header{
+    background: none;
+}
 
 .close {
     color: white;
@@ -59,7 +62,10 @@ display: table;
     color: white;
 }
 
-.modal-body {padding: 10px 10px;}
+.modal-msg,
+.modal-body {
+	padding: 10px 10px;
+}
 
 .modal-footer {
     padding: 2px 16px;

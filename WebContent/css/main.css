@@ -900,7 +900,7 @@ div.add #b-add:hover {
     align-items: flex-start;
 }
 
-.flex-container-row div {
+.flex-container-row > div {
 	margin: 0 10px 0 0;
 }
 

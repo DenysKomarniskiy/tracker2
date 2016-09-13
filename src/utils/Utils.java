@@ -248,7 +248,8 @@ public class Utils {
 	public static void LogMessage (Logger logger, String LogMessage, HttpServletRequest request) {
 	    User user;
 		user =  (User) request.getSession().getAttribute("user");
-		logger.info(user.getId() + " : "  +  LogMessage);
+		
+		logger.info((user != null? user.getId() : "unknown user") + " : "  +  LogMessage);
 	}
 	
 }
