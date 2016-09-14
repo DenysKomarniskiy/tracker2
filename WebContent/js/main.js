@@ -162,6 +162,33 @@ var APP = {
 			
 			console.log('init tools..');
 			
+			$sendMailForm = $('#send-mail');
+			$sendButton = $sendMailForm.find('input[type="submit"]');
+			$sendButton.on('click', (e) => {
+				
+				e.preventDefault();
+				
+				$sendButton[0].disabled = true;
+				
+				this.SETTINGS.fetchOpts.body = $sendMailForm.serialize();
+				
+				fetch(
+					$sendMailForm.attr("action"), this.SETTINGS.fetchOpts
+				).then(
+					resp => resp.text()	
+				).then(
+					respText => {	
+						console.log(respText)
+						$sendButton[0].disabled = false;
+					}
+				).catch(
+					err => {
+						Modal.alert(err);
+					}	
+				);			
+				
+			});
+			
 			$genTestingForm = $('#gen-testing');
 			$genTestingForm.on('submit', (e) => {
 				e.preventDefault();
