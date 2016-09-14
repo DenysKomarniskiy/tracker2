@@ -313,23 +313,28 @@ input.editor-checkbox {
 }
 
 /*user styles*/
-.slick-row.status-P {
+.slick-row.status-P  .l6,
+.slick-row.status-P  .l0 {
 	background-color: rgba(121, 245, 120, 0.4);
 }
 
-.slick-row.status-F {
+.slick-row.status-F .l6,
+.slick-row.status-F .l0 {
 	background-color: rgba(241, 132, 132, 0.4);
 }
 
-.slick-row.status-W {
+.slick-row.status-W .l6,
+.slick-row.status-W .l0 {
 	background-color: rgba(255, 167, 0, 0.4);
 }
 
-.slick-row.status-C {
+.slick-row.status-C .l6,
+.slick-row.status-C .l0 {
 	background-color: rgba(195, 34, 34, 0.4);
 }
 
-.slick-row.status-I {
+.slick-row.status-I .l6,
+.slick-row.status-I .l0 {
 	background-color: rgba(247, 100, 228, 0.4);
 }
 
@@ -696,7 +701,7 @@ input.editor-checkbox {
 .mdl-textfield__input:valid + .float-palceholder {
 	font-size: 12px;
 	bottom: 45px;	
-	color: #fff;
+	color: rgba(255,255,255,0.75);
 }
 
 .mdl-textfield__label:after {

@@ -1,5 +1,3 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
-
 <div id="m-modal" class="modal">
 	<div id="m-content" class="modal-content">
 		<div class="modal-header">
