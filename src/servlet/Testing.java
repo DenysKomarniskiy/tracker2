@@ -20,11 +20,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.log4j.Logger;
 
+import async.actions.AsyncMailProcessor;
 import async.actions.AsyncSoftDevProcessor;
 import async.listener.AppAsyncListener;
 import models.entities.Env;
 import models.entities.TestingSheet;
 import models.entities.User;
+import utils.Mail;
 import utils.TestingSerializer;
 import utils.Utils;
 
@@ -135,6 +137,7 @@ public class Testing extends HttpServlet {
 			String geneVerEdt = request.getParameter("edt_gene_ver");
 			String failInfo = request.getParameter("edt_fail_info");
 			String envId = request.getParameter("edt_env_id");			
+			Boolean isSendMail = false;
 
 			if (id == null) {
 				response.setStatus(400);
@@ -153,6 +156,8 @@ public class Testing extends HttpServlet {
 			if (runnerEdt != null) {
 				testingSheet.setRunner(runnerEdt);
 				editMsg = editMsg + " New runner: " + runnerEdt + " || "; 
+				SendMailAsync(request);
+				
 			}
 			if (tcStatusEdt != null) {
 				testingSheet.setTcStatus(tcStatusEdt);
@@ -193,6 +198,7 @@ public class Testing extends HttpServlet {
 
 			response.getWriter().println(gson.toJson(utils.Utils.unproxy(testingSheet)));
 			Utils.LogMessage(logger, editMsg, request);
+
 		}
 	}
 
@@ -221,6 +227,17 @@ public class Testing extends HttpServlet {
 
 		return testSheet;
 
+	}
+	void SendMailAsync(HttpServletRequest request){
+		Mail mail = new Mail("correction");
+		mail.setSubjectText("New TC has been added to your Test Plan");
+						
+		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
+		AsyncContext asyncCtx = request.startAsync();
+		asyncCtx.addListener(new AppAsyncListener());
+		asyncCtx.setTimeout(1 * 60000); // 1 minutes
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
+		executor.execute(new AsyncMailProcessor(asyncCtx, mail));
 	}
 
 }

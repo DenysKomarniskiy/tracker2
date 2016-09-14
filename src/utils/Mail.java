@@ -11,16 +11,18 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import com.google.gson.Gson;
+
 public class Mail extends javax.mail.Authenticator {
 
 	Properties props;
 	private String subjectText;
 	private String bodyText;
-	private String pathFile;
+	private String pathFile = null;
 	private String addressFrom = "tqc.autobot@isd.dp.ua";
 	private String[] addressTo;
 	private String[] addressCc = null;
-	
+
 	public String getSubjectText() {
 		return subjectText;
 	}
@@ -69,10 +71,7 @@ public class Mail extends javax.mail.Authenticator {
 		this.addressCc = addressCc;
 	}
 
-	
-	
-
-	public Mail() {
+	public Mail(String mailType, DataFromCurrentTestingTableDB... data) {
 		props = new Properties();
 		props.put("mail.smtp.host", "webmail.isd.dp.ua");
 		props.put("mail.debug", "false");
@@ -81,6 +80,55 @@ public class Mail extends javax.mail.Authenticator {
 		props.put("mail.smtp.socketFactory.port", 25);
 		props.put("mail.smtp.starttls.enable", "true");
 		props.put("mail.smtp.ssl.trust", "webmail.isd.dp.ua");
+		Long CountFailedTC = null;
+		Long CountPassedTC = null;
+		Long DurationFailedTC = null;
+		Long DurationPassedTC = null;
+		Long CountTotalTC = null;
+		Long DurationTotalTC = null;
+
+		Long CountProcessedTC = null;
+		Long DurationProcessedTC = null;
+		int PercentOfCountProcessedTC = 0;
+		int PercentOfDurationProcessedTC = 0;
+
+		switch (mailType) {
+		case "statistics":
+			CountFailedTC = data[0].getCountFailedTC();
+			CountPassedTC = data[0].getCountPassedTC();
+			DurationFailedTC = data[0].getDurationFailedTC();
+			DurationPassedTC = data[0].getDurationPassedTC();
+			CountTotalTC = data[0].getCountTotalTC();
+			DurationTotalTC = data[0].getDurationTotalTC();
+
+			CountProcessedTC = CountPassedTC + CountFailedTC;
+			DurationProcessedTC = DurationPassedTC + DurationFailedTC;
+			PercentOfCountProcessedTC = (int) ((CountProcessedTC * 100) / CountTotalTC);
+			PercentOfDurationProcessedTC = (int) ((DurationProcessedTC * 100) / DurationTotalTC);
+
+			setAddressTo(new String[] { "deko@isd.dp.ua" });
+			setAddressCc(new String[] { "deko@isd.dp.ua" });
+			setBodyText("<html> " + "<body> "
+					+ "<H3>Hello! Here you can find current statistics for testing of SoftTotalQC: </H3>"
+					+ "<b>Testing progress:</b>" + "<br>" + "<b>- total TCs: [" + CountTotalTC + "] - ["
+					+ DurationTotalTC + " min]</b>" + "<br>" + "<b>- processed TCs: [" + CountProcessedTC + " - "
+					+ PercentOfCountProcessedTC + "%] [" + DurationProcessedTC + " min - "
+					+ PercentOfDurationProcessedTC + "%]</b>" + "<br><br>" + "<table border='0'>" + "<tr>"
+					+ "<td><div style='float: left'><img src=\"cid:image\"></div></td>" + "</tr>" + "</table>"
+					+ "</body>" + "</html>");
+			break;
+		case "correction":
+			setAddressTo(new String[] { "deko@isd.dp.ua" });
+			setAddressCc(new String[] { "deko@isd.dp.ua" });
+			setBodyText("<html> " + "<body> " + "<H3>Hello! New TC has been ADDED to your Test Plan. </H3>" + "</body>"
+					+ "</html>");
+			break;
+		default:
+			System.out.println("{\"error\":\"Mail: unknown mailType\"}");
+			break;
+
+		}
+
 	}
 
 	public boolean send() throws Exception {
@@ -120,17 +168,18 @@ public class Mail extends javax.mail.Authenticator {
 		multipart.addBodyPart(messageBodyPart);
 
 		// second part (the image)
-		messageBodyPart = new MimeBodyPart();
-		DataSource fds = new FileDataSource(getPathFile());
+		if (getPathFile() != null) {
+			messageBodyPart = new MimeBodyPart();
+			DataSource fds = new FileDataSource(getPathFile());
 
-		messageBodyPart.setDataHandler(new DataHandler(fds));
-		messageBodyPart.setHeader("Content-ID", "<image>");
-		messageBodyPart.setHeader("Content-Type", "image/png");
-		messageBodyPart.setHeader("Content-Transfer-Encoding", "base64");
+			messageBodyPart.setDataHandler(new DataHandler(fds));
+			messageBodyPart.setHeader("Content-ID", "<image>");
+			messageBodyPart.setHeader("Content-Type", "image/png");
+			messageBodyPart.setHeader("Content-Transfer-Encoding", "base64");
 
-		// add image to the multipart
-		multipart.addBodyPart(messageBodyPart);
-
+			// add image to the multipart
+			multipart.addBodyPart(messageBodyPart);
+		}
 		// put everything together
 		message.setContent(multipart);
 		// System.out.print(htmlText);

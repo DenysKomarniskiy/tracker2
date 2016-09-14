@@ -5,14 +5,10 @@ import java.awt.Font;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-
-import javax.mail.internet.InternetAddress;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.labels.PieSectionLabelGenerator;
 import org.jfree.chart.plot.PiePlot;
 
 import org.jfree.data.general.DefaultPieDataset;

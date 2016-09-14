@@ -67,36 +67,17 @@ public class Tools extends HttpServlet {
 			// table
 			DataFromCurrentTestingTableDB data = Utils.GetDurationAndCountTCFromDB(request,	Integer.parseInt(testingId));
 			// response.getWriter().println((new Gson()).toJson(data));
-			Long CountFailedTC = data.getCountFailedTC();
-			Long CountPassedTC = data.getCountPassedTC();
-			Long DurationFailedTC = data.getDurationFailedTC();
-			Long DurationPassedTC = data.getDurationPassedTC();
-			Long CountTotalTC = data.getCountTotalTC();
-			Long DurationTotalTC = data.getDurationTotalTC();
 			
-			Long CountProcessedTC = CountPassedTC + CountFailedTC;
-			Long DurationProcessedTC = DurationPassedTC + DurationFailedTC;
-			int PercentOfCountProcessedTC = (int) ((CountProcessedTC * 100) / CountTotalTC);
-			int PercentOfDurationProcessedTC = (int) ((DurationProcessedTC * 100) / DurationTotalTC);
 			
 			// Chart formation
 			ChartFormationJFreeChart chart = new ChartFormationJFreeChart(data, PathFile);
 			chart.createChart();
 			
 			//Mail sending
-			Mail mail = new Mail();
-			mail.setPathFile(PathFile);
-			mail.setAddressTo(new String[] { "deko@isd.dp.ua" });
-			mail.setAddressCc(new String[] { "deko@isd.dp.ua" });
+			Mail mail = new Mail("statistics", data);
+			mail.setPathFile(PathFile);			
 			mail.setSubjectText("Current statistics for testing on " + officialEnv + "(TQC version: " + verTQC + ")");
-			mail.setBodyText("<html> " + "<body> "
-					+ "<H3>Hello!! Here you can find current statistics for testing of SoftTotalQC: </H3>"
-					+ "<b>Testing progress:</b>" + "<br>" + "<b>- total TCs: [" + CountTotalTC + "] - ["
-					+ DurationTotalTC + " min]</b>" + "<br>" + "<b>- processed TCs: [" + CountProcessedTC + " - "
-					+ PercentOfCountProcessedTC + "%] [" + DurationProcessedTC + " min - "
-					+ PercentOfDurationProcessedTC + "%]</b>" + "<br><br>" + "<table border='0'>" + "<tr>"
-					+ "<td><div style='float: left'><img src=\"cid:image\"></div></td>" + "</tr>" + "</table>"
-					+ "</body>" + "</html>");
+			
 			
 			request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 			AsyncContext asyncCtx = request.startAsync();
