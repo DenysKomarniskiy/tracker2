@@ -137,7 +137,7 @@ public class Testing extends HttpServlet {
 			String geneVerEdt = request.getParameter("edt_gene_ver");
 			String failInfo = request.getParameter("edt_fail_info");
 			String envId = request.getParameter("edt_env_id");			
-			Boolean isSendMail = false;
+			
 
 			if (id == null) {
 				response.setStatus(400);
