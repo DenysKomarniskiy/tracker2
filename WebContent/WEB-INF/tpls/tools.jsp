@@ -4,7 +4,9 @@
 
 	<div class="widget send-mail">
 		<h3>Send mail</h3>
-		<form id="SendingMail" action="tools" method="post">
+		<form id="send-mail" action="tools" method="post">
+			<input type="hidden" name="action" value ="sendmail"/>
+			<div>
 				<label>select testing
 					<select name="testing_id">
 					    <c:forEach items="${testings}" var="testing">						   
@@ -12,6 +14,12 @@
 					    </c:forEach>
 					</select>
 				</label>
+			</div>
+			<div>
+				<label>Enter version
+					<input type="text" name="tqc_version" value="1.0" required/>
+				</label>
+			</div>
 			<input type="submit" name="action" value="Send Mail" />
 		</form>
 	</div>	

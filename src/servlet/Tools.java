@@ -3,7 +3,9 @@ package servlet;
 import java.io.IOException;
 
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,13 +18,15 @@ import org.hibernate.Transaction;
 
 import com.google.gson.Gson;
 
+import async.actions.AsyncMailProcessor;
+import async.listener.AppAsyncListener;
 import utils.ChartFormationJFreeChart;
 import utils.DataFromCurrentTestingTableDB;
 import utils.Mail;
 import utils.Utils;
 
 
-@WebServlet(name = "Tools", urlPatterns = "/tools")
+@WebServlet(name = "Tools", urlPatterns = "/tools", asyncSupported = true)
 public class Tools extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
@@ -54,7 +58,7 @@ public class Tools extends HttpServlet {
 			return;
 		}
 
-		if (action.equals("Send Mail")) {
+		if (action.equals("sendmail")) {
 			String testingId = request.getParameter("testing_id");
 			String verTQC = request.getParameter("tqc_version");
 			String PathFile = getServletContext().getRealPath("pie_chart.png");
@@ -126,15 +130,21 @@ System.out.println("Testing ID is:" + testingId);
 					"</table>" + 
 					"</body>" + 
 					"</html>");
-			try {
-				mail.send();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+//			try {
+//				mail.send();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+			request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
+			AsyncContext asyncCtx = request.startAsync();
+			asyncCtx.addListener(new AppAsyncListener());
+			asyncCtx.setTimeout(1 * 60000); // 1 minutes
+			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
+			executor.execute(new AsyncMailProcessor(asyncCtx, mail));
+			
+//			response.getWriter().println("sendingMail working...");
 
-			response.getWriter().println("sendingMail working...");
-
-			return;
+			
 		}
 	}
 
