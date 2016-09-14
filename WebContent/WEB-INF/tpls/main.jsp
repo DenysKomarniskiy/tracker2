@@ -26,11 +26,10 @@
 				<div class="mdl-layout__header-row">
 					<!-- Title -->
 					<span class="mdl-layout__title">${title}</span>
-					<!-- Add spacer, to align navigation to the right -->
 					
 					<div class="mdl-layout__header-item">
 						<div class="mdl-textfield mdl-textfield--expandable">
-							<label class="mdl-button mdl-button--icon" for="search-tc"> 
+							<label class="mdl-button mdl-button--icon" for="search-tc" title="Search"> 
 								<i class="material-icons">search</i>
 							</label>
 							<div class="mdl-textfield__expandable-holder">

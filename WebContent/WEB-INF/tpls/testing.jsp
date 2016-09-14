@@ -13,11 +13,17 @@
 				</select>				
 				<label class="float-palceholder" for="user_id">runner</label>
 			</div>
-			<input type="submit" name="submit" value="Go" />
+			<input type="submit" name="submit" value="autorenew" class="material-icons mdl-button mdl-button--icon" style="margin: 14px 0;" title="Refresh list">
 		</form>
 	</div>	
 	
-	<div class="stats flex-container-row" style="width: 200px;">
+	<div class="actions flex-container-row">
+		<div class="button">
+		   <button id="get-testplan" class="material-icons mdl-button mdl-button--icon" style="margin: 14px 0;" title="Generate SilkTest testplan">assignment</button>
+		</div>
+	</div>
+	
+	<div class="stats flex-container-row" style="width: 170px;">
 		<div>total: <span id="stats-total-pcs">0</span> pcs. <span id="stats-total-min">0</span> min.</div>
 		<div>processed: <span id="stats-processed-pcs">0</span> pcs.:<span id="stats-processed-proc-pcs">0</span>% <span id="stats-processed-min">0</span> min.:<span id="stats-processed-proc-min">0</span>%</div>
 		<div>passed: <span id="stats-passed-pcs"></span> pcs.</div>
@@ -53,11 +59,7 @@
 			
 	</div>
 	
-	<div class="actions flex-container-row">
-		<div class="button">
-		   <button id="get-testplan">Get Test Plan</button>
-		</div>
-	</div>
+	
 	
 </div>
 

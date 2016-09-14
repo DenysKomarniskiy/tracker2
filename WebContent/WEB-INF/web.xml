@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
-  <display-name>Tracker 2.0</display-name>
-  <context-param>
-    <param-name>SDProductId</param-name>
-    <param-value>1228</param-value>
-  </context-param>
-  <context-param>
-    <param-name>testCasePrefix</param-name>
-    <param-value>STC-TQC-</param-value>
-  </context-param>
-  <context-param>
-    <param-name>issuePrefix</param-name>
-    <param-value>ISS-TQC-</param-value>
-  </context-param>
-  <filter>
-    <filter-name>AuthenticationFilter</filter-name>
-    <filter-class>servlet.filters.AuthenticationFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>AuthenticationFilter</filter-name>
-    <url-pattern>/loginpage</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
-  </filter-mapping>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	<display-name>Tracker 2.0</display-name>
+	<welcome-file-list>
+		<welcome-file>loginpage</welcome-file>
+	</welcome-file-list>
+	<context-param>
+		<param-name>SDProductId</param-name>
+		<param-value>1228</param-value>
+	</context-param>
+	<context-param>
+		<param-name>testCasePrefix</param-name>
+		<param-value>STC-TQC-</param-value>
+	</context-param>
+	<context-param>
+		<param-name>issuePrefix</param-name>
+		<param-value>ISS-TQC-</param-value>
+	</context-param>
+	<filter>
+		<filter-name>AuthenticationFilter</filter-name>
+		<filter-class>servlet.filters.AuthenticationFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>AuthenticationFilter</filter-name>
+		<url-pattern>/loginpage</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+	</filter-mapping>
 </web-app>
