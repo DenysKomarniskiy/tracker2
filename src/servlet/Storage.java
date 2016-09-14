@@ -54,19 +54,21 @@ public class Storage extends HttpServlet {
 		String action = request.getParameter("action");
 		String id = request.getParameter("id");
 		String editMsg, addMsg;
-		
+
 		if (action == null) {
 			response.setStatus(400);
 			response.getWriter().println("error: action is missing");
 			return;
 		}
-		
+
 		String authorEdt = request.getParameter("edt_author");
 		String stepNumEdt = request.getParameter("edt_step_num");
 		String durationEdt = request.getParameter("edt_duration");
 		String featuresEdt = request.getParameter("edt_features");
 		String runPathEdt = request.getParameter("edt_run_path");
 		String runParamEdt = request.getParameter("edt_run_param");
+		String apps = request.getParameter("apps");
+		String tags = request.getParameter("tags");
 
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
@@ -82,20 +84,28 @@ public class Storage extends HttpServlet {
 
 			tx = hibernateSession.beginTransaction();
 			StorageTC storageTC = (StorageTC) hibernateSession.load(StorageTC.class, new Integer(id));
-			
+
 			editMsg = "<< TC-" + storageTC.getTc_id() + " >>";
 
 			if (authorEdt != null) {
 				storageTC.setAuthor(authorEdt);
-				editMsg = editMsg + " New author: " + authorEdt + " || "; 
+				editMsg = editMsg + " New author: " + authorEdt + " || ";
+			}
+			if (apps != null) {
+				storageTC.setApps(apps);
+				editMsg = editMsg + " New apps: " + apps + " || ";
+			}
+			if (tags != null) {
+				storageTC.setTags(tags);
+				editMsg = editMsg + " New tags: " + tags + " || ";
 			}
 			if (featuresEdt != null) {
 				storageTC.setFeatures(featuresEdt);
-				editMsg = editMsg + " New features: " + featuresEdt + " || "; 
+				editMsg = editMsg + " New features: " + featuresEdt + " || ";
 			}
 			if (runPathEdt != null) {
 				storageTC.setRun_path(runPathEdt);
-				editMsg = editMsg + " New run path: " + runPathEdt + " || "; 
+				editMsg = editMsg + " New run path: " + runPathEdt + " || ";
 			}
 			if (runParamEdt != null) {
 				storageTC.setRun_param(runParamEdt);
@@ -111,6 +121,9 @@ public class Storage extends HttpServlet {
 			}
 			hibernateSession.update(storageTC);
 			tx.commit();
+
+			response.getWriter().println(gson.toJson(utils.Utils.unproxy(storageTC)));
+
 			Utils.LogMessage(logger, editMsg, request);
 
 		} else if (action.equals("add")) {
@@ -127,6 +140,12 @@ public class Storage extends HttpServlet {
 			stc.setStep_num(new Integer(stepNumEdt));
 			stc.setDuration(new Integer(durationEdt));
 
+			if (apps != null) {
+				stc.setApps(apps);
+			}
+			if (tags != null) {
+				stc.setTags(tags);
+			}
 			if (featuresEdt != null) {
 				stc.setFeatures(featuresEdt);
 			}
@@ -142,14 +161,11 @@ public class Storage extends HttpServlet {
 
 			hibernateSession = sessionFactory.getCurrentSession();
 			tx = hibernateSession.beginTransaction();
-			Object addedTc = hibernateSession
-					.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet where stc.id = :id")
-					.setParameter("id", stc.getId())
-					.getSingleResult();
+			Object addedTc = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet where stc.id = :id").setParameter("id", stc.getId()).getSingleResult();
 			tx.commit();
 
 			response.getWriter().println(gson.toJson(addedTc));
-			
+
 			addMsg = "<< TC-" + stc.getTc_id() + " >> has benn added";
 		}
 

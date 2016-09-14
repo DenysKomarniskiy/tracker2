@@ -23,6 +23,14 @@ import org.jfree.data.general.DefaultPieDataset;
  */
 public class ChartFormationJFreeChart {
 
+	public ChartFormationJFreeChart(String pathFile, String[] listOflabel, Long[] listOfCountTC) {
+		super();
+		this.pathFile = pathFile;
+		this.listOflabel = listOflabel;
+		this.listOfCountTC = listOfCountTC;
+	}
+
+
 	private String pathFile;
 	private String[] listOflabel;
 	private Long[] listOfCountTC;
@@ -51,6 +59,7 @@ public class ChartFormationJFreeChart {
 		listOfCountTC = listOfValue;
 	}
 
+	
 	public void createChart() {
 
 		String[] ListOflabel = getListOflabel();

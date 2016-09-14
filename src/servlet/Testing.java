@@ -61,7 +61,7 @@ public class Testing extends HttpServlet {
 		String action = request.getParameter("action");
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
-		String editMsg;
+		String editMsg;		
 
 		if (action == null) {
 			response.setStatus(400);
@@ -104,8 +104,9 @@ public class Testing extends HttpServlet {
 			tx.commit();
 
 			User sessionUser = (User) request.getSession().getAttribute("user");
-			if (user.getId() != sessionUser.getId())
+			if (!user.getId().equals(sessionUser.getId())) {
 				throw new ServletException("Set runner yourself first");
+			}
 
 			if (user.getSdEncPass() == null)
 				throw new ServletException("Please define SoftDev password");

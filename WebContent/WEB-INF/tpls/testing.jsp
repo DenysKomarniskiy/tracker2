@@ -1,17 +1,29 @@
 <div class="control-panel flex-container-row">
 
 	<div class="testing-selector">
-		<form id="login-testing" action="testing" method="post">
-			<select name="user_id">
-				<option value="all">All</option>
-			</select> 
-			<select name="testing_id">
-			</select> 
-			<input type="submit" name="submit" value="Go" />
+		<form id="login-testing" action="testing" method="post" class="flex-container-row">
+			<div class="mdl-select">			
+				<select id="testing_id" name="testing_id">
+				</select> 		
+				<label class="float-palceholder" for="testing_id">testing</label>
+			</div>
+			<div class="mdl-select">	
+				<select id="user_id" name="user_id">
+					<option value="all">All</option>
+				</select>				
+				<label class="float-palceholder" for="user_id">runner</label>
+			</div>
+			<input type="submit" name="submit" value="autorenew" class="material-icons mdl-button mdl-button--icon" style="margin: 14px 0;" title="Refresh list">
 		</form>
 	</div>	
 	
-	<div class="stats flex-container-row" style="width: 200px;">
+	<div class="actions flex-container-row">
+		<div class="button">
+		   <button id="get-testplan" class="material-icons mdl-button mdl-button--icon" style="margin: 14px 0;" title="Generate SilkTest testplan">assignment</button>
+		</div>
+	</div>
+	
+	<div class="stats flex-container-row" style="width: 170px;">
 		<div>total: <span id="stats-total-pcs">0</span> pcs. <span id="stats-total-min">0</span> min.</div>
 		<div>processed: <span id="stats-processed-pcs">0</span> pcs.:<span id="stats-processed-proc-pcs">0</span>% <span id="stats-processed-min">0</span> min.:<span id="stats-processed-proc-min">0</span>%</div>
 		<div>passed: <span id="stats-passed-pcs"></span> pcs.</div>
@@ -38,9 +50,16 @@
 		   <label class="mdl-textfield__label" for="sample-expandable"></label>
 		</div>
 		
-		<select name="env_id">				
-		</select> 	
+		<div class="mdl-select">			
+			<select id="env_id" name="env_id" required>
+				<option value=""></option>				
+			</select>			
+			<label class="float-palceholder" for="env_id">env</label>
+		</div>
+			
 	</div>
+	
+	
 	
 </div>
 

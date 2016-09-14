@@ -297,6 +297,7 @@ var APP = {
 			.on('submit', this.loadData.bind(this))
 			.trigger('submit');
 			
+			$('#get-testplan').on('click', this.getSTTestPlan.bind(this));			
 
 		},
 		
@@ -309,7 +310,7 @@ var APP = {
 			$('button#b-add').click(() => {
 				var textnode = document.createTextNode("Testcase"); 
 				var form = document.getElementById("add-testcase-form").cloneNode(true);
-				form.style.display = "flex";				
+				form.classList.remove('hide');	
 				
 				var submit = document.createElement('button');
 				submit.innerText="ADD";
@@ -398,9 +399,11 @@ var APP = {
 	
 	metaDataFormatter: function(index)	{
 		var item = this.dataView.getItem(index);
-	    return {
-	        cssClasses: 'status-' + item.tcStatus
-	    };		
+		if (item.tcStatus){
+		    return {
+		        cssClasses: 'status-' + item.tcStatus
+		    };		
+	    }
 	},
 	
 	dataViewFilter: function (item, args) {
@@ -560,10 +563,16 @@ var APP = {
 		if ((newStatus=='P' || newStatus=='F') && !view.appVer.tqcver)
 			if (!confirm("Want to set status without TQC version?"))
 				return;
+		
+		var envId = $('select[name="env_id"]').val();
+		if (envId == ""){
+			Modal.alert('Select env!')
+			return;
+		}
 
 		this.SETTINGS.fetchOpts.body = 
 			"action=edit&id=" + rowData.id
-			+ "&edt_env_id=" + $('select[name="env_id"]').val()
+			+ "&edt_env_id=" + envId
 			+ "&edt_status=" + newStatus
 			+ ((newStatus=='P' || newStatus=='F') ? "&edt_tqc_ver=" + view.appVer.tqcver : '')
 			+ ((newStatus=='P' || newStatus=='F') ? "&edt_lab_ver=" + view.appVer.labver : '')
@@ -626,6 +635,40 @@ var APP = {
 	    this.grid.render();
 	},
 
+	getSTTestPlan: function (){
+		
+		var testCases = this.dataView.getItems();
+		var testPlan = '';
+		
+		var getSpaces = function (string){
+			var count = 30 - string.length;
+			return (new Array(count)).join(' ');
+		}
+		
+		testCases.forEach((testCase) => {
+			
+			if (testCase.storageTC.auto_ide !== "ST")
+				return;
+			
+			if (testCase.tcStatus !== "")
+				return;
+			
+			if (testCase.storageTC.features.toLowerCase().includes("critical"))
+				return;
+			
+			testPlan += '[+] ' + testCase.storageTC.tc_id + getSpaces(testCase.storageTC.tc_id) + '//' + '\t' + testCase.storageTC.run_path + '\n';
+			testPlan += '\t[ ] ' + 'script: ' + testCase.storageTC.run_path + '\n';
+			testPlan += '\t[ ] ' + 'testcase: ' + testCase.storageTC.run_param + '\n';			
+		});
+		
+		copyToClipboard(testPlan);		
+		
+		Modal
+		.setHeader('Test Plan')
+		.printMsg('Test Plan generated and copied to clipboard.')
+		.show();
+	},
+	
 	SETTINGS: {
 		"storage": {
 			columns: [
@@ -634,9 +677,11 @@ var APP = {
                {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer													},
                {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,  editor: Slick.Editors.Integer,	sortable: true, 								},
                {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65,  								sortable: true									},
+               {id: "apps",			name: "Apps", 		field: "apps", 			width: 100, editor: Slick.Editors.Text														},
+               {id: "tags",			name: "Tags", 		field: "tags", 			width: 100, editor: Slick.Editors.Text														},
                {id: "local_set", 	name: "Set Name", 	field: "testSet", 		width: 150,									sortable: true, 	formatter: (a, b, c) => c.local_set,},
                {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText													},    
-               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text														},
+               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text,		resizable: true,								},
                {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text														},
            ],
            	options: {
@@ -648,7 +693,8 @@ var APP = {
     		    rowHeight: 25,
     		    cellFlashingCssClass: 'flash-cell',
     		    enableColumnReorder: false,
-    		    multiColumnSort: true
+    		    multiColumnSort: true,
+    		    syncColumnCellResize: true
        		}
 		},
 		"testing": {
@@ -739,10 +785,9 @@ init();
 /* helpers */
 function sdFormatter (row, cell, value) {
     switch (value) {        
-        case 1      : return '&#10004';        
-        case 0	    : return '<a href="">post</a>';
+        case 1      : return '&#10004';
         case 'wait' : return '<div class="loader"></div>';
-        default : return value;
+        default : return '<a href="">post</a>';
     }
 }
 
