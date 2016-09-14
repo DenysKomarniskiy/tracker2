@@ -17,7 +17,7 @@ public class Mail extends javax.mail.Authenticator {
 	private String subjectText;
 	private String bodyText;
 	private String pathFile;
-	private String addressFrom;
+	private String addressFrom = "tqc.autobot@isd.dp.ua";
 	private String[] addressTo;
 	private String[] addressCc = null;
 	

@@ -23,11 +23,35 @@ import org.jfree.data.general.DefaultPieDataset;
  */
 public class ChartFormationJFreeChart {
 
-	public ChartFormationJFreeChart(String pathFile, String[] listOflabel, Long[] listOfCountTC) {
+	public ChartFormationJFreeChart(DataFromCurrentTestingTableDB data, String pathFile) {
 		super();
 		this.pathFile = pathFile;
-		this.listOflabel = listOflabel;
-		this.listOfCountTC = listOfCountTC;
+		Long DurationNoNeedTC = data.getDurationNoNeedTC();
+		Long DurationInvestigatingTC = data.getDurationInvestigatingTC();
+		Long DurationCorrectionTC = data.getDurationCorrectionTC();
+		Long DurationWaitingTC = data.getDurationWaitingTC();
+		Long DurationFailedTC = data.getDurationFailedTC();
+		Long DurationPassedTC = data.getDurationPassedTC();
+		Long DurationEmptyTC = data.getDurationEmptyTC();
+
+		Long CountNoNeedTC = data.getCountNoNeedTC();
+		Long CountInvestigatingTC = data.getCountInvestigatingTC();
+		Long CountCorrectionTC = data.getCountCorrectionTC();
+		Long CountWaitingTC = data.getCountWaitingTC();
+		Long CountFailedTC = data.getCountFailedTC();
+		Long CountPassedTC = data.getCountPassedTC();
+		Long CountEmptyTC = data.getCountEmptyTC();		
+
+		String labelNoNeed = "NoNeed [" + DurationNoNeedTC + " min]";
+		String labelInvestigating = "Investigating [" + DurationInvestigatingTC + " min]";
+		String labelCorrection = "Correction [" + DurationCorrectionTC + " min]";
+		String labelWaiting = "Waiting [" + DurationWaitingTC + " min]";
+		String labelFailed = "Failed [" + DurationFailedTC + " min]";
+		String labelPassed = "Passed [" + DurationPassedTC + " min]";
+		String labelEmpty = "Empty [" + DurationEmptyTC + " min]";
+		this.setListOflabel(new String[] { labelNoNeed, labelInvestigating, labelCorrection, labelWaiting, labelFailed, labelPassed, labelEmpty });
+		this.setListOfCountTC(new Long[] { CountNoNeedTC, CountInvestigatingTC, CountCorrectionTC, CountWaitingTC, CountFailedTC, CountPassedTC, CountEmptyTC });
+		
 	}
 
 

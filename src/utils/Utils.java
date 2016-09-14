@@ -198,7 +198,7 @@ public class Utils {
 		Iterator queryDurationOfTCs;
 		tx = hibernateSession.beginTransaction();
 		queryDurationOfTCs = hibernateSession.createQuery("SELECT tsh.tcStatus as status, count(*) as count, sum(tsh.tduration) as duration FROM TestingSheet tsh  WHERE testing_id= :testing_id GROUP BY tsh.tcStatus")
-				.setParameter("testing_id", 5).getResultList().iterator();
+				.setParameter("testing_id", testinigId).getResultList().iterator();
 		tx.commit();
 
 		// [["W",4,98],["F",9,249],["C",2,122],["",666,30335],["P",43,2624],["I",1,88]]

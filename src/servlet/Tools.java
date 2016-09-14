@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 
 import async.actions.AsyncMailProcessor;
 import async.listener.AppAsyncListener;
+import models.entities.User;
 import utils.ChartFormationJFreeChart;
 import utils.DataFromCurrentTestingTableDB;
 import utils.Mail;
@@ -59,62 +60,35 @@ public class Tools extends HttpServlet {
 		if (action.equals("sendmail")) {
 			String testingId = request.getParameter("testing_id");
 			String verTQC = request.getParameter("tqc_version");
+			String officialEnv = request.getParameter("official_env");
 			String PathFile = getServletContext().getRealPath("pie_chart.png");
-			System.out.println("Testing ID is:" + testingId);
+			
 			// Getting data (duration and count of TC) from current testing
 			// table
 			DataFromCurrentTestingTableDB data = Utils.GetDurationAndCountTCFromDB(request,	Integer.parseInt(testingId));
 			// response.getWriter().println((new Gson()).toJson(data));
-
-			Long DurationNoNeedTC = data.getDurationNoNeedTC();
-			Long DurationInvestigatingTC = data.getDurationInvestigatingTC();
-			Long DurationCorrectionTC = data.getDurationCorrectionTC();
-			Long DurationWaitingTC = data.getDurationWaitingTC();
-			Long DurationFailedTC = data.getDurationFailedTC();
-			Long DurationPassedTC = data.getDurationPassedTC();
-			Long DurationEmptyTC = data.getDurationEmptyTC();
-
-			Long CountNoNeedTC = data.getCountNoNeedTC();
-			Long CountInvestigatingTC = data.getCountInvestigatingTC();
-			Long CountCorrectionTC = data.getCountCorrectionTC();
-			Long CountWaitingTC = data.getCountWaitingTC();
 			Long CountFailedTC = data.getCountFailedTC();
 			Long CountPassedTC = data.getCountPassedTC();
-			Long CountEmptyTC = data.getCountEmptyTC();
-
+			Long DurationFailedTC = data.getDurationFailedTC();
+			Long DurationPassedTC = data.getDurationPassedTC();
 			Long CountTotalTC = data.getCountTotalTC();
 			Long DurationTotalTC = data.getDurationTotalTC();
-
+			
 			Long CountProcessedTC = CountPassedTC + CountFailedTC;
 			Long DurationProcessedTC = DurationPassedTC + DurationFailedTC;
 			int PercentOfCountProcessedTC = (int) ((CountProcessedTC * 100) / CountTotalTC);
 			int PercentOfDurationProcessedTC = (int) ((DurationProcessedTC * 100) / DurationTotalTC);
-
-			String labelNoNeed = "NoNeed [" + DurationNoNeedTC + " min]";
-			String labelInvestigating = "Investigating [" + DurationInvestigatingTC + " min]";
-			String labelCorrection = "Correction [" + DurationCorrectionTC + " min]";
-			String labelWaiting = "Waiting [" + DurationWaitingTC + " min]";
-			String labelFailed = "Failed [" + DurationFailedTC + " min]";
-			String labelPassed = "Passed [" + DurationPassedTC + " min]";
-			String labelEmpty = "Empty [" + DurationEmptyTC + " min]";
-
-			ChartFormationJFreeChart chart = new ChartFormationJFreeChart();
-
-			chart.setPathFile(PathFile);
-			chart.setListOflabel(new String[] { labelNoNeed, labelInvestigating, labelCorrection, labelWaiting,
-					labelFailed, labelPassed, labelEmpty });
-			chart.setListOfCountTC(new Long[] { CountNoNeedTC, CountInvestigatingTC, CountCorrectionTC, CountWaitingTC,
-					CountFailedTC, CountPassedTC, CountEmptyTC });
+			
+			// Chart formation
+			ChartFormationJFreeChart chart = new ChartFormationJFreeChart(data, PathFile);
 			chart.createChart();
-
-			System.out.println(PathFile);
-
+			
+			//Mail sending
 			Mail mail = new Mail();
 			mail.setPathFile(PathFile);
-			mail.setAddressFrom("tqc.autobot@isd.dp.ua");
 			mail.setAddressTo(new String[] { "deko@isd.dp.ua" });
 			mail.setAddressCc(new String[] { "deko@isd.dp.ua" });
-			mail.setSubjectText("Current statistics for testing on zw10_pt92(TQC version: " + verTQC + ")");
+			mail.setSubjectText("Current statistics for testing on " + officialEnv + "(TQC version: " + verTQC + ")");
 			mail.setBodyText("<html> " + "<body> "
 					+ "<H3>Hello!! Here you can find current statistics for testing of SoftTotalQC: </H3>"
 					+ "<b>Testing progress:</b>" + "<br>" + "<b>- total TCs: [" + CountTotalTC + "] - ["
@@ -130,8 +104,6 @@ public class Tools extends HttpServlet {
 			asyncCtx.setTimeout(1 * 60000); // 1 minutes
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
 			executor.execute(new AsyncMailProcessor(asyncCtx, mail));
-
-			// response.getWriter().println("sendingMail working...");
 
 		}
 	}

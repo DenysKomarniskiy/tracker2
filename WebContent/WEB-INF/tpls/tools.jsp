@@ -7,7 +7,7 @@
 		<form id="send-mail" action="tools" method="post">
 			<input type="hidden" name="action" value ="sendmail"/>
 			<div>
-				<label>select testing
+				<label>Select testing
 					<select name="testing_id">
 					    <c:forEach items="${testings}" var="testing">						   
 					        <option value="${testing.id}">${testing.name}</option>
@@ -20,6 +20,13 @@
 					<input type="text" name="tqc_version" value="1.0" required/>
 				</label>
 			</div>
+			<div>
+				<label>Enter official env's
+					<input type="text" name="official_env" value="zw10, pt92, QA34_02" required/>
+				</label>
+			</div>
+			<br>
+			</br>
 			<input type="submit" name="action" value="Send Mail" />
 		</form>
 	</div>	
