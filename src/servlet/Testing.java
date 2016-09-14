@@ -44,7 +44,7 @@ public class Testing extends HttpServlet {
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List testings = hibernateSession.createQuery("SELECT tst.id, tst.name from Testing tst").getResultList();
-		List users = hibernateSession.createQuery("from User").getResultList();
+		List users =  hibernateSession.createQuery("from User").getResultList();
 		List envs = hibernateSession.createQuery("from Env").getResultList();
 		tx.commit();
 		 

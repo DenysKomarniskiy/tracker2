@@ -297,6 +297,8 @@ var APP = {
 			.on('submit', this.loadData.bind(this))
 			.trigger('submit');
 			
+			$userSelect.on('change', this.loadData.bind(this));
+			
 			$('#get-testplan').on('click', this.getSTTestPlan.bind(this));			
 
 		},
@@ -366,12 +368,12 @@ var APP = {
 		
 		e.preventDefault();
 		
-		var $form = $(e.target);
+		var $form = $('form#login-testing');
 		
 		localStorage.setItem('lastSelectedUser', $form.find('select[name="user_id"]').val());
 		localStorage.setItem('lastSelectedTesting', $form.find('select[name="testing_id"]').val());
 		
-		this.SETTINGS.fetchOpts.body = $form.serialize() + '&action=get';
+		this.SETTINGS.fetchOpts.body = $form.serialize();
 		
 		console.log('request ->', this.SETTINGS.fetchOpts);
 		
@@ -527,8 +529,9 @@ var APP = {
 				try {
 					var jresp = JSON.parse(resp);
 					console.log('response <-', jresp);
-					if (jresp.status == "Passed"){
+					if (jresp.status == "Passed" || jresp.status == "Failed"){
 						rowData.softdev = 1;
+						Notify.send('Testcase posted to SoftDev');
 					} else {
 						Modal.alert(resp);
 						rowData.softdev = 0;	
@@ -656,6 +659,9 @@ var APP = {
 			if (testCase.storageTC.features.toLowerCase().includes("critical"))
 				return;
 			
+			if (testCase.storageTC.duration === 0)
+				return;			
+			
 			testPlan += '[+] ' + testCase.storageTC.tc_id + getSpaces(testCase.storageTC.tc_id) + '//' + '\t' + testCase.storageTC.run_path + '\n';
 			testPlan += '\t[ ] ' + 'script: ' + testCase.storageTC.run_path + '\n';
 			testPlan += '\t[ ] ' + 'testcase: ' + testCase.storageTC.run_param + '\n';			
@@ -681,20 +687,18 @@ var APP = {
                {id: "tags",			name: "Tags", 		field: "tags", 			width: 100, editor: Slick.Editors.Text														},
                {id: "local_set", 	name: "Set Name", 	field: "testSet", 		width: 150,									sortable: true, 	formatter: (a, b, c) => c.local_set,},
                {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText													},    
-               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text,		resizable: true,								},
-               {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text														},
+               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text,										},
+               {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text,										},
            ],
            	options: {
     		    autoEdit: true,
     		    editable: true,
     		    enableAddRow: false,
-    		    enableCellNavigation: true,
-    		    asyncEditorLoading: false,
+    		    enableCellNavigation: true,    		    
     		    rowHeight: 25,
     		    cellFlashingCssClass: 'flash-cell',
     		    enableColumnReorder: false,
     		    multiColumnSort: true,
-    		    syncColumnCellResize: true
        		}
 		},
 		"testing": {

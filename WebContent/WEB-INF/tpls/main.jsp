@@ -75,8 +75,9 @@
 	</div>
 
 	<jsp:include page="modal.jsp" />
+	<jsp:include page="notify.jsp" />
 	
-	<script src="./js/lib/jquery/jquery-3.1.0.min.js"></script>
+	<script src="./js/lib/jquery/jquery-2.2.4.min.js"></script>
 	<script src="./js/lib/jquery/jquery-ui.min.js"></script>
 	<script src="./js/lib/jquery/jquery.event.drop-2.2.js"></script>
 	<script src="./js/lib/jquery/jquery.event.drag-2.2.js"></script>
