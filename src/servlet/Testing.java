@@ -228,7 +228,7 @@ public class Testing extends HttpServlet {
 		return testSheet;
 
 	}
-	void SendMailAsync(HttpServletRequest request){
+	private void SendMailAsync(HttpServletRequest request){
 		Mail mail = new Mail("correction");
 		mail.setSubjectText("New TC has been added to your Test Plan");
 						
