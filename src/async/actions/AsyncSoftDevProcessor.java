@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.servlet.AsyncContext;
 import javax.xml.datatype.DatatypeFactory;
@@ -20,6 +21,8 @@ import com.scc.softdev.services.TIssue;
 import com.scc.softdev.services.TIssueArray;
 import com.scc.softdev.services.TTestCase;
 import com.scc.softdev.services.TTestRun;
+import com.scc.softdev.services.TTestSet;
+import com.scc.softdev.services.TTestSetArray;
 import com.scc.softdev.services.TTestStep;
 import com.scc.softdev.services.UserField;
 import com.scc.softdev.services.UserFieldArray;
@@ -57,16 +60,16 @@ public class AsyncSoftDevProcessor implements Runnable {
 
 		testCasePort = testCaseService.getTestCaseImplPort();
 
-		if (sheetTc.getTcStatus().equals("F")) {
-			EntityImplService entityService = new EntityImplService();
-			IssueImplService issueService = new IssueImplService();
+		// if (sheetTc.getTcStatus().equals("F")) {
+		EntityImplService entityService = new EntityImplService();
+		IssueImplService issueService = new IssueImplService();
 
-			entityService.setHandlerResolver(handlerResolver);
-			issueService.setHandlerResolver(handlerResolver);
+		entityService.setHandlerResolver(handlerResolver);
+		issueService.setHandlerResolver(handlerResolver);
 
-			entityPort = entityService.getEntityImplPort();
-			issuePort = issueService.getIssueImplPort();
-		}
+		entityPort = entityService.getEntityImplPort();
+		issuePort = issueService.getIssueImplPort();
+		// }
 	}
 
 	public AsyncSoftDevProcessor(AsyncContext asyncCtx, String action) {
@@ -82,14 +85,26 @@ public class AsyncSoftDevProcessor implements Runnable {
 			PrintWriter responseWriter = asyncContext.getResponse().getWriter();
 			switch (action) {
 			case "process-tc1":
-				// entityPort.getEntityLinks(22L, 10000105581L, false)
-				responseWriter.println((new Gson()).toJson(getSDTestCase()));
+
+				TTestCase t = getSDTestCase(sheetTc.getStorageTC().getTc_id());
+
+				responseWriter.println((new Gson()).toJson(t));
+
+				// responseWriter.println((new
+				// Gson()).toJson(this.getSDTestCase()));
+
 				break;
 
 			case "process-tc":
 				TTestRun tTestRun = null;
-				TTestCase tTestCase = getSDTestCase();
-				long testsetId = getSDTestSetId();
+				TTestCase tTestCase = getSDTestCase(sheetTc.getStorageTC().getTc_id());
+				long testsetId = getSDTestSetId(sheetTc.getStorageTC().getTestSet().getSdSet());
+
+				List<TTestSet> testSets = testCasePort.getTestSetsForTestCase(tTestCase.getEntityID()).getItem();
+				
+				if (!isIncludes(testSets, testsetId))
+					throw new Exception("Last revision of testcase " + tTestCase.getUFI() + " not in testset " + sheetTc.getStorageTC().getTestSet().getSdSet());
+
 				UserFieldArray userFields = createSDUserFields();
 
 				if (sheetTc.getTcStatus().equals("P")) {
@@ -124,6 +139,17 @@ public class AsyncSoftDevProcessor implements Runnable {
 		}
 
 		asyncContext.complete();
+	}
+
+	private boolean isIncludes(List<TTestSet> testSets, long testsetId) {
+		boolean result = false;
+
+		for (TTestSet testSet : testSets) {
+			if (testSet.getEntityID() == testsetId)
+				result = true;
+		}
+
+		return result;
 	}
 
 	private TTestRun failTc(TTestCase tTestCase, long testsetId, UserFieldArray userFields) throws Exception {
@@ -185,7 +211,7 @@ public class AsyncSoftDevProcessor implements Runnable {
 	private ArrayList<TIssue> getSDIssues(FailInfo failInfo) throws Exception {
 
 		ArrayList<TIssue> sdIssues = new ArrayList<TIssue>();
-		
+
 		try {
 			for (String issueUFI : failInfo.getIssues()) {
 				StringArray arrayIssueUFI = new StringArray();
@@ -198,15 +224,14 @@ public class AsyncSoftDevProcessor implements Runnable {
 		} catch (Exception e) {
 			throw new Exception("No issue found");
 		}
-		
+
 		return sdIssues;
 	}
 
-	private TTestCase getSDTestCase() throws Exception {
-
-		String tc_id = sheetTc.getStorageTC().getTc_id();
-		String[] splittedId = tc_id.split(":");
-		tc_id = splittedId.length == 1 ? splittedId[0] : splittedId[1];
+	private TTestCase getSDTestCase(String storageTCId) throws Exception {
+		
+		String[] splittedId = storageTCId.split(":");
+		String tc_id = splittedId.length == 1 ? splittedId[0] : splittedId[1];
 
 		TTestCase tTestCase = testCasePort.getTestCaseByUFI(asyncContext.getRequest().getServletContext().getInitParameter("testCasePrefix") + tc_id);
 
@@ -216,9 +241,9 @@ public class AsyncSoftDevProcessor implements Runnable {
 		return tTestCase;
 	}
 
-	private Long getSDTestSetId() throws Exception {
+	private Long getSDTestSetId(String sdSet) throws Exception {
 
-		PairArray testSets = testCasePort.getTestSetByName(sheetTc.getStorageTC().getTestSet().getSdSet(), Long.valueOf(asyncContext.getRequest().getServletContext().getInitParameter("SDProductId")), "Reviewed", true);
+		PairArray testSets = testCasePort.getTestSetByName(sdSet, Long.valueOf(asyncContext.getRequest().getServletContext().getInitParameter("SDProductId")), "Reviewed", true);
 
 		Long testsetId = (Long) testSets.getItem().get(0).getLeft();
 

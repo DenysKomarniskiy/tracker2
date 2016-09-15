@@ -397,13 +397,11 @@ input.editor-checkbox {
 }
 
 /*mdl main*/
-
 .mdl-layout__container {
     position: absolute;
     width: 100%;
     height: 100%;
 }
-
 .mdl-layout {
     width: 100%;
     height: 100%;
@@ -414,7 +412,6 @@ input.editor-checkbox {
     position: relative;
     -webkit-overflow-scrolling: touch;
 }
-
 .mdl-layout__header {
     display: flex;
     flex-direction: column;
@@ -436,7 +433,6 @@ input.editor-checkbox {
     transition-timing-function: cubic-bezier(.4, 0, .2, 1);
     transition-property: max-height, box-shadow;
 }
-
 .mdl-layout__drawer-button {
     display: block;
     position: absolute;
@@ -458,14 +454,12 @@ input.editor-checkbox {
     z-index: 4;
     outline: none;
 }
-
 .mdl-layout__header .user-data {
     position: absolute;
     right: 0;
     color: rgba(255,255,255,0.5);
     padding: 3px;    
 }
-
 .mdl-layout__header-row {
     display: flex;
     flex-direction: row;
@@ -478,13 +472,11 @@ input.editor-checkbox {
     margin: 0;
     padding: 0 40px 0 80px;
 }
-
 @media screen and (max-width: 1205px) {
     .mdl-layout__header-row {
         height: 128px;
     }
 }
-
 .mdl-layout__title {
     display: block;
     position: relative;
@@ -497,15 +489,12 @@ input.editor-checkbox {
     pointer-events: none;
     -webkit-user-select: none;
 }
-
 .mdl-layout__header-item {
 	margin: 0 0 0 20px
 }
-
 .mdl-layout-spacer {
     flex-grow: 1;
 }
-
 .mdl-layout__drawer {
     display: flex;
     flex-direction: column;
@@ -532,28 +521,23 @@ input.editor-checkbox {
     overflow-y: auto;
     z-index: 5;
 }
-
 .mdl-layout__drawer.is-visible {
     transform: translateX(0);
 }
-
 .mdl-layout__drawer > .mdl-layout__title {
     line-height: 64px;
     padding-left: 40px;
 }
-
 .mdl-layout__drawer .mdl-navigation {
     flex-direction: column;
     align-items: stretch;
     padding-top: 16px;
 }
-
 .mdl-navigation {
     display: flex;
     flex-wrap: nowrap;
     box-sizing: border-box;
 }
-
 .mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
     display: block;
     -webkit-flex-shrink: 0;
@@ -563,7 +547,6 @@ input.editor-checkbox {
     margin: 0;
     color: #757575;
 }
-
 .mdl-navigation__link {
     color: #424242;
     text-decoration: none;
@@ -574,15 +557,12 @@ input.editor-checkbox {
     letter-spacing: 0;
     opacity: .87;
 }
-
 .mdl-navigation__link .material-icons {
     vertical-align: top;
 }
-
 .mdl-navigation__link:hover {
     background-color: #e0e0e0;
 }
-
 .mdl-layout__obfuscator {
     background-color: rgba(0, 0, 0, .5);
     opacity: 0;
@@ -590,7 +570,6 @@ input.editor-checkbox {
     visibility: visible;
     pointer-events: none;
 }
-
 .mdl-layout__obfuscator {
     background-color: transparent;
     position: absolute;
@@ -604,24 +583,19 @@ input.editor-checkbox {
     transition-duration: .2s;
     transition-timing-function: cubic-bezier(.4, 0, .2, 1);
 }
-
 .mdl-layout__obfuscator.is-visible {
     pointer-events: auto;
     opacity: 1;
 }
-
 .mdl-layout__obfuscator.is-visible {
     background-color: rgba(0, 0, 0, .5);
     visibility: visible;
 }	
-
-
 .mdl-textfield--expandable {
     min-width: 32px;
     width: auto;
     min-height: 32px;
 }
-
 .mdl-textfield {
     position: relative;
     font-size: 16px;
@@ -632,11 +606,9 @@ input.editor-checkbox {
     margin: 0;
     padding: 20px 0;
 }
-
 .mdl-textfield--expandable .mdl-button--icon {
     top: 16px;
 }
-
 .mdl-textfield__expandable-holder {
     display: inline-block;
     position: relative;
@@ -646,7 +618,6 @@ input.editor-checkbox {
     display: inline-block;
     
 }
-
 .mdl-textfield__input {
     border: none;
     border-bottom: 1px solid rgba(255,255,255,0.5);
@@ -661,11 +632,9 @@ input.editor-checkbox {
     color: inherit;    
     outline: none;
 }
-
 .mdl-textfield--expandable .mdl-textfield__input:valid { max-width: none; }
 .mdl-textfield--expandable .mdl-textfield__input:invalid { max-width: 0; }
 .mdl-textfield--expandable .mdl-textfield__input:focus {	max-width: none; }
-
 .mdl-textfield__label {
     bottom: 0;
     color: rgba(255,255,255,0.26);
@@ -681,11 +650,9 @@ input.editor-checkbox {
     white-space: nowrap;
     text-align: left;
 }
-
 .floating-label .mdl-textfield__label {
 	height: 24px;
 }
-
 .float-palceholder {
 	position: absolute;
     color: rgba(255,255,255,0.5);
@@ -694,8 +661,6 @@ input.editor-checkbox {
     transition: all .2s cubic-bezier(.4,0,.2,1);
     pointer-events: none;
 }
-
-
 .mdl-select select:valid + .float-palceholder,
 .mdl-textfield__input:focus + .float-palceholder,
 .mdl-textfield__input:valid + .float-palceholder {
@@ -703,7 +668,6 @@ input.editor-checkbox {
 	bottom: 45px;	
 	color: rgba(255,255,255,0.75);
 }
-
 .mdl-textfield__label:after {
     background-color: #fff;
     bottom: 0;
@@ -715,7 +679,6 @@ input.editor-checkbox {
     transition: all .2s cubic-bezier(.4,0,.2,1);
     visibility: hidden;    
 }
-
 .mdl-textfield__input:focus + .mdl-textfield__label:after,
 .mdl-textfield__input:focus + .float-palceholder + .mdl-textfield__label:after {
 	left: 0;
@@ -723,7 +686,6 @@ input.editor-checkbox {
 	width: 100%;
 	bottom: 0;
 }
-
 .mdl-textfield .mdl-button {
     position: absolute;
     bottom: 20px;
@@ -731,13 +693,11 @@ input.editor-checkbox {
 .mdl-textfield--expandable .mdl-button--icon {
     top: 16px;
 }
-
 .mdl-select {
 	padding: 20px 0;
     overflow: hidden;
     position: relative;    
 }
-
 .mdl-select:after{
     content: 'arrow_drop_down';
     font: 24px 'Material Icons';
@@ -747,7 +707,6 @@ input.editor-checkbox {
     color: #fff;
     z-index: -1;
 }
-
 .mdl-select select {    
 	font-size: 16px;
 	color: #fff;
@@ -765,7 +724,6 @@ input.editor-checkbox {
        -moz-appearance: none;
             appearance: none;
 }
-
 .mdl-select select option {
 	border: none;
     background: #3f51b5;
@@ -773,8 +731,6 @@ input.editor-checkbox {
     height: 20px;
     display: inline-block;
 }
-
-
 .mdl-button {
     background: 0 0;
     border: none;
@@ -801,7 +757,6 @@ input.editor-checkbox {
     line-height: 36px;
     vertical-align: middle;
 }
-
 .mdl-button--icon {
     border-radius: 50%;
     font-size: 24px;
@@ -815,16 +770,12 @@ input.editor-checkbox {
     color: inherit;
     line-height: normal;
 }
-
-
 .mdl-button--icon:hover {
     background-color: rgba(255,255,255,.2);
 }
-
 .mdl-button .material-icons {
     vertical-align: middle;
 }
-
 .material-icons {
     font-family: 'Material Icons';
     font-weight: normal;
@@ -839,6 +790,21 @@ input.editor-checkbox {
     direction: ltr;
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
+}
+
+.search-field i {
+	position: absolute;
+    top: 3px;
+    font-size: 18px;
+    right: 0; 
+    opacity: 0;
+    transition: opacity 0s ease;
+    cursor: pointer;
+}
+
+.mdl-textfield__input:valid + label + i{
+	opacity: 1;
+	transition-duration: 0.3s;
 }
 
 /*control panel*/
