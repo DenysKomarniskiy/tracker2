@@ -156,31 +156,11 @@ public class Testing extends HttpServlet {
 			editMsg = "<< TC-" + testingSheet.getStorageTC().getTc_id() + " >>";
 			
 			if (runnerEdt != null) {
-				String oldRunnerId = testingSheet.getRunner();
-				String newRunnerId = runnerEdt;
-				String oldRunnerMailAddress = "";
-				String newRunnerMailAddress = "";
-				String tcId = testingSheet.getStorageTC().getTc_id();
-				System.out.println("oldRunnerId" + oldRunnerId);
-				System.out.println("newRunnerId" + newRunnerId);
-				String hql = "from User where department = :department";
-								
-				Query query = hibernateSession.createQuery(hql).setParameter("department", "Total QC");
-				List<User> listUsers = query.getResultList();
-				 
-				for (User aUser : listUsers) {
-					if (oldRunnerId.equals(aUser.getId())){
-						oldRunnerMailAddress = aUser.getEmail();
-					}
-					if (newRunnerId.equals(aUser.getId())){
-						newRunnerMailAddress = aUser.getEmail();
-					}
-				}
-						
+				List<User> listUsers = hibernateSession.createQuery("from User where department = :department").setParameter("department", "Total QC").getResultList();
+				SendMailAsync(request, testingSheet, listUsers);
 				testingSheet.setRunner(runnerEdt);
-				editMsg = editMsg + " New runner: " + runnerEdt + " || "; 
-				SendMailAsync(request, oldRunnerMailAddress, newRunnerMailAddress, tcId);
-				
+				editMsg = editMsg + " New runner: " + runnerEdt + " || ";
+
 			}
 			if (tcStatusEdt != null) {
 				testingSheet.setTcStatus(tcStatusEdt);
@@ -251,11 +231,29 @@ public class Testing extends HttpServlet {
 		return testSheet;
 
 	}
-	private void SendMailAsync(HttpServletRequest request, String mailAdressFrom, String mailAdressTo, String tcId){
+	private void SendMailAsync(HttpServletRequest request, TestingSheet testingSheet, List<User> listUsers){
+		String oldRunnerId = testingSheet.getRunner();
+		String newRunnerId = request.getParameter("edt_runner");
+		System.out.println("oldRunnerId" + oldRunnerId);
+		System.out.println("newRunnerId" + newRunnerId);
+		String oldRunnerMailAddress = "";
+		String newRunnerMailAddress = "";
+		String tcId = testingSheet.getStorageTC().getTc_id();
+		String tcSet = testingSheet.getStorageTC().getTestSet().getLocalSet();
+				 
+		for (User aUser : listUsers) {
+			if (oldRunnerId.equals(aUser.getId())){
+				oldRunnerMailAddress = aUser.getEmail();
+			}
+			if (newRunnerId.equals(aUser.getId())){
+				newRunnerMailAddress = aUser.getEmail();
+			}
+		}
+		
 		Mail mail = new Mail("new_runner");
-		mail.setSubjectText("New TC ( " + tcId + " ) has been added to your Test Plan");
-		mail.setAddressFrom(mailAdressFrom);	
-		mail.setAddressTo(new String[] { mailAdressTo });
+		mail.setSubjectText("New TC ( " + tcId + " from " + tcSet + " ) has been added to your Test Plan");
+		mail.setAddressFrom(oldRunnerMailAddress);	
+		mail.setAddressTo(new String[] { newRunnerMailAddress });
 		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 		AsyncContext asyncCtx = request.startAsync();
 		asyncCtx.addListener(new AppAsyncListener());
