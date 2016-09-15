@@ -86,7 +86,7 @@
 			closeEl.onclick = () => {nbox.remove()};			
 			
 			this.nArea.appendChild(nbox);
-			setTimeout(() => {nbox.classList.remove('hidden');}, 1);
+			setTimeout(() => {nbox.classList.remove('hidden');}, 100);
 				
 		}
 			

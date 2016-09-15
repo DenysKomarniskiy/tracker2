@@ -32,9 +32,10 @@
 							<label class="mdl-button mdl-button--icon" for="search-tc" title="Search"> 
 								<i class="material-icons">search</i>
 							</label>
-							<div class="mdl-textfield__expandable-holder">
+							<div class="mdl-textfield__expandable-holder search-field">
 								<input class="mdl-textfield__input" type="text" id="search-tc" required>
 								<label class="mdl-textfield__label" for="sample-expandable"></label>
+								<i id="reset-search">×</i>
 							</div>
 						</div>					
 					</div>					

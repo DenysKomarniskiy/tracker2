@@ -14,7 +14,8 @@ var APP = {
 			this.initFace[this.faceName].apply(this);
 		}	
 		
-		$("#search-tc").keyup(this.search.bind(this));		
+		$("#search-tc").keyup(this.search.bind(this));	
+		$('#reset-search').on('click', () => {$("#search-tc").val('').trigger('keyup')})
 		
 		if (view.data) {
 			this.dataView = new Slick.Data.DataView();		
@@ -414,7 +415,7 @@ var APP = {
 		
 		var data = args.path.reduce((prev, curr) => prev[curr], item);		 
 			 
-		return data.includes(args.q);
+		return data.toLowerCase().includes(args.q.toLowerCase());
 	},
 	
 	editCommandHandler: function(item, column, editCommand) {
@@ -531,7 +532,7 @@ var APP = {
 					console.log('response <-', jresp);
 					if (jresp.status == "Passed" || jresp.status == "Failed"){
 						rowData.softdev = 1;
-						Notify.send('Testcase posted to SoftDev');
+						Notify.send('Testcase ' + rowData.storageTC.tc_id + ' posted to SoftDev. ' + jresp.name);
 					} else {
 						Modal.alert(resp);
 						rowData.softdev = 0;	
