@@ -119,8 +119,7 @@ public class Mail extends javax.mail.Authenticator {
 					+ "<td><div style='float: left'><img src=\"cid:image\"></div></td>" + "</tr>" + "</table>"
 					+ "</body>" + "</html>");
 			break;
-		case "correction":
-			setAddressTo(new String[] { "deko@isd.dp.ua" });
+		case "new_runner":
 			setAddressCc(new String[] { "deko@isd.dp.ua" });
 			setBodyText("<html> " + "<body> " + "<H3>Hello! New TC has been ADDED to your Test Plan. </H3>" + "</body>"
 					+ "</html>");

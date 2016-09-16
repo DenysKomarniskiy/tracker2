@@ -3,7 +3,7 @@
 <div class="tools content flex-container-row">
 
 	<div class="widget send-mail">
-		<h3>Send mail</h3>
+		<h3>Send mail to managers</h3>
 		<form id="send-mail" action="tools" method="post">
 			<input type="hidden" name="action" value ="sendmail"/>
 			<div>

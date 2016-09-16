@@ -1,6 +1,7 @@
 package servlet;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -26,6 +27,7 @@ import async.listener.AppAsyncListener;
 import models.entities.Env;
 import models.entities.TestingSheet;
 import models.entities.User;
+import utils.DataFromCurrentTestingTableDB;
 import utils.Mail;
 import utils.TestingSerializer;
 import utils.Utils;
@@ -153,10 +155,11 @@ public class Testing extends HttpServlet {
 			editMsg = "<< testsheet entry: " + testingSheet.getId() + " >>";
 			
 			if (runnerEdt != null) {
+				List<User> listUsers = hibernateSession.createQuery("from User where department = :department").setParameter("department", "Total QC").getResultList();
+				SendMailAsync(request, testingSheet, listUsers);
 				testingSheet.setRunner(runnerEdt);
-				editMsg = editMsg + " New runner: " + runnerEdt + " || "; 
-				SendMailAsync(request);
-				
+				editMsg = editMsg + " New runner: " + runnerEdt + " || ";
+
 			}
 			if (tcStatusEdt != null) {
 				testingSheet.setTcStatus(tcStatusEdt);
@@ -227,10 +230,29 @@ public class Testing extends HttpServlet {
 		return testSheet;
 
 	}
-	private void SendMailAsync(HttpServletRequest request){
-		Mail mail = new Mail("correction");
-		mail.setSubjectText("New TC has been added to your Test Plan");
-						
+	private void SendMailAsync(HttpServletRequest request, TestingSheet testingSheet, List<User> listUsers){
+		String oldRunnerId = testingSheet.getRunner();
+		String newRunnerId = request.getParameter("edt_runner");
+		System.out.println("oldRunnerId" + oldRunnerId);
+		System.out.println("newRunnerId" + newRunnerId);
+		String oldRunnerMailAddress = "";
+		String newRunnerMailAddress = "";
+		String tcId = testingSheet.getStorageTC().getTc_id();
+		String tcSet = testingSheet.getStorageTC().getTestSet().getLocalSet();
+				 
+		for (User aUser : listUsers) {
+			if (oldRunnerId.equals(aUser.getId())){
+				oldRunnerMailAddress = aUser.getEmail();
+			}
+			if (newRunnerId.equals(aUser.getId())){
+				newRunnerMailAddress = aUser.getEmail();
+			}
+		}
+		
+		Mail mail = new Mail("new_runner");
+		mail.setSubjectText("New TC ( " + tcId + " from " + tcSet + " ) has been added to your Test Plan");
+		mail.setAddressFrom(oldRunnerMailAddress);	
+		mail.setAddressTo(new String[] { newRunnerMailAddress });
 		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 		AsyncContext asyncCtx = request.startAsync();
 		asyncCtx.addListener(new AppAsyncListener());
