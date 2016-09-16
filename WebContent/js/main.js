@@ -163,6 +163,7 @@ var APP = {
 			
 			console.log('init tools..');
 			
+			$('input[name="tqc_version"]').val(localStorage.getItem('tqcver'))
 			$sendMailForm = $('#send-mail');
 			$sendButton = $sendMailForm.find('input[type="submit"]');
 			$sendButton.on('click', (e) => {

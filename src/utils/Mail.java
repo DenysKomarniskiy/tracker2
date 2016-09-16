@@ -108,8 +108,8 @@ public class Mail extends javax.mail.Authenticator {
 			PercentOfCountProcessedTC = (int) ((CountProcessedTC * 100) / CountTotalTC);
 			PercentOfDurationProcessedTC = (int) ((DurationProcessedTC * 100) / DurationTotalTC);
 
-			setAddressTo(new String[] { "opya@isd.dp.ua" });
-			setAddressCc(new String[] { "opya@isd.dp.ua" });
+			setAddressTo(new String[] { "deko@isd.dp.ua" });
+			setAddressCc(new String[] { "deko@isd.dp.ua" });
 			setBodyText("<html> " + "<body> "
 					+ "<H3>Hello! Here you can find current statistics for testing of SoftTotalQC: </H3>"
 					+ "<b>Testing progress:</b>" + "<br>" + "<b>- total TCs: [" + CountTotalTC + "] - ["
