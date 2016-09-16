@@ -83,7 +83,7 @@ var APP = {
 		stats["stats-processed-proc-pcs"] = Math.ceil((stats["stats-processed-pcs"] / stats["stats-total-pcs"]) * 100);
 		stats["stats-processed-proc-min"] = Math.ceil((stats["stats-processed-min"] / stats["stats-total-min"]) * 100);
 		stats["stats-empty-pcs"] = stats["stats-total-pcs"] - stats["stats-processed-pcs"] - stats["stats-wait-pcs"] - stats["stats-correction-pcs"];
-		console.log(stats);
+		
 		$.each(this.$statsHeaderSpans, (i, spanEl) => {			
 			spanEl.innerText = stats[spanEl.id];
 		})
@@ -579,9 +579,9 @@ var APP = {
 			"action=edit&id=" + rowData.id
 			+ "&edt_env_id=" + envId
 			+ "&edt_status=" + newStatus
-			+ ((newStatus=='P' || newStatus=='F') ? "&edt_tqc_ver=" + view.appVer.tqcver : '')
-			+ ((newStatus=='P' || newStatus=='F') ? "&edt_lab_ver=" + view.appVer.labver : '')
-			+ ((newStatus=='P' || newStatus=='F') ? "&edt_gene_ver=" + view.appVer.genever : '');   		
+			+ "&edt_tqc_ver=" + view.appVer.tqcver 
+			+ ((rowData.storageTC.isLab) ? "&edt_lab_ver=" + view.appVer.labver : '')
+			+ ((rowData.storageTC.isGene) ? "&edt_gene_ver=" + view.appVer.genever : '');   		
 
 		console.log('request ->', this.SETTINGS.fetchOpts);	
 		
@@ -691,6 +691,8 @@ var APP = {
                {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText													},    
                {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text,										},
                {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text,										},
+               {id: "edt_is_lab",	name: "Is Lab", 	field: "isLab", 		width: 100, editor: Slick.Editors.Text,										},
+               {id: "edt_is_gene",	name: "Is Gene", 	field: "isGene", 		width: 100, editor: Slick.Editors.Text,										},
            ],
            	options: {
     		    autoEdit: true,

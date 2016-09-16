@@ -275,7 +275,8 @@ public class AsyncSoftDevProcessor implements Runnable {
 		runtime.setValue(String.valueOf(sheetTc.getDuration()));
 		userFields.getItem().add(runtime);
 
-		if (sheetTc.getLabVer() != null) {
+		
+		if (sheetTc.getStorageTC().getIsLab() == 1 && sheetTc.getLabVer() != null) {
 			UserField labver = new UserField();
 			labver.setNumber(4);
 			labver.setName("Lab_Version_Tested");
@@ -283,7 +284,7 @@ public class AsyncSoftDevProcessor implements Runnable {
 			userFields.getItem().add(labver);
 		}
 
-		if (sheetTc.getGeneVer() != null) {
+		if (sheetTc.getStorageTC().getIsGene() == 1 && sheetTc.getGeneVer() != null) {
 			UserField genever = new UserField();
 			genever.setNumber(7);
 			genever.setName("Gene_Version_Tested");

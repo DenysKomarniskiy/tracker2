@@ -46,6 +46,28 @@ public class StorageTC  {
 	@Column(name = "test_set_id")
 	private int testSetId;
 	
+	public int getIsLab() {
+		return isLab;
+	}
+
+	public void setIsLab(int isLab) {
+		this.isLab = isLab;
+	}
+
+	public int getIsGene() {
+		return isGene;
+	}
+
+	public void setIsGene(int isGene) {
+		this.isGene = isGene;
+	}
+
+	@Column(name = "is_lab")
+	private int isLab;
+	
+	@Column(name = "is_gene")
+	private int isGene;
+	
 	public int getTestSetId() {
 		return testSetId;
 	}

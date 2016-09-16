@@ -69,6 +69,8 @@ public class Storage extends HttpServlet {
 		String runParamEdt = request.getParameter("edt_run_param");
 		String apps = request.getParameter("apps");
 		String tags = request.getParameter("tags");
+		String isLab = request.getParameter("edt_is_lab");
+		String isGene = request.getParameter("edt_is_gene");
 
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
@@ -119,6 +121,16 @@ public class Storage extends HttpServlet {
 				storageTC.setDuration(new Integer(durationEdt));
 				editMsg = editMsg + " New duration: " + durationEdt + " || ";
 			}
+			
+			if (isLab != null) {
+				storageTC.setIsLab(new Integer(isLab));
+				editMsg = editMsg + " New isLab: " + isLab + " || ";
+			}
+			if (isGene != null) {
+				storageTC.setIsGene(new Integer(isGene));
+				editMsg = editMsg + " New isGene: " + isGene + " || ";
+			}
+			
 			hibernateSession.update(storageTC);
 			tx.commit();
 

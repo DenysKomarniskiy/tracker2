@@ -63,11 +63,8 @@ public class Tools extends HttpServlet {
 			String officialEnv = request.getParameter("official_env");
 			String PathFile = getServletContext().getRealPath("pie_chart.png");
 			
-			// Getting data (duration and count of TC) from current testing
-			// table
+			// Getting data (duration and count of TC) from current testing table
 			DataFromCurrentTestingTableDB data = Utils.GetDurationAndCountTCFromDB(request,	Integer.parseInt(testingId));
-			// response.getWriter().println((new Gson()).toJson(data));
-			
 			
 			// Chart formation
 			ChartFormationJFreeChart chart = new ChartFormationJFreeChart(data, PathFile);
