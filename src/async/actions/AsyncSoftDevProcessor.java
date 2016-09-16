@@ -22,7 +22,6 @@ import com.scc.softdev.services.TIssueArray;
 import com.scc.softdev.services.TTestCase;
 import com.scc.softdev.services.TTestRun;
 import com.scc.softdev.services.TTestSet;
-import com.scc.softdev.services.TTestSetArray;
 import com.scc.softdev.services.TTestStep;
 import com.scc.softdev.services.UserField;
 import com.scc.softdev.services.UserFieldArray;
@@ -32,6 +31,7 @@ import com.scc.softdev.services.impl.SoftDevEntity;
 import com.scc.softdev.services.impl.SoftDevIssue;
 import com.scc.softdev.services.impl.SoftDevTestCase;
 import com.scc.softdev.services.impl.TestCaseImplService;
+import com.scc.softdev.services.impl.SDException;
 
 import models.entities.FailInfo;
 import models.entities.TestingSheet;
@@ -129,6 +129,14 @@ public class AsyncSoftDevProcessor implements Runnable {
 				responseWriter.println("{\"error\":\"AsyncSoftDevProcessor: unknown action\"}");
 				break;
 			}
+		} catch (SDException e) {
+			try {
+				e.printStackTrace();
+				asyncContext.getResponse().getWriter().println("SoftDev says: " + e.getFaultInfo().getMessage());				
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
 		} catch (Exception e) {
 			try {
 				e.printStackTrace();

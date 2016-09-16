@@ -680,19 +680,19 @@ var APP = {
 	SETTINGS: {
 		"storage": {
 			columns: [
-               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 200, 								sortable: true									},    
+               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 180, 								sortable: true									},    
                {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50, 	editor: Slick.Editors.Select, 						options: view.usersString, 	},
                {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer													},
                {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,  editor: Slick.Editors.Integer,	sortable: true, 								},
                {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65,  								sortable: true									},
-               {id: "apps",			name: "Apps", 		field: "apps", 			width: 100, editor: Slick.Editors.Text														},
+               {id: "apps",			name: "Apps", 		field: "apps", 			width: 65, editor: Slick.Editors.Text														},
                {id: "tags",			name: "Tags", 		field: "tags", 			width: 100, editor: Slick.Editors.Text														},
                {id: "local_set", 	name: "Set Name", 	field: "testSet", 		width: 150,									sortable: true, 	formatter: (a, b, c) => c.local_set,},
                {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText													},    
                {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text,										},
                {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text,										},
-               {id: "edt_is_lab",	name: "Is Lab", 	field: "isLab", 		width: 100, editor: Slick.Editors.Text,										},
-               {id: "edt_is_gene",	name: "Is Gene", 	field: "isGene", 		width: 100, editor: Slick.Editors.Text,										},
+               {id: "edt_is_lab",	name: "Is Lab", 	field: "isLab", 		width: 50, editor: Slick.Editors.Text,										},
+               {id: "edt_is_gene",	name: "Is Gene", 	field: "isGene", 		width: 50, editor: Slick.Editors.Text,										},
            ],
            	options: {
     		    autoEdit: true,
