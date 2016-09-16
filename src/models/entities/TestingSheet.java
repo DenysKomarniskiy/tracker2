@@ -50,7 +50,7 @@ public class TestingSheet {
 	private Testing testing;
 
 	@OneToOne
-	@JoinColumn(name = "strg_id", nullable = false)
+	@JoinColumn(name = "strg_id", nullable = false, updatable = false)
 	private StorageTC storageTC;
 
 	@Column(name = "fail_info", nullable = true, insertable = false)

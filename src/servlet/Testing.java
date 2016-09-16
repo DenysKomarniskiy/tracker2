@@ -136,8 +136,7 @@ public class Testing extends HttpServlet {
 			String labVerEdt = request.getParameter("edt_lab_ver");
 			String geneVerEdt = request.getParameter("edt_gene_ver");
 			String failInfo = request.getParameter("edt_fail_info");
-			String envId = request.getParameter("edt_env_id");			
-			
+			String envId = request.getParameter("edt_env_id");					
 
 			if (id == null) {
 				response.setStatus(400);
@@ -151,7 +150,7 @@ public class Testing extends HttpServlet {
 			tx = hibernateSession.beginTransaction();
 			TestingSheet testingSheet = (TestingSheet) hibernateSession.load(TestingSheet.class, new Integer(id));
     
-			editMsg = "<< TC-" + testingSheet.getStorageTC().getTc_id() + " >>";
+			editMsg = "<< testsheet entry: " + testingSheet.getId() + " >>";
 			
 			if (runnerEdt != null) {
 				testingSheet.setRunner(runnerEdt);
@@ -197,7 +196,7 @@ public class Testing extends HttpServlet {
 			tx.commit();
 
 			response.getWriter().println(gson.toJson(utils.Utils.unproxy(testingSheet)));
-			Utils.LogMessage(logger, editMsg, request);
+//			Utils.LogMessage(logger, editMsg, request);
 
 		}
 	}

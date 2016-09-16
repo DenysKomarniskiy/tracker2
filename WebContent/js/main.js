@@ -756,8 +756,6 @@ var APP = {
 		}
 	},
 	
-
-	
 }
 		
 APP.init();

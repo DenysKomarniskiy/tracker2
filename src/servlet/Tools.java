@@ -85,6 +85,8 @@ public class Tools extends HttpServlet {
 			asyncCtx.setTimeout(1 * 60000); // 1 minutes
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
 			executor.execute(new AsyncMailProcessor(asyncCtx, mail));
+			
+			response.getWriter().println(1);
 
 		}
 	}

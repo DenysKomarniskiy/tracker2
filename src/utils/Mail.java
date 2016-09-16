@@ -1,17 +1,19 @@
 package utils;
 
-import java.util.*;
+
+import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.*;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
-import com.google.gson.Gson;
 
 public class Mail extends javax.mail.Authenticator {
 
@@ -106,8 +108,8 @@ public class Mail extends javax.mail.Authenticator {
 			PercentOfCountProcessedTC = (int) ((CountProcessedTC * 100) / CountTotalTC);
 			PercentOfDurationProcessedTC = (int) ((DurationProcessedTC * 100) / DurationTotalTC);
 
-			setAddressTo(new String[] { "deko@isd.dp.ua" });
-			setAddressCc(new String[] { "deko@isd.dp.ua" });
+			setAddressTo(new String[] { "opya@isd.dp.ua" });
+			setAddressCc(new String[] { "opya@isd.dp.ua" });
 			setBodyText("<html> " + "<body> "
 					+ "<H3>Hello! Here you can find current statistics for testing of SoftTotalQC: </H3>"
 					+ "<b>Testing progress:</b>" + "<br>" + "<b>- total TCs: [" + CountTotalTC + "] - ["
