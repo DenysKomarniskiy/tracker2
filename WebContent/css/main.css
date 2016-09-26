@@ -339,7 +339,7 @@ input.editor-checkbox {
 }
 
 .flash-cell {
-	background-color: rgba(0, 4, 247, 0.29);
+	background-color: rgba(0, 4, 247, 0.29) !important;
 }
 
 .slick-cell {
@@ -698,7 +698,7 @@ input.editor-checkbox {
     overflow: hidden;
     position: relative;    
 }
-.mdl-select:after{
+.mdl-select:after {
     content: 'arrow_drop_down';
     font: 24px 'Material Icons';
     position: absolute;
@@ -707,10 +707,9 @@ input.editor-checkbox {
     color: #fff;
     z-index: -1;
 }
-.mdl-select select {    
-	font-size: 16px;
+.mdl-select select {
 	color: #fff;
-    font-family: "Helvetica","Arial",sans-serif;
+    font: 16px "Helvetica","Arial",sans-serif;
 	outline: none;
     padding: 4px 25px 4px 0px;    
     border-top: none;
@@ -725,6 +724,7 @@ input.editor-checkbox {
             appearance: none;
 }
 .mdl-select select option {
+	font: 16px "Helvetica","Arial",sans-serif;
 	border: none;
     background: #3f51b5;
     padding: 10px;

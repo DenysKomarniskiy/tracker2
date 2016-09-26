@@ -35,7 +35,7 @@ var APP = {
 		
 	},
 	
-	validateData: function(data){		
+	validateData: function(data){
 		data.forEach((item) => {
 			if (item.storageTC){
 				item.storageTC.apps 	= item.storageTC.apps || ""; 
@@ -159,7 +159,7 @@ var APP = {
 			this.grid = new Slick.Grid("#user-settings-grid", this.dataView, cols, opts); 
 		},
 		
-		"tools": function() {	
+		"tools": function() {
 			
 			console.log('init tools..');
 			
@@ -236,7 +236,7 @@ var APP = {
 			
 		},
 		
-		"testing": function() {				
+		"testing": function() {
 			//init vars
 			this.dataUrl = 'testing';
 			this.searchPath = ['storageTC','tc_id'];
@@ -454,7 +454,7 @@ var APP = {
 		);
 	},
 	
-	gridClickHandler: function(gridEvent) {		
+	gridClickHandler: function(gridEvent) {
 		var cell = this.grid.getCellFromEvent(gridEvent);
 		var columns = this.grid.getColumns();
 		
@@ -487,7 +487,7 @@ var APP = {
 	    
 	},
 	
-	softdevRowClickHandler: function(e, cell, columns) {	
+	softdevRowClickHandler: function(e, cell, columns) {
 				
 		if (columns[cell.cell].id !== "softdev")
 			return;
@@ -588,19 +588,23 @@ var APP = {
 		fetch(
 			this.dataUrl, this.SETTINGS.fetchOpts
 		).then(
-			resp => resp.json()			
+			resp => resp.text()
 		).then(
-			resp => {
-				console.log('response <-', resp);				
-				this.dataView.updateItem(rowData.id, resp);
-				this.grid.invalidate();
-				this.grid.render();
-				this.updateStats();
+			respText => {				
+				try {
+					var jresp = JSON.parse(respText);
+					console.log('response <-', jresp);				
+					this.dataView.updateItem(rowData.id, jresp);
+					this.grid.invalidate();
+					this.grid.render();
+					this.updateStats();
+					
+				} catch (e){
+					Modal.alert(respText);		
+				}					
 			}
 		).catch(
-			function(err){
-				console.log(err);
-			}
+			Modal.alert
 		);
 	},
 	

@@ -138,7 +138,9 @@ public class Testing extends HttpServlet {
 			String labVerEdt = request.getParameter("edt_lab_ver");
 			String geneVerEdt = request.getParameter("edt_gene_ver");
 			String failInfo = request.getParameter("edt_fail_info");
-			String envId = request.getParameter("edt_env_id");					
+			String envId = request.getParameter("edt_env_id");			
+			
+			
 
 			if (id == null) {
 				response.setStatus(400);
@@ -151,6 +153,12 @@ public class Testing extends HttpServlet {
 
 			tx = hibernateSession.beginTransaction();
 			TestingSheet testingSheet = (TestingSheet) hibernateSession.load(TestingSheet.class, new Integer(id));
+			
+			User sessionUser = (User) request.getSession().getAttribute("user");
+			if (!testingSheet.getRunner().equals(sessionUser.getId())) {
+				tx.commit();
+				throw new ServletException("Set runner yourself first");
+			}
     
 			editMsg = "<< testsheet entry: " + testingSheet.getId() + " >>";
 			
