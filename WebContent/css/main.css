@@ -621,9 +621,8 @@ input.editor-checkbox {
 .mdl-textfield__input {
     border: none;
     border-bottom: 1px solid rgba(255,255,255,0.5);
-    display: block;
-    font-size: 16px;
-    font-family: "Helvetica","Arial",sans-serif;
+    display: block;    
+    font: 16px "Helvetica","Arial",sans-serif;
     margin: 0;
     padding: 4px 0;
     width: 100%;
@@ -712,9 +711,7 @@ input.editor-checkbox {
     font: 16px "Helvetica","Arial",sans-serif;
 	outline: none;
     padding: 4px 25px 4px 0px;    
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border: none;
     border-bottom: 1px solid rgba(255,255,255,0.5);
     box-shadow: none;
     background-color: transparent;
