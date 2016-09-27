@@ -66,7 +66,7 @@ public class Testing extends HttpServlet {
 		String action = request.getParameter("action");
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
-		String editMsg;
+		String logMsg;
 
 		if (action == null) {
 			response.setStatus(400);
@@ -101,8 +101,12 @@ public class Testing extends HttpServlet {
 			tx = hibernateSession.beginTransaction();
 			TestingSheet sheetTc = (TestingSheet) hibernateSession
 					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env LEFT JOIN FETCH tsh.testing WHERE tsh.id = :id")
-					.setParameter("id", Integer.valueOf(request.getParameter("sheetentityid"))).getSingleResult();
-			User user = (User) hibernateSession.createQuery("SELECT DISTINCT usr FROM User usr WHERE usr.id = :usr_id").setParameter("usr_id", request.getParameter("runner")).getSingleResult();
+					.setParameter("id", Integer.valueOf(request.getParameter("sheetentityid")))
+					.getSingleResult();
+			User user = (User) hibernateSession
+					.createQuery("SELECT DISTINCT usr FROM User usr WHERE usr.id = :usr_id")
+					.setParameter("usr_id", sheetTc.getRunner())
+					.getSingleResult();
 			tx.commit();
 			
 			if (!user.getId().equals(sessionUser.getId()) & ((sessionUser.getRights() & Rights.TS_EDIT) == 0))
@@ -116,7 +120,7 @@ public class Testing extends HttpServlet {
 			asyncCtx.addListener(new AppAsyncListener());
 			asyncCtx.setTimeout(5 * 60000); // 5 minutes
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
-			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, sessionUser));
+			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, user));
 
 			Utils.LogMessage(logger, "<< TC-" + sheetTc.getStorageTC().getTc_id() + ">> has been posted in SoftDev with status " + sheetTc.getTcStatus(), request);
 
@@ -124,7 +128,6 @@ public class Testing extends HttpServlet {
 
 		} else if (action.equals("edit")) {
 
-			// edit parameters
 			String id = request.getParameter("id");
 			String runnerEdt = request.getParameter("edt_runner");
 			String tcStatusEdt = request.getParameter("edt_status");
@@ -153,7 +156,7 @@ public class Testing extends HttpServlet {
 				throw new ServletException("You have no rights");
 			}
 
-			editMsg = "<< testsheet entry: " + testingSheet.getId() + " >>";
+			logMsg = "<< testsheet entry: " + testingSheet.getId() + " >>";
 
 			if (runnerEdt != null) {
 				User oldRunner = (User) hibernateSession.createQuery("from User where id = :id").setParameter("id", testingSheet.getRunner()).getSingleResult();
@@ -161,48 +164,48 @@ public class Testing extends HttpServlet {
 
 				SendMailAsync(request, testingSheet, oldRunner.getEmail(), newRunner.getEmail());
 				testingSheet.setRunner(runnerEdt);
-				editMsg = editMsg + " New runner: " + runnerEdt + " || ";
+				logMsg += " New runner: " + runnerEdt + " || ";
 
 			}
 			if (tcStatusEdt != null) {
 				testingSheet.setTcStatus(tcStatusEdt);
-				editMsg = editMsg + " New status: " + tcStatusEdt + " || ";
+				logMsg += " New status: " + tcStatusEdt + " || ";
 			}
 			if (durationEdt != null) {
 				testingSheet.setDuration(new Integer(durationEdt));
-				editMsg = editMsg + " New duration: " + durationEdt + " || ";
+				logMsg += " New duration: " + durationEdt + " || ";
 			}
 			if (commentEdt != null) {
 				testingSheet.setComment(commentEdt);
-				editMsg = editMsg + " New Comment: " + commentEdt + " || ";
+				logMsg += " New Comment: " + commentEdt + " || ";
 			}
 			if (tqcVerEdt != null) {
 				testingSheet.setTqcVer(tqcVerEdt);
-				editMsg = editMsg + "New tqcver: " + tqcVerEdt + " || ";
+				logMsg += "New tqcver: " + tqcVerEdt + " || ";
 			}
 			if (labVerEdt != null) {
 				testingSheet.setLabVer(labVerEdt);
-				editMsg = editMsg + " New labver: " + labVerEdt + " || ";
+				logMsg += " New labver: " + labVerEdt + " || ";
 			}
 			if (geneVerEdt != null) {
 				testingSheet.setGeneVer(geneVerEdt);
-				editMsg = editMsg + " New genever: " + geneVerEdt + " || ";
+				logMsg += " New genever: " + geneVerEdt + " || ";
 			}
 			if (failInfo != null) {
 				testingSheet.setFailInfo(failInfo);
-				editMsg = editMsg + " New failInfo: " + failInfo + "|| ";
+				logMsg += " New failInfo: " + failInfo + "|| ";
 			}
 			if (envId != null) {
 				Env env = hibernateSession.get(Env.class, new Integer(envId));
 				testingSheet.setEnv(env);
-				editMsg = editMsg + " New env: " + env.getName() + " || ";
+				logMsg += " New env: " + env.getName() + " || ";
 			}
 
 			hibernateSession.update(testingSheet);
 			tx.commit();
 
 			response.getWriter().println(gson.toJson(utils.Utils.unproxy(testingSheet)));
-			Utils.LogMessage(logger, editMsg, request);
+			Utils.LogMessage(logger, logMsg, request);
 
 		}
 	}

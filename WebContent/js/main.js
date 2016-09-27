@@ -523,7 +523,7 @@ var APP = {
 		this.grid.invalidateRow(cell.row);
 		this.grid.render();
 		
-		this.SETTINGS.fetchOpts.body = "action=sdpost&sheetentityid="+rowData.id+"&runner="+rowData.runner;		
+		this.SETTINGS.fetchOpts.body = "action=sdpost&sheetentityid=" + rowData.id;
 		
 		console.log('request ->', this.SETTINGS.fetchOpts);
 						
