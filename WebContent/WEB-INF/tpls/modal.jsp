@@ -43,6 +43,7 @@
 		},
 		
 		alert: function(text) {
+			this.clear();
 			this.setHeader("Alert")
 			this.msg.innerHTML = text;
 			this.show();
@@ -52,13 +53,24 @@
 		
 		setContent: function(node) {
 			
-			while (this.body.firstChild) {
-				this.body.removeChild(this.body.firstChild);
-			}
+			this.clear();			
 			
 			this.body.appendChild(node);
 			
 			return this;
+		},
+		
+		clear: function() {
+			
+			while (this.body.firstChild) {
+				this.body.removeChild(this.body.firstChild);
+			}
+			
+			while (this.footer.firstChild) {
+				this.footer.removeChild(this.footer.firstChild);
+			}	
+			
+			this.msg.innerHTML = '';	
 		},
 		
 		setFooter: function(node) {

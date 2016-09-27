@@ -519,7 +519,7 @@ input.editor-checkbox {
     color: #424242;
     overflow: visible;
     overflow-y: auto;
-    z-index: 5;
+    z-index: 16;
 }
 .mdl-layout__drawer.is-visible {
     transform: translateX(0);
@@ -577,7 +577,7 @@ input.editor-checkbox {
     left: 0;
     height: 100%;
     width: 100%;
-    z-index: 4;
+    z-index: 14;
     visibility: hidden;
     transition-property: background-color;
     transition-duration: .2s;

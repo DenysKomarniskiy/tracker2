@@ -9,6 +9,7 @@
 
 	<!-- Default set of monitored resources -->
 	<WatchedResource>WEB-INF/web.xml</WatchedResource>
+	<Parameter name="adminpass" value="admin" override="false" />
 
 	<!-- Uncomment this to disable session persistence across Tomcat restarts -->
 	<!-- <Manager pathname="" /> -->

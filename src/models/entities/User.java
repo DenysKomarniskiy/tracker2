@@ -28,6 +28,17 @@ public class User {
 
 	@Column(name = "active", length = 50, nullable = true)
 	private int active;
+	
+	@Column(name = "rights", length = 10)
+	private int rights;
+
+	public int getRights() {
+		return rights;
+	}
+
+	public void setRights(int rights) {
+		this.rights = rights;
+	}
 
 	public String getDepartment() {
 		return department;

@@ -52,8 +52,7 @@ public class Ldap {
 			user.setId(attrs.get("sAMAccountName").get().toString());
 			user.setEmail(attrs.get("mail").get().toString());
 			user.setFullname(attrs.get("CN").get().toString());
-			user.setDepartment(attrs.get("department").get().toString());
-			user.setActive(1);
+			user.setDepartment(attrs.get("department").get().toString());			
 			return user;
 		}
 

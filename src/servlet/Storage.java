@@ -17,6 +17,8 @@ import org.hibernate.Transaction;
 import com.google.gson.Gson;
 
 import models.entities.StorageTC;
+import models.entities.User;
+import utils.Rights;
 import utils.Utils;
 
 @WebServlet("/storage")
@@ -31,7 +33,7 @@ public class Storage extends HttpServlet {
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List<StorageTC> tcs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();
-		List users = hibernateSession.createQuery("from User").getResultList();
+		List users = hibernateSession.createQuery("from User WHERE active = :active").setParameter("active", 1).getResultList();
 		List testsets = hibernateSession.createQuery("from TestSet").getResultList();
 		tx.commit();
 
@@ -53,7 +55,7 @@ public class Storage extends HttpServlet {
 		Gson gson = new Gson();
 		String action = request.getParameter("action");
 		String id = request.getParameter("id");
-		String editMsg, addMsg;
+		String logMsg;
 
 		if (action == null) {
 			response.setStatus(400);
@@ -72,11 +74,16 @@ public class Storage extends HttpServlet {
 		String isLab = request.getParameter("edt_is_lab");
 		String isGene = request.getParameter("edt_is_gene");
 
+		User sessionUser = (User) request.getSession().getAttribute("user");
+		
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		Transaction tx;
 
 		if (action.equals("edit")) {
+			
+			if ((sessionUser.getRights() & Rights.ST_EDIT) == 0)
+				throw new ServletException("You have no rights");		
 
 			if (id == null) {
 				response.setStatus(400);
@@ -87,59 +94,61 @@ public class Storage extends HttpServlet {
 			tx = hibernateSession.beginTransaction();
 			StorageTC storageTC = (StorageTC) hibernateSession.load(StorageTC.class, new Integer(id));
 
-			editMsg = "<< TC-" + storageTC.getTc_id() + " >>";
+			logMsg = "<< TC-" + storageTC.getTc_id() + " >>";
 
 			if (authorEdt != null) {
 				storageTC.setAuthor(authorEdt);
-				editMsg = editMsg + " New author: " + authorEdt + " || ";
+				logMsg += " New author: " + authorEdt + " || ";
 			}
 			if (apps != null) {
 				storageTC.setApps(apps);
-				editMsg = editMsg + " New apps: " + apps + " || ";
+				logMsg += " New apps: " + apps + " || ";
 			}
 			if (tags != null) {
 				storageTC.setTags(tags);
-				editMsg = editMsg + " New tags: " + tags + " || ";
+				logMsg += " New tags: " + tags + " || ";
 			}
 			if (featuresEdt != null) {
 				storageTC.setFeatures(featuresEdt);
-				editMsg = editMsg + " New features: " + featuresEdt + " || ";
+				logMsg += " New features: " + featuresEdt + " || ";
 			}
 			if (runPathEdt != null) {
 				storageTC.setRun_path(runPathEdt);
-				editMsg = editMsg + " New run path: " + runPathEdt + " || ";
+				logMsg += " New run path: " + runPathEdt + " || ";
 			}
 			if (runParamEdt != null) {
 				storageTC.setRun_param(runParamEdt);
-				editMsg = editMsg + " New run param: " + runParamEdt + " || ";
+				logMsg += " New run param: " + runParamEdt + " || ";
 			}
 			if (stepNumEdt != null) {
 				storageTC.setStep_num(new Integer(stepNumEdt));
-				editMsg = editMsg + " New step number: " + stepNumEdt + " || ";
+				logMsg += " New step number: " + stepNumEdt + " || ";
 			}
 			if (durationEdt != null) {
 				storageTC.setDuration(new Integer(durationEdt));
-				editMsg = editMsg + " New duration: " + durationEdt + " || ";
-			}
-			
+				logMsg += " New duration: " + durationEdt + " || ";
+			}			
 			if (isLab != null) {
 				storageTC.setIsLab(new Integer(isLab));
-				editMsg = editMsg + " New isLab: " + isLab + " || ";
+				logMsg += " New isLab: " + isLab + " || ";
 			}
 			if (isGene != null) {
 				storageTC.setIsGene(new Integer(isGene));
-				editMsg = editMsg + " New isGene: " + isGene + " || ";
+				logMsg += " New isGene: " + isGene + " || ";
 			}
 			
 			hibernateSession.update(storageTC);
 			tx.commit();
 
-			response.getWriter().println(gson.toJson(utils.Utils.unproxy(storageTC)));
+			response.getWriter().println(gson.toJson(Utils.unproxy(storageTC)));
 
-			Utils.LogMessage(logger, editMsg, request);
+			Utils.LogMessage(logger, logMsg, request);
 
 		} else if (action.equals("add")) {
 
+			if ((sessionUser.getRights() & Rights.ST_EDIT) == 0)
+				throw new ServletException("You have no rights");	
+			
 			StorageTC stc = new StorageTC();
 
 			String tcId = request.getParameter("edt_tc_id");
@@ -178,7 +187,7 @@ public class Storage extends HttpServlet {
 
 			response.getWriter().println(gson.toJson(addedTc));
 
-			addMsg = "<< TC-" + stc.getTc_id() + " >> has benn added";
+			Utils.LogMessage(logger, "<< TC-" + stc.getTc_id() + " >> has benn added", request);
 		}
 
 	}

@@ -17,6 +17,7 @@ import org.hibernate.Transaction;
 
 import models.entities.User;
 import utils.Ldap;
+import utils.Rights;
 
 @WebServlet("/loginpage")
 public class LoginPage extends HttpServlet {
@@ -46,6 +47,23 @@ public class LoginPage extends HttpServlet {
 			response.sendRedirect("/tracker2/loginpage");
 			return;
 		}
+		
+		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+		
+		if (login.equals("admin") & passw.equals(getServletContext().getInitParameter("adminpass"))){
+			
+			Session hibernateSession = sessionFactory.getCurrentSession();
+			Transaction tx = hibernateSession.beginTransaction();
+			User user = hibernateSession.get(User.class, login);
+			tx.commit();
+			
+			HttpSession session = request.getSession();
+			session.setMaxInactiveInterval(30 * 24 * 60 * 60);
+			session.setAttribute("user", user);
+			
+			response.sendRedirect("/tracker2/loginpage");
+			return;
+		}
 
 		try {
 
@@ -57,7 +75,7 @@ public class LoginPage extends HttpServlet {
 			// session will expire in 30 days			
 			session.setMaxInactiveInterval(30 * 24 * 60 * 60);
 			
-			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
+			
 			Session hibernateSession = sessionFactory.getCurrentSession();
 			Transaction tx = hibernateSession.beginTransaction();
 			User dbUser = hibernateSession.get(User.class, ldapUser.getId());
@@ -66,10 +84,14 @@ public class LoginPage extends HttpServlet {
 			if (dbUser != null) {				
 				session.setAttribute("user", dbUser);					
 			} else {
+				ldapUser.setActive(1);
+				ldapUser.setRights(Rights.DEFAULT);
+				
 				hibernateSession = sessionFactory.getCurrentSession();
-				tx = hibernateSession.beginTransaction();
+				tx = hibernateSession.beginTransaction();				
 				hibernateSession.save(ldapUser);
 				tx.commit();				
+				
 				session.setAttribute("user", ldapUser);		
 			}
 

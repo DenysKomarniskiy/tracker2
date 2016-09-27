@@ -29,6 +29,7 @@ import models.entities.TestingSheet;
 import models.entities.User;
 import utils.DataFromCurrentTestingTableDB;
 import utils.Mail;
+import utils.Rights;
 import utils.TestingSerializer;
 import utils.Utils;
 
@@ -37,19 +38,19 @@ public class Testing extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(Testing.class);
-	
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		Gson gson = new Gson();
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List testings = hibernateSession.createQuery("SELECT tst.id, tst.name from Testing tst").getResultList();
-		List users =  hibernateSession.createQuery("from User").getResultList();
+		List users = hibernateSession.createQuery("from User WHERE active = :active").setParameter("active", 1).getResultList();
 		List envs = hibernateSession.createQuery("from Env").getResultList();
 		tx.commit();
-		 
+
 		request.setAttribute("title", "Testing");
 
 		request.setAttribute("jtestings", gson.toJson(testings));
@@ -61,11 +62,11 @@ public class Testing extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+
 		String action = request.getParameter("action");
 		String runner = request.getParameter("user_id");
 		String testingId = request.getParameter("testing_id");
-		String editMsg;		
+		String editMsg;
 
 		if (action == null) {
 			response.setStatus(400);
@@ -74,7 +75,8 @@ public class Testing extends HttpServlet {
 		}
 
 		Gson gson = new GsonBuilder().registerTypeAdapter(models.entities.Testing.class, new TestingSerializer()).create();
-
+		User sessionUser = (User) request.getSession().getAttribute("user");
+		
 		if (action.equals("get")) {
 
 			if (runner == null || testingId == null) {
@@ -86,48 +88,42 @@ public class Testing extends HttpServlet {
 			List<TestingSheet> testSheet = getTestingSheet(Integer.valueOf(testingId), runner);
 
 			response.getWriter().println(gson.toJson(testSheet));
-						
-			Utils.LogMessage(logger, "Testing Sheet is loaded for User:" + runner + " ||Testing id: " + testingId, request);
-			
-			return;			
 
-		} else if (action.equals("sdpost")) {	
-					
+			Utils.LogMessage(logger, "Testing Sheet is loaded for User:" + runner + " ||Testing id: " + testingId, request);
+
+			return;
+
+		} else if (action.equals("sdpost")) {
+
 			SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 			Session hibernateSession = sessionFactory.getCurrentSession();
 			Transaction tx;
 			tx = hibernateSession.beginTransaction();
 			TestingSheet sheetTc = (TestingSheet) hibernateSession
 					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env LEFT JOIN FETCH tsh.testing WHERE tsh.id = :id")
-					.setParameter("id", Integer.valueOf(request.getParameter("sheetentityid")))
-					.getSingleResult();			
-			User user = (User) hibernateSession
-					.createQuery("SELECT DISTINCT usr FROM User usr WHERE usr.id = :usr_id")
-					.setParameter("usr_id", request.getParameter("runner"))
-					.getSingleResult();
+					.setParameter("id", Integer.valueOf(request.getParameter("sheetentityid"))).getSingleResult();
+			User user = (User) hibernateSession.createQuery("SELECT DISTINCT usr FROM User usr WHERE usr.id = :usr_id").setParameter("usr_id", request.getParameter("runner")).getSingleResult();
 			tx.commit();
-
-			User sessionUser = (User) request.getSession().getAttribute("user");
-			if (!user.getId().equals(sessionUser.getId())) {
-				throw new ServletException("Set runner yourself first");
-			}
+			
+			if (!user.getId().equals(sessionUser.getId()) & ((sessionUser.getRights() & Rights.TS_EDIT) == 0))
+				throw new ServletException("You have no rights");		
 
 			if (user.getSdEncPass() == null)
 				throw new ServletException("Please define SoftDev password");
-						
+
 			request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 			AsyncContext asyncCtx = request.startAsync();
 			asyncCtx.addListener(new AppAsyncListener());
 			asyncCtx.setTimeout(5 * 60000); // 5 minutes
 			ThreadPoolExecutor executor = (ThreadPoolExecutor) request.getServletContext().getAttribute("executor");
 			executor.execute(new AsyncSoftDevProcessor(asyncCtx, sheetTc, sessionUser));
-			
-			Utils.LogMessage(logger, "<< TC-" + sheetTc.getStorageTC().getTc_id() + ">> has been posted in SoftDev with status "  + sheetTc.getTcStatus(), request);
-			
+
+			Utils.LogMessage(logger, "<< TC-" + sheetTc.getStorageTC().getTc_id() + ">> has been posted in SoftDev with status " + sheetTc.getTcStatus(), request);
+
 			return;
 
 		} else if (action.equals("edit")) {
-						
+
 			// edit parameters
 			String id = request.getParameter("id");
 			String runnerEdt = request.getParameter("edt_runner");
@@ -138,9 +134,7 @@ public class Testing extends HttpServlet {
 			String labVerEdt = request.getParameter("edt_lab_ver");
 			String geneVerEdt = request.getParameter("edt_gene_ver");
 			String failInfo = request.getParameter("edt_fail_info");
-			String envId = request.getParameter("edt_env_id");			
-			
-			
+			String envId = request.getParameter("edt_env_id");
 
 			if (id == null) {
 				response.setStatus(400);
@@ -153,19 +147,18 @@ public class Testing extends HttpServlet {
 
 			tx = hibernateSession.beginTransaction();
 			TestingSheet testingSheet = (TestingSheet) hibernateSession.load(TestingSheet.class, new Integer(id));
-			
-			User sessionUser = (User) request.getSession().getAttribute("user");
-			if (!testingSheet.getRunner().equals(sessionUser.getId())) {
+
+			if (!testingSheet.getRunner().equals(sessionUser.getId()) & ((sessionUser.getRights() & Rights.TS_EDIT) == 0)) {
 				tx.commit();
-				throw new ServletException("Set runner yourself first");
+				throw new ServletException("You have no rights");
 			}
-    
+
 			editMsg = "<< testsheet entry: " + testingSheet.getId() + " >>";
-			
+
 			if (runnerEdt != null) {
 				User oldRunner = (User) hibernateSession.createQuery("from User where id = :id").setParameter("id", testingSheet.getRunner()).getSingleResult();
 				User newRunner = (User) hibernateSession.createQuery("from User where id = :id").setParameter("id", runnerEdt).getSingleResult();
-		
+
 				SendMailAsync(request, testingSheet, oldRunner.getEmail(), newRunner.getEmail());
 				testingSheet.setRunner(runnerEdt);
 				editMsg = editMsg + " New runner: " + runnerEdt + " || ";
@@ -224,12 +217,14 @@ public class Testing extends HttpServlet {
 
 		if (runner.toLowerCase().equals("all")) {
 			query = hibernateSession
-					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env WHERE tsh.testingId = :testingId")
+					.createQuery(
+							"SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env WHERE tsh.testingId = :testingId")
 					.setParameter("testingId", testingId);
 		} else {
 
 			query = hibernateSession
-					.createQuery("SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
+					.createQuery(
+							"SELECT DISTINCT tsh FROM TestingSheet tsh LEFT JOIN FETCH tsh.testing LEFT JOIN FETCH tsh.storageTC stc LEFT JOIN FETCH stc.testSet LEFT JOIN FETCH tsh.env WHERE tsh.testingId = :testingId AND tsh.runner = :runner")
 					.setParameter("testingId", testingId).setParameter("runner", runner);
 
 		}
@@ -240,18 +235,18 @@ public class Testing extends HttpServlet {
 		return testSheet;
 
 	}
-	
-	private void SendMailAsync(HttpServletRequest request, TestingSheet testingSheet, String oldRunnerMail, String newRunnerMail){
+
+	private void SendMailAsync(HttpServletRequest request, TestingSheet testingSheet, String oldRunnerMail, String newRunnerMail) {
 
 		System.out.println("oldRunnerMail " + oldRunnerMail);
 		System.out.println("newRunnerMail " + newRunnerMail);
-		
+
 		String tcId = testingSheet.getStorageTC().getTc_id();
 		String tcSet = testingSheet.getStorageTC().getTestSet().getLocalSet();
-		
+
 		Mail mail = new Mail("new_runner");
 		mail.setSubjectText("New TC ( " + tcId + " from " + tcSet + " ) has been added to your Test Plan");
-		mail.setAddressFrom(oldRunnerMail);	
+		mail.setAddressFrom(oldRunnerMail);
 		mail.setAddressTo(new String[] { newRunnerMail });
 		request.setAttribute("org.apache.catalina.ASYNC_SUPPORTED", true);
 		AsyncContext asyncCtx = request.startAsync();

@@ -127,7 +127,7 @@ var APP = {
 		
 		"settings": function() {
 			console.log('init settings..');
-			var excludedFields = ['id', 'active'];
+			var excludedFields = ['id', 'active', 'rights'];
 			
 			var data = [], id = 0;
 			$.each(view.userSettings, (key, val) => {
@@ -145,7 +145,7 @@ var APP = {
 			this.dataView = new Slick.Data.DataView();		
 			this.dataView.setItems(data);
 			
-			var cols = [	            
+			var cols = [
 	            {id: "id",  name: "Setting", field: "id",  width: 100,},
                 {id: "val", name: "Value", 	 field: "val", width: 200, editor: Slick.Editors.Text}
            	];
@@ -330,14 +330,19 @@ var APP = {
 					console.log('request ->', this.SETTINGS.fetchOpts);
 					
 					fetch(APP.dataUrl, this.SETTINGS.fetchOpts)
-					.then(resp => resp.json())
-					.then(resp => {
-						console.log('response <-', resp);
-						this.dataView.insertItem(0, resp);
-						this.grid.invalidate();
-						this.grid.render();						
-						this.grid.scrollRowToTop(0);
-						Modal.close();
+					.then(resp => resp.text())
+					.then(respText => {						
+						try {
+							var jresp = JSON.parse(respText);
+							console.log('response <-', jresp);	
+							this.dataView.insertItem(0, jresp);
+							this.grid.invalidate();
+							this.grid.render();						
+							this.grid.scrollRowToTop(0);
+							Modal.close();							
+						} catch (e){
+							Modal.alert(respText);		
+						}						
 					})
 					.catch(Modal.alert.bind(Modal));					
 				};
@@ -604,7 +609,7 @@ var APP = {
 				}					
 			}
 		).catch(
-			Modal.alert
+			Modal.alert.bind(Modal)
 		);
 	},
 	

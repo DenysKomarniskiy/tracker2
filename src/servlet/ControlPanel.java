@@ -93,7 +93,7 @@ public class ControlPanel extends HttpServlet {
 		Long totalTime = (Long) hibernateSession.createQuery("SELECT sum(stc.duration) FROM StorageTC stc").getSingleResult();
 		Long testCompCount = (Long) hibernateSession.createQuery("SELECT count(*) FROM StorageTC stc WHERE stc.auto_ide = :ide").setParameter("ide", "TC").getSingleResult();
 		Long testCompDuration = (Long) hibernateSession.createQuery("SELECT sum(stc.duration) FROM StorageTC stc WHERE stc.auto_ide = :ide").setParameter("ide", "TC").getSingleResult();
-		List<User> users = hibernateSession.createQuery("FROM User U").getResultList();
+		List<User> users = hibernateSession.createQuery("FROM User WHERE active = :active").setParameter("active", 1).getResultList();
 		tx.commit();
 
 		Collections.shuffle(allOtherTCs, new Random(System.nanoTime()));
