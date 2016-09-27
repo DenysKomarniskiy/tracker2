@@ -46,6 +46,12 @@ public class StorageTC  {
 	@Column(name = "test_set_id")
 	private int testSetId;
 	
+	@Column(name = "is_lab")
+	private int isLab;
+	
+	@Column(name = "is_gene")
+	private int isGene;
+	
 	public int getIsLab() {
 		return isLab;
 	}
@@ -61,12 +67,6 @@ public class StorageTC  {
 	public void setIsGene(int isGene) {
 		this.isGene = isGene;
 	}
-
-	@Column(name = "is_lab")
-	private int isLab;
-	
-	@Column(name = "is_gene")
-	private int isGene;
 	
 	public int getTestSetId() {
 		return testSetId;

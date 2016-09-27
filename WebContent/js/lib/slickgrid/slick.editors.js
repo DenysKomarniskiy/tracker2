@@ -28,16 +28,22 @@
         var scope = this;
 
         this.init = function () {
-            if (args.column.options) {
-                opt_values = args.column.options.split(',');
+        	
+        	var opt_values = args.column.options || "yes,no".split(',');
+         
+            var option_str = "";
+            	
+            if (Array.isArray(opt_values)){
+	            for (i in opt_values) {
+	                v = opt_values[i];
+	                option_str += "<OPTION value='" + v + "'>" + v + "</OPTION>";
+	            }
             } else {
-                opt_values = "yes,no".split(',');
-            }
-            option_str = ""
-            for (i in opt_values) {
-                v = opt_values[i];
-                option_str += "<OPTION value='" + v + "'>" + v + "</OPTION>";
-            }
+            	for (i in opt_values) {	                
+	                option_str += "<OPTION value='" + i + "'>" + opt_values[i] + "</OPTION>";
+	            }
+            }            
+            
             $select = $("<SELECT tabIndex='0' class='editor-select'>" + option_str + "</SELECT>");
             $select.appendTo(args.container);
             $select.focus();

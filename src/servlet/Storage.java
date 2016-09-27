@@ -73,7 +73,8 @@ public class Storage extends HttpServlet {
 		String tags = request.getParameter("tags");
 		String isLab = request.getParameter("edt_is_lab");
 		String isGene = request.getParameter("edt_is_gene");
-
+		String testSetId = request.getParameter("edt_testSetId");
+		
 		User sessionUser = (User) request.getSession().getAttribute("user");
 		
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
@@ -96,6 +97,10 @@ public class Storage extends HttpServlet {
 
 			logMsg = "<< TC-" + storageTC.getTc_id() + " >>";
 
+			if (testSetId != null) {
+				storageTC.setTestSetId(new Integer(testSetId));
+				logMsg += " New testSetId: " + testSetId + " || ";
+			}
 			if (authorEdt != null) {
 				storageTC.setAuthor(authorEdt);
 				logMsg += " New author: " + authorEdt + " || ";

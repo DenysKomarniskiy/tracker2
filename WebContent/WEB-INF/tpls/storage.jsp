@@ -73,5 +73,11 @@
 <script type="text/javascript">	
 	var view = {};
 	view['data'] = ${tcs};
-	view['users'] = ${jusers};		
+	view['users'] = ${jusers};	
+	view['testsets'] = {};
+	
+	<c:forEach items="${testsets}" var="set">
+		view['testsets']['${set.id}'] = '${set.getLocalSet()}';
+	</c:forEach>
+	
 </script>
