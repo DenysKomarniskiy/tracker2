@@ -13,7 +13,8 @@
 
 <form id="add-testcase-form" class="flex-container-col hide" onsubmit="return false;">
 	<!-- don't change position of this input -->
-	<input type="submit" class="hide" id="f-submit"> 
+		
+	<input type="hidden" name="action" value="add">
 	
 	<div>
 		<span>TC ID</span> <input name="edt_tc_id" required>
@@ -65,6 +66,10 @@
 
 	<div>
 		<span>Run param</span> <input name="edt_run_param">
+	</div>
+	
+	<div class="row">
+		<button id="btn-add-tc" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">ADD</button>
 	</div>
 	
 </form>

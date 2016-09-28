@@ -326,22 +326,19 @@ var APP = {
 			this.dataUrl = 'storage';
 			this.searchPath = ['tc_id'];		
 			
-			//build interface
+			//build interface	
 			$('button#b-add').click(() => {
-				var textnode = document.createTextNode("Testcase"); 
 				var form = document.getElementById("add-testcase-form").cloneNode(true);
-				form.classList.remove('hide');	
 				
-				var submit = document.createElement('button');
-				submit.innerText="ADD";
-				submit.onclick = () => {
+				$(form).find('button#btn-add-tc').click( (e) => {		
 					
-					if (!form.checkValidity()){
-						form[0].click();
+					if (!form.checkValidity()){					
 						return;
 					}
 					
-					this.SETTINGS.fetchOpts.body = $(form).serialize() + '&action=add';
+					e.preventDefault();
+					
+					this.SETTINGS.fetchOpts.body = $(form).serialize();
 					
 					console.log('request ->', this.SETTINGS.fetchOpts);
 					
@@ -361,12 +358,13 @@ var APP = {
 						}						
 					})
 					.catch(Modal.alert.bind(Modal));					
-				};
+				});				
+				
+				form.classList.remove('hide');					
 				
 				Modal
 				.setHeader('Add Testcase')
 				.setContent(form)
-				.setFooter(submit)
 				.show();
 			});
 		}
