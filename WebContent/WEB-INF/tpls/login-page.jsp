@@ -10,25 +10,46 @@
 
 <body>
 	<div class="login-form widget">
-		<h3>Please login</h3>
+		<header class="mdl-layout__header">
+			<div class="mdl-layout__header-row">
+				<span class="mdl-layout__title">Welcome Back!</span>				
+			</div>				
+		</header>
+		
 		<form action="loginpage" method="post">
 
 			<c:if test="${not empty logged}">
-				You are logged as <strong>${logged}</strong> 
-				<input type="submit" name="action" value="Logout" />
-				<div>
-				<a href="/tracker2/testing">Work</a>
+				<div class="row">
+					<span class="mdl-textfield">You are logged as <strong class="mdl-textfield">${logged}</strong></span> 
 				</div>
+				<input type="hidden" name="action" value="Logout" />
+				<div class="row">
+					<a class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" data-upgraded=",MaterialButton" href="/tracker2/testing">Work</a>
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" data-upgraded=",MaterialButton">Logout</button>
+				</div>
+				
 			</c:if>
 			
 			<c:if test="${empty logged}">
 				<div class="row">
-					<label>ISD login</label><input type="text" name="login" required />
+					<div class="mdl-textfield floating-label">
+					   <input type="text" name="login" id="tqc-ver" class="mdl-textfield__input" required>
+					   <label class="float-palceholder" for="tqc-ver">ISD login</label>
+					   <label class="mdl-textfield__label" for="sample-expandable"></label>
+					</div>					
 				</div>
 				<div class="row">
-					<label>ISD password</label><input type="password" name="passw" required />
+					<div class="mdl-textfield floating-label">
+					   <input type="password" name="passw" id="tqc-ver" class="mdl-textfield__input" required>
+					   <label class="float-palceholder" for="tqc-ver">ISD password</label>
+					   <label class="mdl-textfield__label" for="sample-expandable"></label>
+					</div>
 				</div>
-				<input type="submit" name="action" value="Enter" />
+				
+				<input type="hidden" name="action" value="Enter" />
+				<div class="row">
+					<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" data-upgraded=",MaterialButton">Enter</button>
+				</div>
 			</c:if>			
 		</form>
 	</div>
