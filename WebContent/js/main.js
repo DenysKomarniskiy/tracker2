@@ -2,6 +2,7 @@
 var APP = {
 	
 	gridClickHandlers: [],
+	gridPlugins: [],
 		
 	init: function(){
 		
@@ -12,7 +13,9 @@ var APP = {
 		}	
 		
 		$("#search-tc").keyup(this.search.bind(this));	
-		$('#reset-search').on('click', () => {$("#search-tc").val('').trigger('keyup')})
+		$('#reset-search').on('click', () => {$("#search-tc").val('').trigger('keyup')});
+		
+		this.gridPlugins.push(new Slick.AutoTooltips({}));
 		
 		if (view.data) {
 			this.dataView = new Slick.Data.DataView();		
@@ -25,7 +28,7 @@ var APP = {
 			this.SETTINGS[this.faceName].options.editCommandHandler = this.editCommandHandler.bind(this);
 			
 			this.grid = new Slick.Grid("#main-grid", this.dataView, this.SETTINGS[this.faceName].columns, this.SETTINGS[this.faceName].options);    
-			this.grid.registerPlugin(new Slick.AutoTooltips({}));
+			this.gridPlugins.forEach(plugin => this.grid.registerPlugin(plugin));
 			this.grid.onClick.subscribe(this.gridClickHandler.bind(this));	
 			this.grid.onSort.subscribe(this.gridSortHandler.bind(this));
 		}		
@@ -298,7 +301,23 @@ var APP = {
 			
 			$userSelect.on('change', this.loadData.bind(this));
 			
-			$('#get-testplan').on('click', this.getSTTestPlan.bind(this));			
+			$('#get-testplan').on('click', this.getSTTestPlan.bind(this));	
+			
+			
+			//add grid plugin
+		    var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});		   
+		    headerMenuPlugin.onCommand.subscribe((e, args) => {
+		    	Slick.GlobalEditorLock.cancelCurrentEdit();
+			    
+		    	var searchPath = ["tcStatus"];
+		    	var filterValue = args.command === "A" ? "" : args.command;		    	
+			    
+			    this.dataView.setFilterArgs({q: filterValue, path: searchPath});
+			    this.dataView.refresh();
+			    this.grid.invalidate();
+			    this.grid.render();
+		    });
+		    this.gridPlugins.push(headerMenuPlugin);
 
 		},
 		
@@ -418,6 +437,11 @@ var APP = {
 		
 		var data = args.path.reduce((prev, curr) => prev[curr], item);		 
 			 
+		//костыль, потому что решили оставить пустые статусы
+		if (args.q === "N") {
+			return data === "";
+		}
+
 		return data.toLowerCase().includes(args.q.toLowerCase());
 	},
 	
@@ -720,7 +744,7 @@ var APP = {
           	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65, formatter: (a, b, c) => c.step_num	},
           	    {id: "edt_tduration", 	name: "Duration", 		field: "tduration", 	width: 65, sortable: true, editor: Slick.Editors.Integer},
           	 	{id: "local_set", 		name: "Set Name", 		field: "storageTC", 	width: 150,	formatter: true, formatter: (a, b, c) => c.testSet.local_set, sortable: true},
-          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 50,  },
+          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 70,  header: {menu: {items: [{title: "All", command: "A"}, {title: "N", command: "N"}, {title: "P", command: "P"}, {title: "F", command: "F"}, {title: "W", command: "W"}, {title: "C", command: "C"}, {title: "I", command: "I"}]}} },
           	 	{id: "apps", 			name: "Application", 	field: "storageTC", 	width: 80, 	formatter: (a, b, c) => c.apps},   	    
           	 	{id: "edt_comment", 	name: "Comment", 		field: "comment", 		width: 200, editor: Slick.Editors.LongText},
           	    {id: "features", 		name: "Features", 		field: "storageTC", 	width: 200, formatter: (a, b, c) => c.features},

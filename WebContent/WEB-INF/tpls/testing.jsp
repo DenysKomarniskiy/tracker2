@@ -1,3 +1,28 @@
+<link rel="stylesheet" type="text/css" href="./js/lib/slickgrid/plugins/slick.headermenu.css" />
+<style>
+ .slick-header-menu {      
+      background: #f0f0f0;
+      padding: 2px;
+      -moz-box-shadow: 2px 2px 2px silver;
+      -webkit-box-shadow: 2px 2px 2px silver;
+      min-width: 20px;
+      z-index: 14;
+    }
+    .slick-header-menuitem {
+      padding: 2px 4px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+    }
+    .slick-header-menuitem:hover {
+      border-color: silver;
+      background: white;
+    }
+    .slick-header-menuitem-disabled {
+      border-color: transparent !important;
+      background: inherit !important;
+    }
+</style>
+
 <div class="control-panel flex-container-row">
 
 	<div class="testing-selector">
