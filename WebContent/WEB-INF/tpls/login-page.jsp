@@ -33,15 +33,15 @@
 			<c:if test="${empty logged}">
 				<div class="row">
 					<div class="mdl-textfield floating-label">
-					   <input type="text" name="login" id="tqc-ver" class="mdl-textfield__input" required>
-					   <label class="float-palceholder" for="tqc-ver">ISD login</label>
+					   <input type="text" name="login" id="login" class="mdl-textfield__input" required>
+					   <label class="float-palceholder" for="login">ISD login</label>
 					   <label class="mdl-textfield__label" for="sample-expandable"></label>
 					</div>					
 				</div>
 				<div class="row">
 					<div class="mdl-textfield floating-label">
-					   <input type="password" name="passw" id="tqc-ver" class="mdl-textfield__input" required>
-					   <label class="float-palceholder" for="tqc-ver">ISD password</label>
+					   <input type="password" name="passw" id="passw" class="mdl-textfield__input" required>
+					   <label class="float-palceholder" for="passw">ISD password</label>
 					   <label class="mdl-textfield__label" for="sample-expandable"></label>
 					</div>
 				</div>
@@ -53,7 +53,5 @@
 			</c:if>			
 		</form>
 	</div>
-	
-	
 </body>
 </html>

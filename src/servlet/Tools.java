@@ -33,14 +33,18 @@ public class Tools extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		Gson gson = new Gson();
+		
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 
 		Transaction tx = hibernateSession.beginTransaction();
 		List testings = hibernateSession.createQuery("from Testing").getResultList();
+		List users = hibernateSession.createQuery("from User WHERE active = :active").setParameter("active", 1).getResultList();
 		tx.commit();
 
 		request.setAttribute("testings", testings);
+		request.setAttribute("jusers", gson.toJson(users));
 
 		request.setAttribute("title", "Tools");
 		request.setAttribute("template", "tools.jsp");

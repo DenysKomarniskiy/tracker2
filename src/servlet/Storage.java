@@ -148,6 +148,14 @@ public class Storage extends HttpServlet {
 			response.getWriter().println(gson.toJson(Utils.unproxy(storageTC)));
 
 			Utils.LogMessage(logger, logMsg, request);
+			
+		} else if (action.equals("get")) {
+			
+			tx = hibernateSession.beginTransaction();
+			List tcs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet").getResultList();			
+			tx.commit();
+			
+			response.getWriter().println(gson.toJson(tcs));
 
 		} else if (action.equals("add")) {
 

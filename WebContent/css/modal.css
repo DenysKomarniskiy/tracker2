@@ -2,7 +2,6 @@
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
     z-index: 21; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
     left: 0;
     top: 0;
     width: 100%; /* Full width */
@@ -14,7 +13,8 @@
 
 
 .modal-content {
-display: table;
+	top: 100px;
+	display: table;
     position: relative;
     background-color: #fefefe;
     margin: auto;
@@ -30,13 +30,9 @@ display: table;
 
 @-webkit-keyframes animatetop {
     from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
+    to {top:100px; opacity:1}
 }
 
-@keyframes animatetop {
-    from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
-}
 
 #m-header{
     background: none;

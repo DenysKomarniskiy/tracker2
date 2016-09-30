@@ -166,8 +166,7 @@ var APP = {
 			$('input[name="tqc_version"]').val(localStorage.getItem('tqcver'))
 			$sendMailForm = $('#send-mail');
 			$sendButton = $sendMailForm.find('input[type="submit"]');
-			$sendButton.on('click', (e) => {
-				
+			$sendButton.on('click', (e) => {				
 				e.preventDefault();
 				
 				$sendButton[0].disabled = true;
@@ -227,11 +226,83 @@ var APP = {
 					function(err){
 						Modal.alert(err);
 					}
-				);
-				
+				);				
 			});
 			
 			
+			//init custom testing creation grids
+			this.SETTINGS.fetchOpts.body = "action=get";
+			var leftGridDataView = new Slick.Data.DataView();
+			var rightGridDataView = new Slick.Data.DataView();
+			
+			var leftCols = [
+	        	{id: "tc_id", 		 name: "TC ID", 	 field: "tc_id", 		width: 150, 	sortable: true	},    
+	        	{id: "edt_testSetId",name: "Set Name", 	 field: "testSet", 		width: 150,	sortable: true, 	formatter: (a, b, c) => c.local_set, },
+                {id: "edt_author", 	 name: "Author", 	 field: "author", 		width: 50, 		},
+			    {id: "edt_step_num", name: "Step Count", field: "step_num", 	width: 65,		},
+			    {id: "edt_duration", name: "Duration", 	 field: "duration", 	width: 65,  sortable: true, 	},
+           	];
+			
+			var rightCols = leftCols.slice();
+			rightCols.push({id: "edt_runner", name: "Runner", field: "runner", width: 50, editor: Slick.Editors.Select, options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : []});
+								
+			var leftGrid = new Slick.Grid("#left-grid", leftGridDataView, leftCols, {explicitInitialization: true});
+			var rightGrid = new Slick.Grid("#right-grid", rightGridDataView, rightCols,  {explicitInitialization: true});
+			
+			leftGrid.setSelectionModel(new Slick.RowSelectionModel());
+			rightGrid.setSelectionModel(new Slick.RowSelectionModel());
+			
+			function rerenderGrids(){
+				leftGrid.invalidate();
+				leftGrid.render();
+				rightGrid.invalidate();
+				rightGrid.render();
+			}
+			
+			var $customTestingEditor = $('#custom-testing-editor');
+			$customTestingEditor.find('#btn-add').click((e) => {
+				leftGrid.getSelectedRows().forEach(idx => {
+					var item = leftGridDataView.getItemByIdx(idx);
+					rightGridDataView.addItem(item);
+					leftGridDataView.deleteItem(item.id);
+				});
+				
+				rerenderGrids();
+				
+			});
+			
+			$customTestingEditor.find('#btn-remove').click((e) => {
+				rightGrid.getSelectedRows().forEach(idx => {
+					var item = rightGridDataView.getItemByIdx(idx);
+					leftGridDataView.addItem(item);
+					rightGridDataView.deleteItem(item.id);
+				});
+				
+				rerenderGrids();
+				
+			});						
+			
+			$('#btn-create-custom-testing').click((e) => {
+				$customTestingEditor.removeClass('hide');
+				leftGrid.init();
+				rightGrid.init();
+				
+				leftGridDataView.setItems([]);
+				rightGridDataView.setItems([]);						
+				
+				fetch('storage', this.SETTINGS.fetchOpts)
+				.then(resp => resp.json())
+				.then(respJson => {
+					leftGridDataView.setItems(respJson);
+					rerenderGrids();
+				})
+				.catch(Modal.alert.bind(Modal));	
+				
+				Modal
+				.setHeader('New Custom Testing')
+				.setContent($customTestingEditor[0])
+				.show();	
+			});
 
 			
 		},

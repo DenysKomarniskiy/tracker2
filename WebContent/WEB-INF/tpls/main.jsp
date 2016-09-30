@@ -89,7 +89,7 @@
 	<script src="./js/lib/slickgrid/slick.dataview.js"></script>
 	<script src="./js/lib/slickgrid/plugins/slick.autotooltips.js"></script>
 	<script src="./js/lib/slickgrid/plugins/slick.headermenu.js"></script>
-	
+	<script src="./js/lib/slickgrid/plugins/slick.rowselectionmodel.js"></script>
 	<script src="./js/main.js"></script>
 
 
