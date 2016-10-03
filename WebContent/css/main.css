@@ -59,29 +59,43 @@ input:-webkit-autofill {
 	color: #3f51b5;
     padding: 0;
 }
-.login-form.widget .mdl-layout__header {
+.invert-color .mdl-layout__header {
 	box-shadow: none;
 }
-.login-form.widget .mdl-layout__header-row {
+.invert-color .mdl-layout__header-row {
 	padding: 0 40px 0 35px;
 }
-.login-form.widget .mdl-textfield {
+.invert-color .mdl-textfield {
 	width: auto;	
 }
-.login-form.widget .mdl-textfield__input {
+.invert-color .mdl-textfield__input {
 	border-bottom: 1px solid rgba(63,81,181,0.5);
 }
-.login-form.widget .mdl-textfield__input:focus + .float-palceholder,
-.login-form.widget .mdl-textfield__input:valid + .float-palceholder {
+.invert-color .mdl-textfield__input:focus + .float-palceholder,
+.invert-color .mdl-textfield__input:valid + .float-palceholder {
     color: rgba(63,81,181,0.75);
 }
-.login-form.widget .float-palceholder,
-.login-form.widget .float-palceholder {
+.invert-color .float-palceholder,
+.invert-color .float-palceholder {
     color: rgba(63,81,181,0.65);
 }
-.login-form.widget .mdl-textfield__label:after {
+.invert-color .mdl-textfield__label:after {
     background-color: #3f51b5;
 }
+.invert-color .mdl-select select {
+    border-bottom: 1px solid rgb(154, 163, 213);
+    color: #3f51b5;
+}
+.invert-color .mdl-select select option {
+	background: #fff;
+}
+.invert-color .mdl-select select:valid + .float-palceholder {
+    color: rgba(63,81,181,0.75);
+}
+.invert-color .mdl-select:after {
+   	color: #3f51b5 !important;
+}
+
 .login-form.widget .row {
 	margin: 0px 35px;
 }
@@ -427,6 +441,14 @@ input.editor-checkbox {
 	margin: 10px 0 0 10px !important;
 }
 
+.custom-testing-editor {
+	color: #3f51b5;
+} 
+
+.custom-testing-editor .flex-container-row{
+	align-items: center;
+}
+
 /*mdl main*/
 .mdl-layout__container {
     position: absolute;
@@ -724,6 +746,7 @@ input.editor-checkbox {
     top: 16px;
 }
 .mdl-select {
+    display: inline-block;
 	padding: 20px 0;
     overflow: hidden;
     position: relative;    
@@ -735,7 +758,7 @@ input.editor-checkbox {
     top: 20px;
     right: 0;	
     color: #fff;
-    z-index: -1;
+    pointer-events: none;
 }
 .mdl-select select {
 	color: #fff;
@@ -958,7 +981,15 @@ div.add #b-add:hover {
 .hide {
 	display:none !important;
 }
-
+.float-r {
+	float: right;
+}
+.float-l {
+	float: left;
+}
+.inline-b {
+	display: inline-block;
+}
 
 .flex-container-col,
 .flex-container-row {
@@ -967,6 +998,10 @@ div.add #b-add:hover {
     flex-wrap: wrap;    
     justify-content:flex-start;    
     align-items: flex-start;
+}
+
+.row .flex-container-row {
+    align-items: center;
 }
 
 .flex-container-col{
@@ -983,4 +1018,9 @@ div.add #b-add:hover {
 
 .flex-container-row div span {
     display: inline-block;
+}
+
+button:disabled {
+	opacity: 0.5;
+    cursor: not-allowed;	
 }

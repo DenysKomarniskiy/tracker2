@@ -45,6 +45,7 @@ public class Tools extends HttpServlet {
 
 		request.setAttribute("testings", testings);
 		request.setAttribute("jusers", gson.toJson(users));
+		request.setAttribute("users", users);
 
 		request.setAttribute("title", "Tools");
 		request.setAttribute("template", "tools.jsp");

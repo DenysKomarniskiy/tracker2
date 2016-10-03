@@ -9,7 +9,7 @@
 </head>
 
 <body>
-	<div class="login-form widget">
+	<div class="login-form widget invert-color">
 		<header class="mdl-layout__header">
 			<div class="mdl-layout__header-row">
 				<span class="mdl-layout__title">Welcome Back!</span>				

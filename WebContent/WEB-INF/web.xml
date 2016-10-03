@@ -17,6 +17,10 @@
 		<param-name>issuePrefix</param-name>
 		<param-value>ISS-TQC-</param-value>
 	</context-param>
+	<context-param>
+		<param-name>testCompleteRunner</param-name>
+		<param-value>rovo</param-value>
+	</context-param>
 	<filter>
 		<filter-name>AuthenticationFilter</filter-name>
 		<filter-class>servlet.filters.AuthenticationFilter</filter-class>

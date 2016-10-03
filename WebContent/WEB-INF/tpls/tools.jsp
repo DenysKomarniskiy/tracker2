@@ -33,14 +33,15 @@
 	
 	<div class="widget testing-manager">
 		<h3>Testing management</h3>
-		<div class="row">
+		<div class="row invert-color">
 			<h4>New testing</h4>
-			<form id="gen-testing" action="controlpanel" method="post">
-				<label>Testing name
-					<input type="text" name="testing_name" value="" required/>
-				</label>
-				<input type="hidden" name="action" value ="generate"/>
-				<input type="submit" name="button" value="Generate" />
+			<form class="flex-container-row" id="gen-testing" action="controlpanel/generate" method="post">				
+				<div class="mdl-textfield floating-label">
+		   			<input type="text" name="testing_name" class="mdl-textfield__input" required>
+		   			<label class="float-palceholder">Testing name</label>
+		   			<label class="mdl-textfield__label" for="sample-expandable"></label>
+				</div>						
+				<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Generate</button>		
 			</form>
 		</div>
 		
@@ -49,23 +50,23 @@
 			<button id="btn-create-custom-testing" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Create</button>
 		</div>
 		
-		<div class="row">	
+		<div class="row invert-color">	
 			<h4>Delete testing</h4>
-			<form action="controlpanel" method="post" onsubmit="return confirm('Do you really want to delete this testing?');">
-				<label>select testing
-					<select name="testing_id">
-					    <c:forEach items="${testings}" var="testing">						   
+			<form class="flex-container-row" action="controlpanel/delete" method="post" onsubmit="return confirm('Do you really want to delete this testing?');">				
+				<div class="mdl-select">			
+					<select id="testing_id" name="testing_id" required>
+						<option value="" selected></option>
+						<c:forEach items="${testings}" var="testing">						   
 					        <option value="${testing.id}">${testing.name}</option>
-					    </c:forEach>
-					</select>
-				</label>
-				<input type="hidden" name="action" value ="delete"/>
-				<input type="submit" name="button" value="delete" />
+					    </c:forEach>				
+					</select>			
+					<label class="float-palceholder" for="testing_id">Select testing</label>
+				</div>		
+				<div><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Delete</button></div>		
 			</form>			
 		</div>
 		
-		<div class="row">
-		</div>
+		
 	</div>
 	
 	
@@ -82,15 +83,39 @@
 		</div>	
 		<div id="right-grid" style="width: 550px; height: 500px"></div>
 	</div>
-	<div class="flex-container-row">
-		<button id="set-runners" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Set runners</button>
-		<div class="mdl-textfield floating-label">
-		   <input type="text" name="login" id="login" class="mdl-textfield__input" required>
-		   <label class="float-palceholder" for="login">Testing name</label>
-		   <label class="mdl-textfield__label" for="sample-expandable"></label>
+	
+	<div class="float-l invert-color">	
+		<div class="mdl-textfield mdl-textfield--expandable">
+			<label class="mdl-button mdl-button--icon" for="search-cte-tc" title="Search"> 
+				<i class="material-icons">search</i>
+			</label>
+			<div class="mdl-textfield__expandable-holder search-field">
+				<input class="mdl-textfield__input" type="text" id="search-cte-tc" required>
+				<label class="mdl-textfield__label" for="sample-expandable"></label>
+				<i id="reset-search">×</i>
+			</div>
 		</div>		
-		<button id="save" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Save</button>
 	</div>
+
+	
+	<div class="flex-container-row invert-color float-r">
+		<!-- <div><button id="set-runners" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Set runners</button></div>  -->
+		<div>
+			<div class="mdl-textfield floating-label">
+		   		<input type="text" name="cte-name" id="cte-name" class="mdl-textfield__input" required>
+		   		<label class="float-palceholder" >Testing name</label>
+		   		<label class="mdl-textfield__label" for="sample-expandable"></label>
+			</div>		
+		</div>
+		<div><button id="cte-save" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Save</button></div>
+	</div>
+	
+		
+	<form id="cteusers" class="flex-container-row float-r" style="height: 67px;">
+		<c:forEach items="${users}" var="user">						   
+	        <div><label><input type="checkbox" value="${user.id}" checked>${user.id}</label></div> 
+	    </c:forEach>
+	</form>
 </div>
 
 
