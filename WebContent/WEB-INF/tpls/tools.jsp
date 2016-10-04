@@ -51,7 +51,7 @@
 		</div>
 		
 		<div class="row invert-color">	
-			<h4>Delete testing</h4>
+			<h4>Edit testing</h4>
 			<form class="flex-container-row" action="controlpanel/delete" method="post" onsubmit="return confirm('Do you really want to delete this testing?');">				
 				<div class="mdl-select">			
 					<select id="testing_id" name="testing_id" required>
@@ -62,6 +62,7 @@
 					</select>			
 					<label class="float-palceholder" for="testing_id">Select testing</label>
 				</div>		
+				<div><button id="btn-edit-testing" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Edit</button></div>
 				<div><button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Delete</button></div>		
 			</form>			
 		</div>
