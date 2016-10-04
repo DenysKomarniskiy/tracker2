@@ -127,7 +127,7 @@ public class TestSet extends HttpServlet {
 			int result = query.executeUpdate();
 			tx.commit();
 
-			response.getWriter().println("Test_set Update Status=" + result);
+			response.getWriter().println("{\"status\":\"updated\"}");
 			return;
 		}
 

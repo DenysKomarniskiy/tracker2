@@ -19,6 +19,16 @@
 	<div class="mdl-layout__container">
 		<div class="mdl-layout">
 			<header class="mdl-layout__header">
+				<div id="load-bar" class="load-bar">
+				  <div class="cs-loader-inner">
+				    <label>	●</label>
+				    <label>	●</label>
+				    <label>	●</label>
+				    <label>	●</label>
+				    <label>	●</label>
+				    <label>	●</label>
+				  </div>
+				</div>
 				<div id="mdl-menu-btn" class="mdl-layout__drawer-button">					
 					<i class="material-icons">menu</i>					
 				</div>

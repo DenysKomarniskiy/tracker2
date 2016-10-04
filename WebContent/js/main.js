@@ -1,3 +1,33 @@
+/* main interface*/
+function interfaceInit() {
+
+    var mdlDrawer = document.getElementById('mdl-drawer');
+    var mdlObfuscator = document.getElementById('mdl-obfuscator');
+    var menuBtn = document.getElementById('mdl-menu-btn');
+
+    menuBtn.onclick = function () {
+        mdlDrawer.classList.add('is-visible');
+        mdlObfuscator.classList.add('is-visible');
+    };
+
+    mdlObfuscator.onclick = function () {
+        mdlDrawer.classList.remove('is-visible');
+        mdlObfuscator.classList.remove('is-visible');
+    }
+    
+    var loadBar = document.getElementById('load-bar');
+    loadBar.style.display = "none";
+    
+    Loader = {
+		show: function() {
+			loadBar.style.display = "block";
+		},
+		hide: function() {
+			loadBar.style.display = "none";
+		}
+    }
+
+};
 
 var APP = {
 	
@@ -17,11 +47,12 @@ var APP = {
 		
 		this.gridPlugins.push(new Slick.AutoTooltips({}));
 		
-		if (view.data) {
-			this.dataView = new Slick.Data.DataView();		
-			this.dataView.setItems(view.data);
-			this.dataView.getItemMetadata = this.metaDataFormatter.bind(this);
-			this.dataView.setFilter(this.dataViewFilter);		
+		this.dataView = new Slick.Data.DataView();	
+		this.dataView.getItemMetadata = this.metaDataFormatter.bind(this);
+		this.dataView.setFilter(this.dataViewFilter); // for search
+		
+		if (view.data) {				
+			this.dataView.setItems(view.data);				
 		}
 				
 		if (this.SETTINGS[this.faceName]){
@@ -80,8 +111,8 @@ var APP = {
 				stats["stats-correction-pcs"] += 1;
 			}			
 		});
-		stats["stats-processed-proc-pcs"] = Math.ceil((stats["stats-processed-pcs"] / stats["stats-total-pcs"]) * 100);
-		stats["stats-processed-proc-min"] = Math.ceil((stats["stats-processed-min"] / stats["stats-total-min"]) * 100);
+		stats["stats-processed-proc-pcs"] = Math.ceil((stats["stats-processed-pcs"] / stats["stats-total-pcs"]) * 100) || 0;
+		stats["stats-processed-proc-min"] = Math.ceil((stats["stats-processed-min"] / stats["stats-total-min"]) * 100) || 0;
 		stats["stats-empty-pcs"] = stats["stats-total-pcs"] - stats["stats-processed-pcs"] - stats["stats-wait-pcs"] - stats["stats-correction-pcs"];
 		
 		$.each(this.$statsHeaderSpans, (i, spanEl) => {			
@@ -133,9 +164,7 @@ var APP = {
 			$.each(view.userSettings, (key, val) => {
 				if (!excludedFields.includes(key))
 					data.push({	id: key, val: val});
-			});
-			
-			console.log(data);
+			});			
 			
 			$('#user-settings-grid').css({				
 				width: 301,
@@ -371,8 +400,7 @@ var APP = {
 				};
 			});
 			
-			//init grid click handlers
-			this.gridClickHandlers.push(this.idRowClickHandler);
+			//init grid click handlers			
 			this.gridClickHandlers.push(this.statusRowClickHandler);
 			this.gridClickHandlers.push(this.softdevRowClickHandler);
 			
@@ -412,9 +440,10 @@ var APP = {
 			});
 			$envSelect.on('blur', function() {localStorage.setItem('lastSelectedEnv', this.value);})
 			
-			$('form#login-testing')
-			.on('submit', this.loadData.bind(this))
-			.trigger('submit');
+			var $testingSelector = $('form#login-testing');
+			$testingSelector.on('submit', this.loadData.bind(this));			
+			
+			$(() => $testingSelector.trigger('submit'));
 			
 			$userSelect.on('change', this.loadData.bind(this));
 			
@@ -505,6 +534,12 @@ var APP = {
 	loadData: function(e) {
 		
 		e.preventDefault();
+		Loader.show();
+		
+		this.dataView.setItems([]);
+		this.updateStats();
+		this.grid.invalidate();
+		this.grid.render();		
 		
 		var $form = $('form#login-testing');
 		
@@ -515,14 +550,10 @@ var APP = {
 		
 		console.log('request ->', this.SETTINGS.fetchOpts);
 		
-		fetch(APP.dataUrl, this.SETTINGS.fetchOpts)
-		.then(function(response) {
-		    return response.json();
-		})
+		fetch(this.dataUrl, this.SETTINGS.fetchOpts)
+		.then(resp => resp.json())
 		.then(this.updateGrid.bind(this))
-		.catch(function(error) {
-		    console.log('Request failed', error);
-		});
+		.catch(Modal.alert.bind(Modal));
 	},	
 	
 	updateGrid: function(data) {
@@ -531,10 +562,11 @@ var APP = {
 		console.dir(data);
 	    
 		this.dataView.setItems(this.validateData(data));
+		this.updateStats();
 		this.grid.invalidate();
-		this.grid.render();			
+		this.grid.render();
 
-        this.updateStats();
+        Loader.hide();
 	},
 	
 	metaDataFormatter: function(index)	{
@@ -826,7 +858,7 @@ var APP = {
 	SETTINGS: {
 		"storage": {
 			columns: [
-               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 180, 								sortable: true									},    
+               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 180, 								sortable: true,									formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + c + '">' + c + '</a>') },    
                {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50, 	editor: Slick.Editors.Select, 	options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : [], 	},
                {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer													},
                {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,  editor: Slick.Editors.Integer,	sortable: true, 								},
@@ -853,7 +885,7 @@ var APP = {
 		},
 		"testing": {
 			columns: [
-          	    {id: "tc_id", 			name: "TC ID", 			field: "storageTC", 	width: 140, sortable: true, formatter: (a, b, c) => c.tc_id },    
+          	    {id: "tc_id", 			name: "TC ID", 			field: "storageTC", 	width: 140, sortable: true, formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + c.tc_id + '">' + c.tc_id + '</a>') },    
           	    {id: "author", 			name: "Author", 		field: "storageTC", 	width: 50, 	formatter: (a, b, c) => c.author},
           	 	{id: "edt_runner", 		name: "Runner", 		field: "runner", 		width: 50, editor: Slick.Editors.Select, options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : []},
           	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65, formatter: (a, b, c) => c.step_num	},
@@ -902,44 +934,21 @@ var APP = {
 			method: 'post',  
 			credentials: 'include',
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'}
-		}
+		},
+		softDevLink: 'http://sd01srv.softsystem.pl:8080/SoftDev/View?ufi=STC-TQC-' 
 	},
 	
 }
-		
+	
+interfaceInit();
 APP.init();
-
-
-
-/* main interface*/
-
-var init = function() {
-
-    var mdlDrawer = document.getElementById('mdl-drawer');
-    var mdlObfuscator = document.getElementById('mdl-obfuscator');
-    var menuBtn = document.getElementById('mdl-menu-btn');
-
-    menuBtn.onclick = function () {
-        mdlDrawer.classList.add('is-visible');
-        mdlObfuscator.classList.add('is-visible');
-    };
-
-    mdlObfuscator.onclick = function () {
-        mdlDrawer.classList.remove('is-visible');
-        mdlObfuscator.classList.remove('is-visible');
-    }
-
-};
-
-init();
-
 
 /* helpers */
 function sdFormatter (row, cell, value) {
     switch (value) {        
         case 1      : return '&#10004';
         case 'wait' : return '<div class="loader"></div>';
-        default : return '<a href="">post</a>';
+        default : return '<a class="no-action" href="">post</a>';
     }
 }
 
