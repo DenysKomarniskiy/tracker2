@@ -63,25 +63,13 @@ public class ControlPanel extends HttpServlet {
 			response.sendRedirect("/tracker2/tools");
 			return;
 
-		} else if (path.contains("create")) {
+		} else if (path.contains("save")) {
 
 			Gson gson = new GsonBuilder().registerTypeAdapter(CustomTesting.class, new CustomTestingDeserializer()).create();
 
 			CustomTesting ct = gson.fromJson(request.getReader(), CustomTesting.class);
-
-			Map<String, List<Long>> result = createCustomTesting(ct, null);
-
-			response.getWriter().println(gson.toJson(result));
-
-			return;
-
-		} else if (path.contains("edit")) {
-
-			Gson gson = new GsonBuilder().registerTypeAdapter(CustomTesting.class, new CustomTestingDeserializer()).create();
-
-			CustomTesting ct = gson.fromJson(request.getReader(), CustomTesting.class);
-
-			Map<String, List<Long>> result = createCustomTesting(ct, ct.id);
+			
+			Map<String, List<Long>> result = createCustomTesting(ct, ct.id == 0 ? null : ct.id);
 
 			response.getWriter().println(gson.toJson(result));
 

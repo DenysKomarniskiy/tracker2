@@ -303,10 +303,10 @@ var APP = {
 			rightGrid.onSort.subscribe(this.gridSortHandler.bind({dataView: rightGridDataView, grid: rightGrid}));
 			
 			
-			var saveTesting = (url, testing) => {					
+			var saveTesting = (testing) => {					
 				this.SETTINGS.fetchOpts.body = JSON.stringify(testing);
-				console.log('request -> ' + url, this.SETTINGS.fetchOpts);
-				fetch(url, this.SETTINGS.fetchOpts)
+				console.log('request -> controlpanel/save', this.SETTINGS.fetchOpts);
+				fetch('controlpanel/save', this.SETTINGS.fetchOpts)
 				.then(resp => resp.text())
 				.then(showGeneratedTesting)
 				.catch(Modal.alert.bind(Modal));	
@@ -347,7 +347,7 @@ var APP = {
 				$saveBtn.attr('disabled', false);				
 				$saveBtn.unbind('click').click(() => {
 					$saveBtn.attr('disabled', true);
-					saveTesting('controlpanel/create', {
+					saveTesting({
 						id: 0,
 						name: $("#cte-name").val(), 
 						list: rightGridDataView.getItems().map(item => ({id: item.id, runner: item.runner})),
@@ -412,7 +412,7 @@ var APP = {
 					
 					$saveBtn.attr('disabled', true);
 					
-					saveTesting('controlpanel/edit', {
+					saveTesting({
 						id:  testingId,
 						name: $("#cte-name").val(), 
 						list,
