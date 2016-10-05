@@ -19,6 +19,7 @@ public class CustomTestingDeserializer implements JsonDeserializer<CustomTesting
 		CustomTesting customTesting = new CustomTesting();
 
 		customTesting.name = jsonObject.get("name").getAsString();
+		customTesting.id = jsonObject.get("id").getAsInt();
 
 		JsonArray list = jsonObject.getAsJsonArray("list");
 

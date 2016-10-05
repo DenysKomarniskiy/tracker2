@@ -55,7 +55,7 @@
 			<form class="flex-container-row" action="controlpanel/delete" method="post" onsubmit="return confirm('Do you really want to delete this testing?');">				
 				<div class="mdl-select">			
 					<select id="testing_id" name="testing_id" required>
-						<option value="" selected></option>
+						<option selected></option>
 						<c:forEach items="${testings}" var="testing">						   
 					        <option value="${testing.id}">${testing.name}</option>
 					    </c:forEach>				

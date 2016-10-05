@@ -69,7 +69,19 @@ public class ControlPanel extends HttpServlet {
 
 			CustomTesting ct = gson.fromJson(request.getReader(), CustomTesting.class);
 
-			Map<String, List<Long>> result = createCustomTesting(ct);
+			Map<String, List<Long>> result = createCustomTesting(ct, null);
+
+			response.getWriter().println(gson.toJson(result));
+
+			return;
+
+		} else if (path.contains("edit")) {
+
+			Gson gson = new GsonBuilder().registerTypeAdapter(CustomTesting.class, new CustomTestingDeserializer()).create();
+
+			CustomTesting ct = gson.fromJson(request.getReader(), CustomTesting.class);
+
+			Map<String, List<Long>> result = createCustomTesting(ct, ct.id);
 
 			response.getWriter().println(gson.toJson(result));
 
@@ -88,19 +100,27 @@ public class ControlPanel extends HttpServlet {
 		tx.commit();
 	}
 
-	private Map<String, List<Long>> createCustomTesting(CustomTesting customTesting) {
+	private Map<String, List<Long>> createCustomTesting(CustomTesting customTesting, Integer testingId) {
 		SessionFactory sessionFactory = (SessionFactory) getServletContext().getAttribute("HibernateSessionFactory");
 		Session hibernateSession = sessionFactory.getCurrentSession();
 		List<TestingSheet> newTestingSheet = new ArrayList<TestingSheet>();
+		List<StorageTC> allTCs = new ArrayList<StorageTC>();
 		Map<String, List<Long>> timePerUser = new HashMap<String, List<Long>>();
 		List<Long> newTCcountTCduration = null, oldTCcountTCduration = null;
 		String runner;
+		Testing testing;
 
 		Transaction tx = hibernateSession.beginTransaction();
-		List<StorageTC> allTCs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet WHERE stc.id in (:ids) order by stc.duration desc").setParameter("ids", customTesting.getIds()).getResultList();		
-		tx.commit();
+		if (!customTesting.getIds().isEmpty()) {
+			allTCs = hibernateSession.createQuery("SELECT DISTINCT stc FROM StorageTC stc LEFT JOIN FETCH stc.testSet WHERE stc.id IN (:ids) order by stc.duration desc").setParameter("ids", customTesting.getIds())
+					.getResultList();
+		}
+		if (testingId != null) {
+			testing = hibernateSession.load(Testing.class, testingId);
+		} else {
+			testing = new Testing();
+		}
 
-		Testing testing = new Testing();
 		testing.setName(customTesting.name);
 		for (String user : customTesting.users) {
 			newTCcountTCduration = new ArrayList<Long>();
@@ -137,13 +157,16 @@ public class ControlPanel extends HttpServlet {
 
 		testing.setTestingSheet(newTestingSheet);
 
-		hibernateSession = sessionFactory.getCurrentSession();
-		tx = hibernateSession.beginTransaction();
 		hibernateSession.save(testing);
 
 		for (TestingSheet testingSheetEntry : newTestingSheet) {
 			hibernateSession.save(testingSheetEntry);
 		}
+
+		if (!customTesting.getIdsToDel().isEmpty()) {
+			hibernateSession.createQuery("DELETE TestingSheet WHERE strg_id IN :ids").setParameter("ids", customTesting.getIdsToDel()).executeUpdate();
+		}
+		
 		tx.commit();
 
 		return timePerUser;
@@ -173,7 +196,6 @@ public class ControlPanel extends HttpServlet {
 		Long testCompCount = (Long) hibernateSession.createQuery("SELECT count(*) FROM StorageTC stc WHERE stc.auto_ide = :ide").setParameter("ide", "TC").getSingleResult();
 		Long testCompDuration = (Long) hibernateSession.createQuery("SELECT sum(stc.duration) FROM StorageTC stc WHERE stc.auto_ide = :ide").setParameter("ide", "TC").getSingleResult();
 		List<User> users = hibernateSession.createQuery("FROM User WHERE active = :active").setParameter("active", 1).getResultList();
-		tx.commit();
 
 		Collections.shuffle(allOtherTCs, new Random(System.nanoTime()));
 
@@ -218,8 +240,6 @@ public class ControlPanel extends HttpServlet {
 
 		testing.setTestingSheet(newTestingSheet);
 
-		hibernateSession = sessionFactory.getCurrentSession();
-		tx = hibernateSession.beginTransaction();
 		hibernateSession.save(testing);
 
 		for (TestingSheet testingSheetEntry : newTestingSheet) {

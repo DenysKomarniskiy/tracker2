@@ -188,80 +188,100 @@ var APP = {
 			this.grid = new Slick.Grid("#user-settings-grid", this.dataView, cols, opts); 
 		},
 		
-		"tools": function() {
-			
+		"tools": function() {			
 			console.log('init tools..');
-			function initSendMail() {
-				
+			
+			var initSendMail = () => {
 				$('input[name="tqc_version"]').val(localStorage.getItem('tqcver'))
-				$sendMailForm = $('#send-mail');
-				$sendButton = $sendMailForm.find('input[type="submit"]');
+				var $sendMailForm = $('#send-mail');
+				var $sendButton = $sendMailForm.find('input[type="submit"]');
 				$sendButton.on('click', (e) => {				
-					e.preventDefault();
-					
-					$sendButton[0].disabled = true;
-					
+					e.preventDefault();					
+					$sendButton[0].disabled = true;					
 					this.SETTINGS.fetchOpts.body = $sendMailForm.serialize();
 					
-					fetch(
-						$sendMailForm.attr("action"), this.SETTINGS.fetchOpts
-					).then(
-						resp => resp.text()	
-					).then(
-						respText => {	
-							console.log(respText)
-							$sendButton[0].disabled = false;
-						}
-					).catch(
-						err => {
-							Modal.alert(err);
-						}	
-					);	
-					
+					fetch($sendMailForm.attr("action"), this.SETTINGS.fetchOpts)
+					.then(resp => resp.text())
+					.then(respText => {$sendButton[0].disabled = false;})
+					.catch(Modal.alert.bind(Modal));						
 				});
 			}
-			function initGenTesting() {
+			var initGenTesting = () => {
 				$genTestingForm = $('#gen-testing');
 				$genTestingForm.on('submit', (e) => {
-					e.preventDefault();
-					
+					e.preventDefault();					
 					this.SETTINGS.fetchOpts.body = $genTestingForm.serialize();				
 	
 					console.log('request ->',  this.SETTINGS.fetchOpts);
 					
-					$genTestingForm.find('button')[0].disabled = true;
+					$genTestingForm.find('button')[0].disabled = true;					
 					
-					
-					fetch(
-						$genTestingForm.attr("action"), this.SETTINGS.fetchOpts
-					).then(
-						resp => resp.text()			
-					).then(
-						respText => {						
-							console.log(respText);					
-							
-							$table = $('<table />');
-							$table.append('<tr><th>User</th><th>TC count</th><th>Total duration</th></tr>')
-							$.each(JSON.parse(respText), (k, v) => {
-								$table.append('<tr><td>' + k + '</td><td>' + v[0] + '</td><td>' + v[1] + '</td></tr>');
-							});
-							
-							$genTestingForm.find('button')[0].disabled = false;
-							
-							Modal
-							.setHeader('New Testing was generated')
-							.setContent($table[0])
-							.show();						
-						}
-					).catch(
-						function(err){
-							Modal.alert(err);
-						}
-					);				
+					fetch($genTestingForm.attr("action"), this.SETTINGS.fetchOpts)
+					.then(resp => resp.text())
+					.then(respText => {	
+						showGeneratedTesting(respText)	
+						$genTestingForm.find('button')[0].disabled = false;					
+					})
+					.catch(Modal.alert.bind(Modal));				
 				});
+			}			
+			function showGeneratedTesting(respText) {
+				console.log('response <-', respText);
+				try {
+					var jResp = JSON.parse(respText);					
+					var $table = $('<table />');
+					
+					$table.append('<tr><th>User</th><th>TC count</th><th>Total duration</th></tr>')
+					$.each(jResp, (k, v) => {$table.append('<tr><td>' + k + '</td><td>' + v[0] + '</td><td>' + v[1] + '</td></tr>')});
+					
+					Modal.setHeader('New Testing was generated')
+					.setContent($table[0])
+					.show();
+					
+				} catch(e) {
+					Modal.alert(respText);
+				}				
 			}
-						
+			function rerenderGrids(which){
+				switch (which) {        
+			        case 'left': 
+			        	leftGrid.invalidate();
+						leftGrid.render();
+						break;
+			        case 'right': 
+			        	rightGrid.invalidate();
+						rightGrid.render();
+						break;
+			        default : 
+			        	leftGrid.invalidate();
+						leftGrid.render();
+						rightGrid.invalidate();
+						rightGrid.render();
+				}
+			}
+			function moveData(fromGrid, toGrid){
+				var idsToDel = [];
+				fromGrid.getSelectedRows().forEach(idx => {
+					var item = fromGrid.getDataItem(idx);
+					if (item) {
+						toGrid.getData().addItem(item);
+						idsToDel.push(item.id);
+					}
+				});
+				idsToDel.forEach(id => fromGrid.getData().deleteItem(id));
+				rerenderGrids();
+			}
+			function initGrids() {
+				$customTestingEditor.removeClass('hide');
+				leftGridDataView.setItems([]);
+				rightGridDataView.setItems([]);		
+				leftGrid.init();
+				rightGrid.init();
+				rerenderGrids();
+			}			
 			// init custom testing creation
+			var $btnCreateTesting = $('#btn-create-custom-testing');
+			var $btnEditTesting = $('#btn-edit-testing');
 			var leftGridDataView = new Slick.Data.DataView();
 			var rightGridDataView = new Slick.Data.DataView();			
 			var leftCols = [
@@ -282,107 +302,76 @@ var APP = {
 			leftGrid.onSort.subscribe(this.gridSortHandler.bind({dataView: leftGridDataView, grid: leftGrid}));
 			rightGrid.onSort.subscribe(this.gridSortHandler.bind({dataView: rightGridDataView, grid: rightGrid}));
 			
-			function rerenderGrids(which){
-				switch (which) {        
-			        case 'left': 
-			        	leftGrid.invalidate();
-						leftGrid.render();
-						break;
-			        case 'right': 
-			        	rightGrid.invalidate();
-						rightGrid.render();
-						break;
-			        default : 
-			        	leftGrid.invalidate();
-						leftGrid.render();
-						rightGrid.invalidate();
-						rightGrid.render();
-				}
-			}
-
-			function moveData(fromGrid, toGrid){
-				var idsToDel = [];
-				fromGrid.getSelectedRows().forEach(idx => {
-					var item = fromGrid.getDataItem(idx);
-					if (item) {
-						toGrid.getData().addItem(item);
-						idsToDel.push(item.id);
-					}
-				});
-				idsToDel.forEach(id => fromGrid.getData().deleteItem(id));
-				rerenderGrids();
+			
+			var saveTesting = (url, testing) => {					
+				this.SETTINGS.fetchOpts.body = JSON.stringify(testing);
+				console.log('request -> ' + url, this.SETTINGS.fetchOpts);
+				fetch(url, this.SETTINGS.fetchOpts)
+				.then(resp => resp.text())
+				.then(showGeneratedTesting)
+				.catch(Modal.alert.bind(Modal));	
 			}
 			
 			var $customTestingEditor = $('#custom-testing-editor');
+			var $saveBtn = $customTestingEditor.find('#cte-save');
+			
 			$customTestingEditor.find("#search-cte-tc").keyup(this.search.bind({dataView: leftGridDataView, grid: leftGrid, searchPath: ['tc_id']}));
 			$customTestingEditor.find('#reset-search').on('click', (e) => {$customTestingEditor.find("#search-cte-tc").val('').trigger('keyup')});			
 			$customTestingEditor.find('#btn-add').click(() => {moveData(leftGrid, rightGrid)});			
-			$customTestingEditor.find('#btn-remove').click((e) => {moveData(rightGrid, leftGrid)});						
+			$customTestingEditor.find('#btn-remove').click(() => {moveData(rightGrid, leftGrid)});						
 			
-			$customTestingEditor.find('#btn-add-all').click((e) => {								
+			$customTestingEditor.find('#btn-add-all').click(() => {								
 				leftGridDataView.getItems().forEach(item => rightGridDataView.addItem(item));
 				leftGridDataView.setItems([]);
 				rerenderGrids();				
 			});	
 			
-			$customTestingEditor.find('#btn-remove-all').click((e) => {								
+			$customTestingEditor.find('#btn-remove-all').click(() => {								
 				rightGridDataView.getItems().forEach(item => leftGridDataView.addItem(item));
 				rightGridDataView.setItems([]);
 				rerenderGrids();				
 			});	
+			$btnCreateTesting.click(initGrids);			
 			
-						
-			function saveNewTesting(e) {
+			$btnCreateTesting.click((e) => {				
+								
+				this.SETTINGS.fetchOpts.body = "action=get";
+				fetch('storage', this.SETTINGS.fetchOpts)
+				.then(resp => resp.json())
+				.then(respJson => {
+					leftGridDataView.setItems(respJson);
+					rerenderGrids();
+				})
+				.catch(Modal.alert.bind(Modal));
 				
-				var buttonEl = e.currentTarget;
-				buttonEl.disabled = true;
-				var testing = {
+				$saveBtn.attr('disabled', false);				
+				$saveBtn.unbind('click').click(() => {
+					$saveBtn.attr('disabled', true);
+					saveTesting('controlpanel/create', {
+						id: 0,
 						name: $("#cte-name").val(), 
 						list: rightGridDataView.getItems().map(item => ({id: item.id, runner: item.runner})),
 						users: Array.prototype.map.call(document.querySelectorAll('#cteusers input:checked'), el => el.value)
-				};		
-				this.SETTINGS.fetchOpts.body = JSON.stringify(testing);
-				fetch('controlpanel/create', this.SETTINGS.fetchOpts)
-				.then(resp => resp.text())
-				.then(respText => {
-					try {
-						var jresp = JSON.parse(respText);
-						console.log('response <-', jresp);
-						
-						$table = $('<table />');
-						$table.append('<tr><th>User</th><th>TC count</th><th>Total duration</th></tr>')
-						$.each(jresp, (k, v) => {
-							$table.append('<tr><td>' + k + '</td><td>' + v[0] + '</td><td>' + v[1] + '</td></tr>');
-						});
-						
-						buttonEl.disabled = false;
-						
-						Modal
-						.setHeader('New Testing was generated')
-						.setContent($table[0])
-						.show();
-						
-					} catch (e) {
-						Modal.alert(respText);		
-					}
-									
-				})
-				.catch(Modal.alert.bind(Modal));	
-			}
-			
-			$('#btn-edit-testing').click((e) => {
+					});
+				});
 				
-				var testingId = $('#testing_id').val();				
+				Modal
+				.setHeader('New Custom Testing')
+				.setContent($customTestingEditor[0])
+				.show();	
+			});
+			
+			$btnEditTesting.click((e) => {				
+				var testingId = $('#testing_id').val();	
+				var oldTestingData;
+				
 				if (testingId === ""){
 					return;
 				}				
-				e.preventDefault();
-				$customTestingEditor.removeClass('hide');
-				leftGridDataView.setItems([]);
-				rightGridDataView.setItems([]);	
-				leftGrid.init();
-				rightGrid.init();
-				rerenderGrids();				
+				
+				initGrids();
+				
+				e.preventDefault();							
 				
 				$.when(
 					$.ajax({url: "storage", method: "POST", data: {action: "get"}, dataType: "json"}), 
@@ -395,45 +384,46 @@ var APP = {
 					});					
 					
 					testingData.forEach(tItem => {
-						storageData[0] = storageData[0].filter(sItem => sItem.id !== tItem.id )
-					})
+						storageData[0] = storageData[0].filter(sItem => sItem.id !== tItem.id)
+					});
 					
 					leftGridDataView.setItems(storageData[0]);
 					rightGridDataView.setItems(testingData);	
 					rerenderGrids();
-				
-				    //console.log(storageData, testingData);
+					oldTestingData = rightGridDataView.getItems().slice();
+					
 				});			
+				
+				$customTestingEditor.find("#cte-name").val($('#testing_id option:selected').text());
+				$saveBtn.attr('disabled', false);
+				$saveBtn.unbind('click').click(() => {
+							
+					var newTestingData = rightGridDataView.getItems();
+					var list  = [];
+					
+					oldTestingData.map(oldItem => {						
+						if (!newTestingData.find(newItem => oldItem.id === newItem.id))
+							list.push({id: oldItem.id, sign: -1});						
+					});
+					newTestingData.map(newItem => {
+						if (!oldTestingData.find(oldItem => oldItem.id === newItem.id))
+							list.push({id: newItem.id, runner: newItem.runner, sign: 1});						
+					});				
+					
+					$saveBtn.attr('disabled', true);
+					
+					saveTesting('controlpanel/edit', {
+						id:  testingId,
+						name: $("#cte-name").val(), 
+						list,
+						users: Array.prototype.map.call(document.querySelectorAll('#cteusers input:checked'), el => el.value)
+					});
+				});
 
 				Modal
 				.setHeader('Edit Custom Testing')
 				.setContent($customTestingEditor[0])
 				.show();
-			});
-			
-			$('#btn-create-custom-testing').click((e) => {
-				$customTestingEditor.removeClass('hide');
-				leftGridDataView.setItems([]);
-				rightGridDataView.setItems([]);		
-				leftGrid.init();
-				rightGrid.init();
-				rerenderGrids();
-								
-				this.SETTINGS.fetchOpts.body = "action=get";
-				fetch('storage', this.SETTINGS.fetchOpts)
-				.then(resp => resp.json())
-				.then(respJson => {
-					leftGridDataView.setItems(respJson);
-					rerenderGrids();
-				})
-				.catch(Modal.alert.bind(Modal));	
-				
-				$customTestingEditor.find('#cte-save').click(saveNewTesting.bind(this));
-				
-				Modal
-				.setHeader('New Custom Testing')
-				.setContent($customTestingEditor[0])
-				.show();	
 			});
 
 			initSendMail();
@@ -521,10 +511,7 @@ var APP = {
 			    this.grid.invalidate();
 			    this.grid.render();
 		    });
-		    this.gridPlugins.push(headerMenuPlugin);
-		    
-		    initSendMail();
-
+		    this.gridPlugins.push(headerMenuPlugin);		    
 		},
 		
 		"storage": function() {
@@ -756,37 +743,30 @@ var APP = {
 		
 		console.log('request ->', this.SETTINGS.fetchOpts);
 						
-		fetch(
-			this.dataUrl, this.SETTINGS.fetchOpts
-		).then(
-			resp => resp.text()			
-		).then(
-			resp => {				
-				try {
-					var jresp = JSON.parse(resp);
-					console.log('response <-', jresp);
-					if (jresp.status == "Passed" || jresp.status == "Failed"){
-						rowData.softdev = 1;
-						Notify.send('Testcase ' + rowData.storageTC.tc_id + ' posted to SoftDev. ' + jresp.name);
-					} else {
-						Modal.alert(resp);
-						rowData.softdev = 0;	
-					}
-					
-				} catch (e){
-					Modal.alert(resp);					
-					rowData.softdev = 0;
+		fetch(this.dataUrl, this.SETTINGS.fetchOpts)
+		.then(resp => resp.text())
+		.then(resp => {				
+			try {
+				var jresp = JSON.parse(resp);
+				console.log('response <-', jresp);
+				if (jresp.status == "Passed" || jresp.status == "Failed"){
+					rowData.softdev = 1;
+					Notify.send('Testcase ' + rowData.storageTC.tc_id + ' posted to SoftDev. ' + jresp.name);
+				} else {
+					Modal.alert(resp);
+					rowData.softdev = 0;	
 				}
 				
-				this.dataView.updateItem(rowData.id, rowData);
-				this.grid.invalidateRow(cell.row);
-				this.grid.render();
+			} catch (e){
+				Modal.alert(resp);					
+				rowData.softdev = 0;
 			}
-		).catch(
-			function(err){
-				Modal.alert(err);
-			}
-		);
+			
+			this.dataView.updateItem(rowData.id, rowData);
+			this.grid.invalidateRow(cell.row);
+			this.grid.render();
+		})
+		.catch(Modal.alert.bind(Modal));
 		
 	    
 	},	
