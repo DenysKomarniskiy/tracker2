@@ -924,7 +924,7 @@ var APP = {
           	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65,					formatter: (a, b, c) => c.step_num	},
           	    {id: "edt_tduration", 	name: "Duration", 		field: "tduration", 	width: 65,	sortable: true, editor: Slick.Editors.Integer},
           	 	{id: "local_set", 		name: "Set Name", 		field: "storageTC", 	width: 150,	sortable: true, formatter: (a, b, c) => c.testSet.local_set, sortable: true},
-          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 70,  sortable: true, headerCssClass: "tc-status", header: {menu: {items: view.statuses.slice().reduce((prev, status) => {prev.push({title: status.desc, command: status.id}); return prev;}, [{title: "All", command: "A"}])}} },
+          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 70,  sortable: true, headerCssClass: "tc-status", header: {menu: {items: view.statuses ? view.statuses.slice().reduce((prev, status) => {prev.push({title: status.desc, command: status.id}); return prev;}, [{title: "All", command: "A"}]) : []}} },
           	 	{id: "apps", 			name: "Application", 	field: "storageTC", 	width: 80,	sortable: true, formatter: (a, b, c) => c.apps},   	    
           	 	{id: "edt_comment", 	name: "Comment", 		field: "comment", 		width: 200,					editor: Slick.Editors.LongText},
           	    {id: "features", 		name: "Features", 		field: "storageTC", 	width: 200,					formatter: (a, b, c) => c.features},
