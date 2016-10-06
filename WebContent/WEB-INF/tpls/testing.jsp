@@ -93,12 +93,6 @@
 <div id="main-grid"></div>
 
 <ul id="status-menu" style="display: none; position: absolute">
-	<li class="n" data-status="">No run</li>
-	<li class="p" data-status="P">Passed</li>
-	<li class="f" data-status="F">Failed</li>
-	<li class="w" data-status="W">Waiting</li>
-	<li class="c" data-status="C">Correction</li>
-	<li class="i" data-status="I">Investigate</li>
 </ul>	
 
 <script type="text/javascript">
@@ -108,4 +102,13 @@
 	view['envs'] = ${jenvs};
 	view['data'] = [];
 	view['appVer'] = {};	
+	view['statuses'] = [
+		{id:"E", desc:"No run", val: ""},
+		{id:"P", desc:"Passed", val: "P"},
+		{id:"F", desc:"Failed", val: "F"},
+		{id:"W", desc:"Waiting", val: "W"},
+		{id:"C", desc:"Correction", val: "C"},
+		{id:"I", desc:"Investigation", val: "I"},
+		{id:"N", desc:"N\A", val: "N"},
+	];
 </script>

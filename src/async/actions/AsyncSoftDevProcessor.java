@@ -149,15 +149,14 @@ public class AsyncSoftDevProcessor implements Runnable {
 		asyncContext.complete();
 	}
 
-	private boolean isIncludes(List<TTestSet> testSets, long testsetId) {
-		boolean result = false;
+	private boolean isIncludes(List<TTestSet> testSets, long testsetId) {		
 
 		for (TTestSet testSet : testSets) {
 			if (testSet.getEntityID() == testsetId)
-				result = true;
+				return true;
 		}
 
-		return result;
+		return false;
 	}
 
 	private TTestRun failTc(TTestCase tTestCase, long testsetId, UserFieldArray userFields) throws Exception {

@@ -21,7 +21,7 @@ import models.entities.User;
 import utils.Rights;
 import utils.Utils;
 
-@WebServlet("/storage")
+@WebServlet("/storage/*")
 public class Storage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger(Storage.class);

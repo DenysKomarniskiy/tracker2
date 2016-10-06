@@ -5,12 +5,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="./js/lib/jquery/jquery-ui.min.css">
-<link rel="stylesheet" type="text/css" href="./js/lib/slickgrid/slick.grid.css" />
-<link rel="stylesheet" type="text/css" href="./js/lib/slickgrid/slick-default-theme.css" />
-<link rel="stylesheet" type="text/css" href="./css/main.css" />
-<link rel="stylesheet" type="text/css" href="./css/modal.css" />
-<link href="./favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+<link rel="stylesheet" type="text/css" href="/tracker2/js/lib/jquery/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="/tracker2/js/lib/slickgrid/slick.grid.css" />
+<link rel="stylesheet" type="text/css" href="/tracker2/js/lib/slickgrid/slick-default-theme.css" />
+<link rel="stylesheet" type="text/css" href="/tracker2/css/main.css" />
+<link rel="stylesheet" type="text/css" href="/tracker2/css/modal.css" />
+<link href="/tracker2/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>${title}</title>
@@ -88,19 +88,19 @@
 	<jsp:include page="modal.jsp" />
 	<jsp:include page="notify.jsp" />
 	
-	<script src="./js/lib/jquery/jquery-2.2.4.min.js"></script>
-	<script src="./js/lib/jquery/jquery-ui.min.js"></script>
-	<script src="./js/lib/jquery/jquery.event.drop-2.2.js"></script>
-	<script src="./js/lib/jquery/jquery.event.drag-2.2.js"></script>
+	<script src="/tracker2/js/lib/jquery/jquery-2.2.4.min.js"></script>
+	<script src="/tracker2/js/lib/jquery/jquery-ui.min.js"></script>
+	<script src="/tracker2/js/lib/jquery/jquery.event.drop-2.2.js"></script>
+	<script src="/tracker2/js/lib/jquery/jquery.event.drag-2.2.js"></script>
 	
-	<script src="./js/lib/slickgrid/slick.core.js"></script>
-	<script src="./js/lib/slickgrid/slick.editors.js"></script>
-	<script src="./js/lib/slickgrid/slick.grid.js"></script>
-	<script src="./js/lib/slickgrid/slick.dataview.js"></script>
-	<script src="./js/lib/slickgrid/plugins/slick.autotooltips.js"></script>
-	<script src="./js/lib/slickgrid/plugins/slick.headermenu.js"></script>
-	<script src="./js/lib/slickgrid/plugins/slick.rowselectionmodel.js"></script>
-	<script src="./js/main.js"></script>
+	<script src="/tracker2/js/lib/slickgrid/slick.core.js"></script>
+	<script src="/tracker2/js/lib/slickgrid/slick.editors.js"></script>
+	<script src="/tracker2/js/lib/slickgrid/slick.grid.js"></script>
+	<script src="/tracker2/js/lib/slickgrid/slick.dataview.js"></script>
+	<script src="/tracker2/js/lib/slickgrid/plugins/slick.autotooltips.js"></script>
+	<script src="/tracker2/js/lib/slickgrid/plugins/slick.headermenu.js"></script>
+	<script src="/tracker2/js/lib/slickgrid/plugins/slick.rowselectionmodel.js"></script>
+	<script src="/tracker2/js/main.js"></script>
 
 
 </body>

@@ -72,6 +72,10 @@ var APP = {
 				item.storageTC.apps 	= item.storageTC.apps || ""; 
 				item.storageTC.features = item.storageTC.features || ""; 
 			}
+			item.softdev = item.softdev || 0;
+			item.tqcVer = item.tqcVer || "";
+			item.labVer = item.labVer || "";
+			item.geneVer = item.geneVer || "";
 		});
 		
 		return data;
@@ -454,6 +458,7 @@ var APP = {
 			
 			// init status-tc menu
             this.$statusMenu = $("#status-menu");
+            view.statuses.forEach(status => $('<li class="'+status.id.toLowerCase()+'" data-status="'+status.val+'">'+status.desc+'</li>').appendTo(this.$statusMenu));                        
             this.$statusMenu.on('click', this.setTcStatus.bind(this));
             
             // init stats header
@@ -501,7 +506,15 @@ var APP = {
 			// add grid plugin
 		    var headerMenuPlugin = new Slick.Plugins.HeaderMenu({});		   
 		    headerMenuPlugin.onCommand.subscribe((e, args) => {
-		    	Slick.GlobalEditorLock.cancelCurrentEdit();
+		    	Slick.GlobalEditorLock.cancelCurrentEdit();		    	
+		    	
+		    	var $tcStatusCol = $('.tc-status');
+		    	
+		    	view.statuses.forEach(status => {
+		    		$tcStatusCol.removeClass(status.id);
+		    	});
+//		    	
+		    	$tcStatusCol.addClass(args.command);
 			    
 		    	var searchPath = ["tcStatus"];
 		    	var filterValue = args.command === "A" ? "" : args.command;		    	
@@ -632,7 +645,7 @@ var APP = {
 		var data = args.path.reduce((prev, curr) => prev[curr], item);		 
 			 
 		// костыль, потому что решили оставить пустые статусы
-		if (args.q === "N") {
+		if (args.q === "E") {
 			return data === "";
 		}
 
@@ -641,38 +654,23 @@ var APP = {
 	
 	editCommandHandler: function(item, column, editCommand) {
 		
-		var id = item.id;
-		var field = column.id;
-		var data = editCommand.serializedValue;
-		this.SETTINGS.fetchOpts.body = "action=edit&id=" + id + "&" + field + "=" + data;				
-
+		this.SETTINGS.fetchOpts.body = "action=edit&id=" + item.id + "&" + column.id + "=" + editCommand.serializedValue;
 		console.log('request ->', this.SETTINGS.fetchOpts);
 		
-		fetch(
-			this.dataUrl, this.SETTINGS.fetchOpts
-		).then(
-			resp => resp.text()			
-		).then(
-			respText => {
-				
-				try {
-					var jresp = JSON.parse(respText);
-					console.log('response <-', jresp);
-					editCommand.execute();
-					this.grid.invalidateRow(editCommand.row);
-					this.grid.render();
-					
-				} catch (e){
-					console.log(e);
-					Modal.alert(respText);		
-				}				
-				
+		fetch(this.dataUrl, this.SETTINGS.fetchOpts)
+		.then(resp => resp.text())
+		.then(respText => {				
+			try {
+				var jresp = JSON.parse(respText);
+				console.log('response <-', jresp);
+				editCommand.execute();
+				this.grid.invalidateRow(editCommand.row);
+				this.grid.render();				
+			} catch (e){
+				Modal.alert(respText);		
 			}
-		).catch(
-			function(err){
-				Modal.alert(err);
-			}
-		);
+		})
+		.catch(Modal.alert.bind(Modal));
 	},
 	
 	gridClickHandler: function(gridEvent) {
@@ -785,7 +783,7 @@ var APP = {
 		
 		var envId = $('select[name="env_id"]').val();
 		if (envId == ""){
-			Modal.alert('Select env!')
+			Modal.alert('Select env!');
 			return;
 		}
 
@@ -799,31 +797,29 @@ var APP = {
 
 		console.log('request ->', this.SETTINGS.fetchOpts);	
 		
-		fetch(
-			this.dataUrl, this.SETTINGS.fetchOpts
-		).then(
-			resp => resp.text()
-		).then(
-			respText => {				
-				try {
-					var jresp = JSON.parse(respText);
-					console.log('response <-', jresp);				
-					this.dataView.updateItem(rowData.id, jresp);
-					this.grid.invalidate();
-					this.grid.render();
-					this.updateStats();
-					
-				} catch (e){
-					Modal.alert(respText);		
-				}					
-			}
-		).catch(
-			Modal.alert.bind(Modal)
-		);
+		fetch(this.dataUrl, this.SETTINGS.fetchOpts)
+		.then(resp => resp.text())
+		.then(respText => {				
+			try {
+				var jresp = JSON.parse(respText);
+				console.log('response <-', jresp);				
+				this.dataView.updateItem(rowData.id, jresp);
+				this.grid.invalidate();
+				this.grid.render();
+				this.updateStats();
+				
+			} catch (e){
+				Modal.alert(respText);		
+			}					
+		})
+		.catch(Modal.alert.bind(Modal));
 	},
 	
 	gridSortHandler: function (e, args) {
 		this.dataView.sort(function (row1, row2) {
+			
+//			console.log(args, row1, row2)
+			
 	        for (var i = 0, l = args.sortCols.length; i < l; i++) {
 	            var field = args.sortCols[i].sortCol.field;	        	
 	            var sign = args.sortCols[i].sortAsc ? 1 : -1;
@@ -831,17 +827,14 @@ var APP = {
 	            
 	            var x = row1[field], y = row2[field];	
 	            
-	            if (field === 'testSet' && field_id === 'local_set') {
+	            if (field === 'testSet') {
 	            	x = row1[field][field_id];
 	            	y = row2[field][field_id];
-	            }
-	            
+	            }	            
 	            if (field === 'storageTC' && field_id === 'local_set') {
 	            	x = row1[field].testSet[field_id];
 	            	y = row2[field].testSet[field_id];
-	            }
-	            
-	            if (field === 'storageTC' && field_id === 'tc_id') {
+	            } else if (field === 'storageTC') {
 	            	x = row1[field][field_id];
 	            	y = row2[field][field_id];
 	            }
@@ -898,19 +891,19 @@ var APP = {
 	SETTINGS: {
 		"storage": {
 			columns: [
-               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 180, 								sortable: true,									formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + c + '">' + c + '</a>') },    
-               {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50, 	editor: Slick.Editors.Select, 	options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : [], 	},
-               {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	editor: Slick.Editors.Integer													},
-               {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,  editor: Slick.Editors.Integer,	sortable: true, 								},
-               {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65,  								sortable: true									},
-               {id: "apps",			name: "Apps", 		field: "apps", 			width: 65,  editor: Slick.Editors.Text														},
-               {id: "tags",			name: "Tags", 		field: "tags", 			width: 100, editor: Slick.Editors.Text														},
-               {id: "edt_testSetId",name: "Set Name", 	field: "testSetId", 	width: 150,	editor: Slick.Editors.Select, 	options: view.testsets,		sortable: true, 	formatter: (a, b, c) => view.testsets[c.toString()],},
-               {id: "edt_features", name: "Features", 	field: "features", 		width: 200, editor: Slick.Editors.LongText													},    
-               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, editor: Slick.Editors.Text,										},
-               {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, editor: Slick.Editors.Text,										},
-               {id: "edt_is_lab",	name: "Is Lab", 	field: "isLab", 		width: 50,  editor: Slick.Editors.Text,										},
-               {id: "edt_is_gene",	name: "Is Gene", 	field: "isGene", 		width: 50,  editor: Slick.Editors.Text,										},
+               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 180,	sortable: true,									formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + c + '">' + c + '</a>') },    
+               {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50,	sortable: true,	editor: Slick.Editors.Select, 	options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : [], 	},
+               {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	sortable: true,	editor: Slick.Editors.Integer},
+               {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,	sortable: true, editor: Slick.Editors.Integer},
+               {id: "auto_ide", 	name: "Auto Ide", 	field: "auto_ide",		width: 65,  sortable: true},
+               {id: "apps",			name: "Apps", 		field: "apps", 			width: 65, 					editor: Slick.Editors.Text},
+               {id: "tags",			name: "Tags", 		field: "tags", 			width: 100, 				editor: Slick.Editors.Text},
+               {id: "edt_testSetId",name: "Set Name", 	field: "testSetId", 	width: 150,	sortable: true,	editor: Slick.Editors.Select, 	options: view.testsets,		 	formatter: (a, b, c) => view.testsets[c.toString()],},
+               {id: "edt_features", name: "Features", 	field: "features", 		width: 200, 				editor: Slick.Editors.LongText},    
+               {id: "edt_run_path", name: "Run path", 	field: "run_path", 		width: 200, 				editor: Slick.Editors.Text},
+               {id: "edt_run_param",name: "Run param", 	field: "run_param", 	width: 100, 				editor: Slick.Editors.Text},
+               {id: "edt_is_lab",	name: "Is Lab", 	field: "isLab", 		width: 50,	sortable: true,	editor: Slick.Editors.Text},
+               {id: "edt_is_gene",	name: "Is Gene", 	field: "isGene", 		width: 50,	sortable: true,	editor: Slick.Editors.Text},
            ],
            	options: {
     		    autoEdit: true,
@@ -926,21 +919,21 @@ var APP = {
 		"testing": {
 			columns: [
           	    {id: "tc_id", 			name: "TC ID", 			field: "storageTC", 	width: 140, sortable: true, formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + c.tc_id + '">' + c.tc_id + '</a>') },    
-          	    {id: "author", 			name: "Author", 		field: "storageTC", 	width: 50, 	formatter: (a, b, c) => c.author},
-          	 	{id: "edt_runner", 		name: "Runner", 		field: "runner", 		width: 50, editor: Slick.Editors.Select, options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : []},
-          	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65, formatter: (a, b, c) => c.step_num	},
-          	    {id: "edt_tduration", 	name: "Duration", 		field: "tduration", 	width: 65, sortable: true, editor: Slick.Editors.Integer},
-          	 	{id: "local_set", 		name: "Set Name", 		field: "storageTC", 	width: 150,	formatter: true, formatter: (a, b, c) => c.testSet.local_set, sortable: true},
-          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 70,  header: {menu: {items: [{title: "All", command: "A"}, {title: "N", command: "N"}, {title: "P", command: "P"}, {title: "F", command: "F"}, {title: "W", command: "W"}, {title: "C", command: "C"}, {title: "I", command: "I"}]}} },
-          	 	{id: "apps", 			name: "Application", 	field: "storageTC", 	width: 80, 	formatter: (a, b, c) => c.apps},   	    
-          	 	{id: "edt_comment", 	name: "Comment", 		field: "comment", 		width: 200, editor: Slick.Editors.LongText},
-          	    {id: "features", 		name: "Features", 		field: "storageTC", 	width: 200, formatter: (a, b, c) => c.features},
-          	    {id: "softdev", 		name: "SoftDev", 		field: "softdev", 		width: 50, formatter: sdFormatter},
-          	 	{id: "edt_tqc_ver", 	name: "TQC ver", 		field: "tqcVer", 		width: 60, editor: Slick.Editors.Text}, 
-          		{id: "edt_lab_ver", 	name: "LAB ver", 		field: "labVer", 		width: 60, editor: Slick.Editors.Text}, 
-          		{id: "edt_gene_ver", 	name: "GENE ver", 		field: "geneVer", 		width: 60, editor: Slick.Editors.Text},
-          		{id: "edt_env_id", 		name: "Env", 			field: "env", 			width: 50, formatter: (a, b, c) =>  c ? c.name : ''},
-          		{id: "edt_fail_info", 	name: "Fail Info", 		field: "failInfo", 		width: 60, editor: Slick.Editors.FailInfo},          		
+          	    {id: "author", 			name: "Author", 		field: "storageTC", 	width: 50, 					formatter: (a, b, c) => c.author},
+          	 	{id: "edt_runner", 		name: "Runner", 		field: "runner", 		width: 50,					editor: Slick.Editors.Select, options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : []},
+          	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65,					formatter: (a, b, c) => c.step_num	},
+          	    {id: "edt_tduration", 	name: "Duration", 		field: "tduration", 	width: 65,	sortable: true, editor: Slick.Editors.Integer},
+          	 	{id: "local_set", 		name: "Set Name", 		field: "storageTC", 	width: 150,	sortable: true, formatter: (a, b, c) => c.testSet.local_set, sortable: true},
+          	 	{id: "edt_status", 		name: "Status TC", 		field: "tcStatus", 		width: 70,  sortable: true, headerCssClass: "tc-status", header: {menu: {items: view.statuses.slice().reduce((prev, status) => {prev.push({title: status.desc, command: status.id}); return prev;}, [{title: "All", command: "A"}])}} },
+          	 	{id: "apps", 			name: "Application", 	field: "storageTC", 	width: 80,	sortable: true, formatter: (a, b, c) => c.apps},   	    
+          	 	{id: "edt_comment", 	name: "Comment", 		field: "comment", 		width: 200,					editor: Slick.Editors.LongText},
+          	    {id: "features", 		name: "Features", 		field: "storageTC", 	width: 200,					formatter: (a, b, c) => c.features},
+          	    {id: "softdev", 		name: "SoftDev", 		field: "softdev", 		width: 50,	sortable: true, formatter: sdFormatter},
+          	 	{id: "edt_tqc_ver", 	name: "TQC ver", 		field: "tqcVer", 		width: 60,	sortable: true,	editor: Slick.Editors.Text}, 
+          		{id: "edt_lab_ver", 	name: "LAB ver", 		field: "labVer", 		width: 60,	sortable: true,	editor: Slick.Editors.Text}, 
+          		{id: "edt_gene_ver", 	name: "GENE ver", 		field: "geneVer", 		width: 60,	sortable: true,	editor: Slick.Editors.Text},
+          		{id: "edt_env_id", 		name: "Env", 			field: "env", 			width: 50,					formatter: (a, b, c) =>  c ? c.name : ''},
+          		{id: "edt_fail_info", 	name: "Fail Info", 		field: "failInfo", 		width: 60,					editor: Slick.Editors.FailInfo},          		
           	],
           	options: {
       	   	    autoEdit: true,
@@ -975,7 +968,7 @@ var APP = {
 			credentials: 'include',
 			headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 		},
-		softDevLink: 'http://sd01srv.softsystem.pl:8080/SoftDev/View?ufi=STC-TQC-' 
+		softDevLink: 'http://sd01srv.softsystem.pl:8080/SoftDev/View?ufi=STC-TQC-'		
 	},
 	
 }
@@ -988,7 +981,7 @@ function sdFormatter (row, cell, value) {
     switch (value) {        
         case 1      : return '&#10004';
         case 'wait' : return '<div class="loader"></div>';
-        default : return '<a class="no-action" href="">post</a>';
+        default 	: return '<a class="no-action" href="">post</a>';
     }
 }
 

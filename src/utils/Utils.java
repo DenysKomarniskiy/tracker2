@@ -79,6 +79,19 @@ public class Utils {
 		return matches;
 	}
 
+	private String getAction(String pathInfo) {
+
+		if (pathInfo != null) {
+			String[] temp = pathInfo.split("\\/");
+
+			if (temp.length >= 1) {
+				return temp[1];
+			}
+		}
+
+		return null;
+	}
+
 	public static TestingSheet unproxy(TestingSheet proxied) {
 		TestingSheet entity = proxied;
 		if (entity != null && entity instanceof HibernateProxy) {

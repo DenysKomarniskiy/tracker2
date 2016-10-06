@@ -358,29 +358,40 @@ input.editor-checkbox {
 }
 
 /*user styles*/
+.tc-status.P,
 .slick-row.status-P  .l6,
 .slick-row.status-P  .l0 {
 	background-color: rgba(121, 245, 120, 0.4);
 }
 
+.tc-status.F,
 .slick-row.status-F .l6,
 .slick-row.status-F .l0 {
 	background-color: rgba(241, 132, 132, 0.4);
 }
 
+.tc-status.W,
 .slick-row.status-W .l6,
 .slick-row.status-W .l0 {
 	background-color: rgba(255, 167, 0, 0.4);
 }
 
+.tc-status.C,
 .slick-row.status-C .l6,
 .slick-row.status-C .l0 {
 	background-color: rgba(195, 34, 34, 0.4);
 }
 
+.tc-status.I,
 .slick-row.status-I .l6,
 .slick-row.status-I .l0 {
 	background-color: rgba(247, 100, 228, 0.4);
+}
+
+.tc-status.N,
+.slick-row.status-N .l6,
+.slick-row.status-N .l0 {
+	background-color: rgba(153,153,153,0.4);
 }
 
 .flash-cell {

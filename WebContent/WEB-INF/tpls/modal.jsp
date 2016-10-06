@@ -43,6 +43,7 @@
 		},
 		
 		alert: function(text) {
+			console.log(text);
 			this.clear();
 			this.setHeader("Alert")
 			this.msg.innerHTML = text;

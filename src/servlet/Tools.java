@@ -39,8 +39,8 @@ public class Tools extends HttpServlet {
 		Session hibernateSession = sessionFactory.getCurrentSession();
 
 		Transaction tx = hibernateSession.beginTransaction();
-		List testings = hibernateSession.createQuery("from Testing").getResultList();
-		List users = hibernateSession.createQuery("from User WHERE active = :active").setParameter("active", 1).getResultList();
+		List testings = hibernateSession.createQuery("FROM Testing").getResultList();
+		List users = hibernateSession.createQuery("FROM User WHERE active = :active").setParameter("active", 1).getResultList();
 		tx.commit();
 
 		request.setAttribute("testings", testings);
