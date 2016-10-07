@@ -6,12 +6,11 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="/tracker2/js/lib/jquery/jquery-ui.min.css">
-<link rel="stylesheet" type="text/css" href="/tracker2/js/lib/slickgrid/slick.grid.css" />
-<link rel="stylesheet" type="text/css" href="/tracker2/js/lib/slickgrid/slick-default-theme.css" />
-<link rel="stylesheet" type="text/css" href="/tracker2/css/main.css" />
-<link rel="stylesheet" type="text/css" href="/tracker2/css/modal.css" />
-<link href="/tracker2/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-
+<link rel="stylesheet" type="text/css" href="/tracker2/js/lib/slickgrid/slick.grid.css">
+<link rel="stylesheet" type="text/css" href="/tracker2/js/lib/slickgrid/slick-default-theme.css">
+<link rel="stylesheet" type="text/css" href="/tracker2/css/main.css">
+<link rel="stylesheet" type="text/css" href="/tracker2/css/modal.css">
+<link href="/tracker2/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>${title}</title>
 </head>
@@ -31,8 +30,7 @@
 				</div>
 				<div id="mdl-menu-btn" class="mdl-layout__drawer-button">					
 					<i class="material-icons">menu</i>					
-				</div>
-				
+				</div>				
 				<div class="mdl-layout__header-row">
 					<!-- Title -->
 					<span class="mdl-layout__title">${title}</span>
@@ -49,12 +47,10 @@
 							</div>
 						</div>					
 					</div>					
-				</div>
-				
+				</div>				
 				<div class="user-data">
 					<span class="mdl-layout__title">${sessionScope.user}</span>
-				</div>
-				
+				</div>				
 			</header>
 			<div id="mdl-drawer" class="mdl-layout__drawer" aria-hidden="true">
 				<span class="mdl-layout__title">Tracker</span>
@@ -66,20 +62,13 @@
 					<a class="mdl-navigation__link" href="tools"><i class="material-icons">restaurant</i> Tools</a>
 				</nav>
 			</div>
-			<main class="mdl-layout__content">
-			
-			
+			<main class="mdl-layout__content">			
 				<div class="page-content">
-	
 					<!-- content goes here -->
-	
 					<c:if test="${not empty template}">
-						<jsp:include page="${template}" />
+						<jsp:include page="${template}"/>
 					</c:if>
-	
 				</div>
-			
-			
 			</main>
 			<div id="mdl-obfuscator" class="mdl-layout__obfuscator"></div>
 		</div>
@@ -91,8 +80,7 @@
 	<script src="/tracker2/js/lib/jquery/jquery-2.2.4.min.js"></script>
 	<script src="/tracker2/js/lib/jquery/jquery-ui.min.js"></script>
 	<script src="/tracker2/js/lib/jquery/jquery.event.drop-2.2.js"></script>
-	<script src="/tracker2/js/lib/jquery/jquery.event.drag-2.2.js"></script>
-	
+	<script src="/tracker2/js/lib/jquery/jquery.event.drag-2.2.js"></script>	
 	<script src="/tracker2/js/lib/slickgrid/slick.core.js"></script>
 	<script src="/tracker2/js/lib/slickgrid/slick.editors.js"></script>
 	<script src="/tracker2/js/lib/slickgrid/slick.grid.js"></script>
@@ -101,8 +89,6 @@
 	<script src="/tracker2/js/lib/slickgrid/plugins/slick.headermenu.js"></script>
 	<script src="/tracker2/js/lib/slickgrid/plugins/slick.rowselectionmodel.js"></script>
 	<script src="/tracker2/js/main.js"></script>
-
-
 </body>
 </html>
 

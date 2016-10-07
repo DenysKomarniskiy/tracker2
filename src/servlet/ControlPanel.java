@@ -1,11 +1,7 @@
 package servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +20,6 @@ import org.hibernate.Transaction;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import models.entities.StorageTC;
 import models.entities.TestingSheet;
@@ -33,7 +28,6 @@ import models.entities.User;
 import models.entities.Testing;
 import utils.CustomTesting;
 import utils.CustomTestingDeserializer;
-import utils.CustomTestingItem;
 import utils.Distributor;
 
 @WebServlet("/controlpanel/*")

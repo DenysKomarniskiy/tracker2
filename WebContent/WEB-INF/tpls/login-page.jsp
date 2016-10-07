@@ -20,7 +20,7 @@
 
 			<c:if test="${not empty logged}">
 				<div class="row">
-					<span class="mdl-textfield">You are logged as <strong class="mdl-textfield">${logged}</strong></span> 
+					<span class="mdl-textfield">You are logged as <a class="mdl-textfield" href="settings">${logged}</a></span> 
 				</div>
 				<input type="hidden" name="action" value="Logout" />
 				<div class="row">

@@ -102,8 +102,10 @@ public class AsyncSoftDevProcessor implements Runnable {
 
 				List<TTestSet> testSets = testCasePort.getTestSetsForTestCase(tTestCase.getEntityID()).getItem();
 				
-				if (!isIncludes(testSets, testsetId))
+				if (!isIncludes(testSets, testsetId)) {
+					asyncContext.complete();
 					throw new Exception("Last revision of testcase " + tTestCase.getUFI() + " not in testset " + sheetTc.getStorageTC().getTestSet().getSdSet());
+				}
 
 				UserFieldArray userFields = createSDUserFields();
 

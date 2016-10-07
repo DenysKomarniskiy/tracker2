@@ -13,7 +13,7 @@ function interfaceInit() {
     mdlObfuscator.onclick = function () {
         mdlDrawer.classList.remove('is-visible');
         mdlObfuscator.classList.remove('is-visible');
-    }
+    };
     
     var loadBar = document.getElementById('load-bar');
     loadBar.style.display = "none";
@@ -25,7 +25,7 @@ function interfaceInit() {
 		hide: function() {
 			loadBar.style.display = "none";
 		}
-    }
+    };
 
 };
 
@@ -193,8 +193,6 @@ var APP = {
 		},
 		
 		"tools": function() {			
-			console.log('init tools..');
-			
 			var initSendMail = () => {
 				$('input[name="tqc_version"]').val(localStorage.getItem('tqcver'))
 				var $sendMailForm = $('#send-mail');
@@ -891,7 +889,7 @@ var APP = {
 	SETTINGS: {
 		"storage": {
 			columns: [
-               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 180,	sortable: true,									formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + c + '">' + c + '</a>') },    
+               {id: "tc_id", 		name: "TC ID", 		field: "tc_id", 		width: 180,	sortable: true,									formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + (c.split(":")[1] || c) + '">' + c + '</a>') },    
                {id: "edt_author", 	name: "Author", 	field: "author", 		width: 50,	sortable: true,	editor: Slick.Editors.Select, 	options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : [], 	},
                {id: "edt_step_num", name: "Step Count", field: "step_num", 		width: 65,	sortable: true,	editor: Slick.Editors.Integer},
                {id: "edt_duration", name: "Duration", 	field: "duration", 		width: 65,	sortable: true, editor: Slick.Editors.Integer},
@@ -918,7 +916,7 @@ var APP = {
 		},
 		"testing": {
 			columns: [
-          	    {id: "tc_id", 			name: "TC ID", 			field: "storageTC", 	width: 140, sortable: true, formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + c.tc_id + '">' + c.tc_id + '</a>') },    
+          	    {id: "tc_id", 			name: "TC ID", 			field: "storageTC", 	width: 140, sortable: true, formatter: (a, b, c) => ('<a target="_blank" href="' + APP.SETTINGS.softDevLink + (c.tc_id.split(":")[1] || c.tc_id) + '">' + c.tc_id + '</a>') },    
           	    {id: "author", 			name: "Author", 		field: "storageTC", 	width: 50, 					formatter: (a, b, c) => c.author},
           	 	{id: "edt_runner", 		name: "Runner", 		field: "runner", 		width: 50,					editor: Slick.Editors.Select, options: view.users ? view.users.reduce((prev, curr) => {prev.push(curr.id); return prev;}, []) : []},
           	    {id: "step_num", 		name: "Step Count", 	field: "storageTC", 	width: 65,					formatter: (a, b, c) => c.step_num	},

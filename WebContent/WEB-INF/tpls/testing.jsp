@@ -109,6 +109,6 @@
 		{id:"W", desc:"Waiting", val: "W"},
 		{id:"C", desc:"Correction", val: "C"},
 		{id:"I", desc:"Investigation", val: "I"},
-		{id:"N", desc:"N\A", val: "N"},
+		{id:"N", desc:"N\\A", val: "N"},
 	];
 </script>
