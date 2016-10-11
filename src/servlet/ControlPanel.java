@@ -47,6 +47,7 @@ public class ControlPanel extends HttpServlet {
 
 		if (path.contains("generate")) {
 
+			//@TODO refactor generateTesting
 			generateTesting(request, response);
 			return;
 
@@ -60,13 +61,9 @@ public class ControlPanel extends HttpServlet {
 		} else if (path.contains("save")) {
 
 			Gson gson = new GsonBuilder().registerTypeAdapter(CustomTesting.class, new CustomTestingDeserializer()).create();
-
-			CustomTesting ct = gson.fromJson(request.getReader(), CustomTesting.class);
-			
+			CustomTesting ct = gson.fromJson(request.getReader(), CustomTesting.class);			
 			Map<String, List<Long>> result = createCustomTesting(ct, ct.id == 0 ? null : ct.id);
-
 			response.getWriter().println(gson.toJson(result));
-
 			return;
 		}
 

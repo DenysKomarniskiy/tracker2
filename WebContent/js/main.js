@@ -161,7 +161,6 @@ var APP = {
 	initFace: {
 		
 		"settings": function() {
-			console.log('init settings..');
 			var excludedFields = ['id', 'active', 'rights'];
 			
 			var data = [], id = 0;
@@ -188,33 +187,33 @@ var APP = {
     		    editable: true,
 				editCommandHandler: this.editCommandHandler.bind(this)
 			}
-			
-			this.grid = new Slick.Grid("#user-settings-grid", this.dataView, cols, opts); 
+
+			this.grid = new Slick.Grid("#user-settings-grid", this.dataView, cols, opts);
 		},
-		
-		"tools": function() {			
+
+		"tools": function() {
 			var initSendMail = () => {
 				$('input[name="tqc_version"]').val(localStorage.getItem('tqcver'))
 				var $sendMailForm = $('#send-mail');
-				var $sendButton = $sendMailForm.find('input[type="submit"]');
-				$sendButton.on('click', (e) => {				
-					e.preventDefault();					
-					$sendButton[0].disabled = true;					
+				var $sendButton = $sendMailForm.find('#btn-send-mail');
+				$sendButton.on('click', (e) => {
+					if (!$sendMailForm[0].checkValidity())
+						return;
+					e.preventDefault();	
+					$sendButton[0].disabled = true;
 					this.SETTINGS.fetchOpts.body = $sendMailForm.serialize();
-					
+
 					fetch($sendMailForm.attr("action"), this.SETTINGS.fetchOpts)
 					.then(resp => resp.text())
 					.then(respText => {$sendButton[0].disabled = false;})
-					.catch(Modal.alert.bind(Modal));						
+					.catch(Modal.alert.bind(Modal));	
 				});
 			}
 			var initGenTesting = () => {
 				$genTestingForm = $('#gen-testing');
 				$genTestingForm.on('submit', (e) => {
 					e.preventDefault();					
-					this.SETTINGS.fetchOpts.body = $genTestingForm.serialize();				
-	
-					console.log('request ->',  this.SETTINGS.fetchOpts);
+					this.SETTINGS.fetchOpts.body = $genTestingForm.serialize();
 					
 					$genTestingForm.find('button')[0].disabled = true;					
 					
@@ -228,7 +227,6 @@ var APP = {
 				});
 			}			
 			function showGeneratedTesting(respText) {
-				console.log('response <-', respText);
 				try {
 					var jResp = JSON.parse(respText);					
 					var $table = $('<table />');
@@ -307,7 +305,6 @@ var APP = {
 			
 			var saveTesting = (testing) => {					
 				this.SETTINGS.fetchOpts.body = JSON.stringify(testing);
-				console.log('request -> controlpanel/save', this.SETTINGS.fetchOpts);
 				fetch('controlpanel/save', this.SETTINGS.fetchOpts)
 				.then(resp => resp.text())
 				.then(showGeneratedTesting)
@@ -544,14 +541,11 @@ var APP = {
 					
 					this.SETTINGS.fetchOpts.body = $(form).serialize();
 					
-					console.log('request ->', this.SETTINGS.fetchOpts);
-					
 					fetch(APP.dataUrl, this.SETTINGS.fetchOpts)
 					.then(resp => resp.text())
 					.then(respText => {						
 						try {
 							var jresp = JSON.parse(respText);
-							console.log('response <-', jresp);	
 							this.dataView.insertItem(0, jresp);
 							this.grid.invalidate();
 							this.grid.render();						
@@ -605,9 +599,6 @@ var APP = {
 		localStorage.setItem('lastSelectedTesting', $form.find('select[name="testing_id"]').val());
 		
 		this.SETTINGS.fetchOpts.body = $form.serialize();
-		
-		console.log('request ->', this.SETTINGS.fetchOpts);
-		
 		fetch(this.dataUrl, this.SETTINGS.fetchOpts)
 		.then(resp => resp.json())
 		.then(this.updateGrid.bind(this))
@@ -615,9 +606,6 @@ var APP = {
 	},	
 	
 	updateGrid: function(data) {
-		
-		console.log('response <-');
-		console.dir(data);
 	    
 		this.dataView.setItems(this.validateData(data));
 		this.updateStats();
@@ -653,14 +641,11 @@ var APP = {
 	editCommandHandler: function(item, column, editCommand) {
 		
 		this.SETTINGS.fetchOpts.body = "action=edit&id=" + item.id + "&" + column.id + "=" + editCommand.serializedValue;
-		console.log('request ->', this.SETTINGS.fetchOpts);
-		
 		fetch(this.dataUrl, this.SETTINGS.fetchOpts)
 		.then(resp => resp.text())
 		.then(respText => {				
 			try {
 				var jresp = JSON.parse(respText);
-				console.log('response <-', jresp);
 				editCommand.execute();
 				this.grid.invalidateRow(editCommand.row);
 				this.grid.render();				
@@ -736,15 +721,11 @@ var APP = {
 		this.grid.render();
 		
 		this.SETTINGS.fetchOpts.body = "action=sdpost&sheetentityid=" + rowData.id;
-		
-		console.log('request ->', this.SETTINGS.fetchOpts);
-						
 		fetch(this.dataUrl, this.SETTINGS.fetchOpts)
 		.then(resp => resp.text())
 		.then(resp => {				
 			try {
 				var jresp = JSON.parse(resp);
-				console.log('response <-', jresp);
 				if (jresp.status == "Passed" || jresp.status == "Failed"){
 					rowData.softdev = 1;
 					Notify.send('Testcase ' + rowData.storageTC.tc_id + ' posted to SoftDev. ' + jresp.name);
@@ -791,21 +772,17 @@ var APP = {
 			+ "&edt_status=" + newStatus
 			+ "&edt_tqc_ver=" + view.appVer.tqcver 
 			+ ((rowData.storageTC.isLab) ? "&edt_lab_ver=" + view.appVer.labver : '')
-			+ ((rowData.storageTC.isGene) ? "&edt_gene_ver=" + view.appVer.genever : '');   		
-
-		console.log('request ->', this.SETTINGS.fetchOpts);	
+			+ ((rowData.storageTC.isGene) ? "&edt_gene_ver=" + view.appVer.genever : '');
 		
 		fetch(this.dataUrl, this.SETTINGS.fetchOpts)
 		.then(resp => resp.text())
 		.then(respText => {				
 			try {
-				var jresp = JSON.parse(respText);
-				console.log('response <-', jresp);				
+				var jresp = JSON.parse(respText);	
 				this.dataView.updateItem(rowData.id, jresp);
 				this.grid.invalidate();
 				this.grid.render();
-				this.updateStats();
-				
+				this.updateStats();				
 			} catch (e){
 				Modal.alert(respText);		
 			}					
@@ -1004,9 +981,8 @@ function copyToClipboard(text) {
     try {
         var successful = document.execCommand('copy');
         successful ? console.log(text, 'copied to clipboard') : console.log('unable to copy');
-
     } catch (err) {
-        console.log('Oops, unable to copy');
+        console.log('Oops, unable to copy', err);
     }
 
     document.body.removeChild(textArea);

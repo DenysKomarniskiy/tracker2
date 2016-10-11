@@ -3,36 +3,45 @@
 <div class="tools content flex-container-row">
 
 	<div class="widget send-mail">
-		<h3>Send mail to managers</h3>
-		<form id="send-mail" action="tools" method="post">
+		<h3 class="mdl-layout__title">Send mail to managers</h3>
+		<form id="send-mail" class="invert-color" action="tools" method="post">
 			<input type="hidden" name="action" value ="sendmail"/>
-			<div>
-				<label>Select testing
-					<select name="testing_id">
-					    <c:forEach items="${testings}" var="testing">						   
+
+			<div class="row">	
+				<div class="mdl-select">			
+					<select name="testing_id" required>
+						<option selected></option>
+						<c:forEach items="${testings}" var="testing">						   
 					        <option value="${testing.id}">${testing.name}</option>
-					    </c:forEach>
-					</select>
-				</label>
+					    </c:forEach>				
+					</select>			
+					<label class="float-palceholder">Select testing</label>
+				</div>	
 			</div>
-			<div>
-				<label>Enter version
-					<input type="text" name="tqc_version" value="1.0" required/>
-				</label>
+
+			<div class="row">
+				<div class="mdl-textfield floating-label">
+		   			<input type="text" name="tqc_version" class="mdl-textfield__input" value="1.0" required>
+		   			<label class="float-palceholder">Enter version</label>
+		   			<label class="mdl-textfield__label" for="sample-expandable"></label>
+				</div>	
 			</div>
-			<div>
-				<label>Enter official env's
-					<input type="text" name="official_env" value="zw10, pt92, QA34_02" required/>
-				</label>
+
+			<div class="row">
+				<div class="mdl-textfield floating-label">
+		   			<input type="text" name="official_env" class="mdl-textfield__input" value="zw10, pt92, QA34_02" required>
+		   			<label class="float-palceholder">Enter official env's</label>
+		   			<label class="mdl-textfield__label" for="sample-expandable"></label>
+				</div>
 			</div>
-			<br>
-			</br>
-			<input type="submit" name="action" value="Send Mail" />
+
+			<button id="btn-send-mail" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Send Mail</button>
+
 		</form>
 	</div>	
 	
 	<div class="widget testing-manager">
-		<h3>Testing management</h3>
+		<h3 class="mdl-layout__title">Testing management</h3>
 		<div class="row invert-color">
 			<h4>New testing</h4>
 			<form class="flex-container-row" id="gen-testing" action="controlpanel/generate" method="post">				
