@@ -3,7 +3,7 @@
 <div class="tools content flex-container-row">
 
 	<div class="widget send-mail">
-		<h3 class="mdl-layout__title">Send mail to managers</h3>
+		<h3 class="mdl-layout__title"> <i class="material-icons">mail_outline</i>  Send mail to managers</h3>
 		<form id="send-mail" class="invert-color" action="tools" method="post">
 			<input type="hidden" name="action" value ="sendmail"/>
 
@@ -41,7 +41,7 @@
 	</div>	
 	
 	<div class="widget testing-manager">
-		<h3 class="mdl-layout__title">Testing management</h3>
+		<h3 class="mdl-layout__title"> <i class="material-icons">create</i> Testing management</h3>
 		<div class="row invert-color">
 			<h4>New testing</h4>
 			<form class="flex-container-row" id="gen-testing" action="controlpanel/generate" method="post">				

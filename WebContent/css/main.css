@@ -8,8 +8,7 @@
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 @font-face {
-    /*https://design.google.com/icons/#ic_settings*/
-    /*https://github.com/google/material-design-icons/blob/master/iconfont/codepoints*/
+    /* https://design.google.com/icons/ */
     font-family: 'Material Icons';
     font-style: normal;
     font-weight: 400;
@@ -504,6 +503,10 @@ input.editor-checkbox {
     padding: 10px;
     
 }
+
+.widget .mdl-layout__title {
+	margin-left: 20px;
+}
 .tools .widget {
 	margin: 10px 0 0 10px !important;
 }
@@ -824,7 +827,7 @@ input.editor-checkbox {
     font: 24px 'Material Icons';
     position: absolute;
     top: 20px;
-    right: 0;	
+    right: -6px;	
     color: #fff;
     pointer-events: none;
 }
@@ -832,7 +835,7 @@ input.editor-checkbox {
 	color: #fff;
     font: 16px "Helvetica","Arial",sans-serif;
 	outline: none;
-    padding: 4px 25px 4px 0px;    
+    padding: 5px 25px 4px 0px;    
     border: none;
     border-bottom: 1px solid rgba(255,255,255,0.5);
     box-shadow: none;
@@ -1038,7 +1041,9 @@ div.add #b-add:hover {
     outline: none;
 }
 
-
+#add-testcase-form {
+	color: #3f51b5;	
+}
 #add-testcase-form div span {
 	display: inline-block;
 	width: 100px;

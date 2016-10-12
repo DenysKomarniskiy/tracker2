@@ -526,21 +526,21 @@ var APP = {
 			// init vars
 			this.dataUrl = 'storage';
 			this.searchPath = ['tc_id'];		
+			var addForm = document.getElementById("add-testcase-form");		
 			
 			// build interface
 			$('button#b-add').click(() => {
-				var form = document.getElementById("add-testcase-form").cloneNode(true);
+				var form = addForm.cloneNode(true);				
 				
-				$(form).find('button#btn-add-tc').click( (e) => {		
-					
-					if (!form.checkValidity()){					
+				$(form).find('input[name="edt_tc_id"]').on('blur', this.runPathFormatter);
+				$(form).find('select[name="edt_test_set"]').on('change', this.runPathFormatter);
+				
+				$(form).find('button#btn-add-tc').click( (e) => {
+					if (!form.checkValidity())			
 						return;
-					}
-					
 					e.preventDefault();
 					
-					this.SETTINGS.fetchOpts.body = $(form).serialize();
-					
+					this.SETTINGS.fetchOpts.body = $(form).serialize();					
 					fetch(APP.dataUrl, this.SETTINGS.fetchOpts)
 					.then(resp => resp.text())
 					.then(respText => {						
@@ -861,6 +861,29 @@ var APP = {
 		.setHeader('Test Plan')
 		.printMsg('Test Plan generated and copied to clipboard.')
 		.show();
+	},
+	
+	runPathFormatter: function() {
+		var form = $(this).parents('form');
+		var fullId = form.find('input[name="edt_tc_id"]').val();
+		var testSet = form.find('select[name="edt_test_set"] > option:selected').text();
+		var idParts = fullId.split(":");
+		var $runPathInput = form.find('input[name="edt_run_path"]')
+		
+		if (!testSet || !fullId){
+			$runPathInput.val('');
+			return;
+		}
+		
+		var runPath = testSet + '\\';
+		
+		if (idParts[1]) {
+			runPath += idParts[0] + '\\' + idParts[1] + '\\' + idParts[1] + '.t';
+		} else {
+			runPath +=  idParts[0] + '\\' + idParts[0] + '.t';
+		}
+		
+		$runPathInput.val(runPath);		
 	},
 	
 	SETTINGS: {
